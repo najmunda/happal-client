@@ -1,8 +1,8 @@
-import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import { BookA, CalendarPlus, Crosshair, Search, SquarePen, Trash2, WholeWord } from "lucide-react"
+import { getCards } from "../db";
 
-const data = [
+/*const data = [
   { "id": 1, "sentence": "Maecenas pulvinar lobortis est.", "target": "adipiscing", "definition": "Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem. Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci.", "dateAdded": "8/17/2024" },
   { "id": 2, "sentence": "In congue. Etiam justo.", "target": "enim", "definition": "Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.", "dateAdded": "9/26/2024" },
   { "id": 3, "sentence": "Donec ut mauris eget massa tempor convallis.", "target": "cras", "definition": "Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi.", "dateAdded": "12/13/2024" },
@@ -33,9 +33,21 @@ const data = [
   { "id": 28, "sentence": "Maecenas ut massa quis augue luctus tincidunt.", "target": "mi", "definition": "Nullam varius. Nulla facilisi. Cras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit.", "dateAdded": "5/13/2024" },
   { "id": 29, "sentence": "Nullam varius. Nulla facilisi.", "target": "augue", "definition": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est. Donec odio justo, sollicitudin ut, suscipit a, feugiat et, eros. Vestibulum ac est lacinia nisi venenatis tristique.", "dateAdded": "3/6/2024" },
   { "id": 30, "sentence": "Etiam justo. Etiam pretium iaculis justo.", "target": "quam", "definition": "Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus. Curabitur at ipsum ac tellus semper interdum.", "dateAdded": "4/22/2024" }
-]
+]*/
+
+export async function loader() {
+  const cardsData = await getCards();
+  return cardsData.rows.map(row => row.doc);
+}
 
 export default function Cards() {
+
+  const cardsData = useLoaderData();
+
+  function formatDate(dateISOString) {
+    const date = new Date(dateISOString);
+    return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
+  }
 
   return (
     <>
@@ -48,17 +60,17 @@ export default function Cards() {
           <tr>
             <th className="p-2 w-4/12"><div className="flex justify-center items-center gap-2"><WholeWord />Sentence</div></th>
             <th className="w-2/12"><div className="flex justify-center items-center gap-2"><Crosshair />Target</div></th>
-            <th className="w-5/12"><div className="flex justify-center items-center gap-2"><BookA />Definition</div></th>
-            <th className="w-1/12"><div className="flex justify-center items-center gap-2"><CalendarPlus />Added</div></th>
+            <th className="w-4/12"><div className="flex justify-center items-center gap-2"><BookA />Definition</div></th>
+            <th className="w-2/12"><div className="flex justify-center items-center gap-2"><CalendarPlus />Date Added</div></th>
           </tr>
         </thead>
         <tbody>
-          {data.map(card => (
-            <tr key={card.id} data-key={card.id} className="group border relative">
+          {cardsData.map(card => (
+            <tr key={card._id} data-key={card._id} className="group border relative">
               <td className="p-2 text-nowrap truncate">{card.sentence}</td>
               <td className="text-center text-nowrap truncate">{card.target}</td>
-              <td className="text-nowrap truncate">{card.definition}</td>
-              <td className="text-center text-nowrap truncate">{card.dateAdded}</td>
+              <td className="text-nowrap truncate">{card.def}</td>
+              <td className="text-center text-nowrap truncate">{formatDate(card.dateAdded)}</td>
               <td className="h-full absolute right-0">
                 <div className="h-full px-4 bg-white opacity-0 flex justify-center items-center gap-3 group-hover:opacity-100">
                   <button><SquarePen size={18} /></button>

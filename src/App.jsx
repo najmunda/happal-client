@@ -1,9 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Root/*, { action as rootAction }*/ from './routes/root'
 import Home from "./routes/home.jsx";
-import Mine from "./routes/mine.jsx";
+import Mine, { action as mineAction } from "./routes/mine.jsx";
 import Sorb from "./routes/sorb.jsx";
-import Cards from './routes/cards.jsx'
+import Cards, { loader as cardsLoader } from './routes/cards.jsx'
 
 export default function App() {
 
@@ -20,6 +20,7 @@ export default function App() {
         {
           path: "/mine",
           element: <Mine />,
+          action: mineAction,
         },
         {
           path: "/sorb",
@@ -28,6 +29,7 @@ export default function App() {
         {
           path: "/cards",
           element: <Cards />,
+          loader: cardsLoader,
         },
       ]
     },
