@@ -1,7 +1,8 @@
-import { Form, Outlet, useLoaderData } from "react-router-dom";
-import { BookA, CalendarPlus, Crosshair, Search, SquareCheck, SquarePen, Trash2, WholeWord } from "lucide-react";
+import { Form, Outlet, useLoaderData, useLocation } from "react-router-dom";
+import { CopyX, Info, Pickaxe, Search, SquarePen, Table, Trash2 } from "lucide-react";
 import { getCards } from "../../db";
-import { useState } from "react";
+import Header from "../../components/Header";
+import Toast from "../../components/Toast";
 
 export async function loader() {
   const cardsData = await getCards();
@@ -11,71 +12,48 @@ export async function loader() {
 export default function Cards() {
 
   const cardsData = useLoaderData();
-  const [selectedCard, setSelectedCard] = useState([]);
-  console.log(selectedCard);
+  const location = useLocation();
+
+  console.log("location ", location.state);
 
   function formatDate(dateISOString) {
     const date = new Date(dateISOString);
-    return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
-  }
-
-  function handleCheckBox(e) {
-    if (e.target.tagName == "INPUT") {
-      const key = e.target.parentElement.parentElement.dataset.key;
-      if (e.target.checked == true) {
-        setSelectedCard([...selectedCard, key]);
-      } else {
-        setSelectedCard(selectedCard.filter(cardId => cardId != key));
-      }
-    }
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
   }
 
   return (
     <>
-      <div className={`p-2 flex justify-${selectedCard.length ? 'between' : 'end'} items-center`}>
-        {
-          selectedCard.length ?
-            <div className="flex items-center gap-2">
-              <p>{selectedCard.length} Selected</p>
-            </div> : <></>
+      <Header>
+        {cardsData.length != 0 ?
+          <>
+            <button className="h-fit"><Table size={20} /></button>
+            <button className="h-fit"><Search size={20} /></button>
+          </> : <></>
         }
-        <form action="" className="flex items-center border rounded">
-          <input type="search" name="" id="" className="w-full outline-0" />
-          <Search />
-        </form>
-      </div>
-      <table className="p-2 w-full table-fixed border rounded">
-        <thead>
-          <tr>
-            <th className="p-2 w-fit"><div className="flex justify-center items-center gap-2"><SquareCheck /></div></th>
-            <th className="w-3/12"><div className="flex justify-center items-center gap-2"><WholeWord />Sentence</div></th>
-            <th className="w-2/12"><div className="flex justify-center items-center gap-2"><Crosshair />Target</div></th>
-            <th className="w-4/12"><div className="flex justify-center items-center gap-2"><BookA />Definition</div></th>
-            <th className="w-2/12"><div className="flex justify-center items-center gap-2"><CalendarPlus />Date Updated</div></th>
-          </tr>
-        </thead>
-        <tbody onClick={handleCheckBox}>
-          {cardsData.map(card => (
-            <tr key={card._id} data-key={card._id} className="group border relative">
-              <td className="p-2 text-center"><input type="checkbox" name={`check_${card._id}`} id={`check_${card._id}`} checked={selectedCard.includes(card._id)} readOnly /></td>
-              <td className="text-nowrap truncate">{card.sentence}</td>
-              <td className="text-center text-nowrap truncate">{card.target}</td>
-              <td className="text-nowrap truncate">{card.def}</td>
-              <td className="text-center text-nowrap truncate">{formatDate(card.dateUpdated)}</td>
-              <td className="h-full absolute right-0">
-                {selectedCard.length ?
-                  <></> :
-                  <div className="h-full px-4 bg-white opacity-0 flex justify-center items-center gap-3 group-hover:opacity-100">
-                    <Form action={`${card._id}/edit`} className="flex items-center"><button><SquarePen size={18} /></button></Form>
-                    <Form method="post" action={`${card._id}/delete`} className="flex items-center"><button type="submit"><Trash2 size={18} color="red" /></button></Form>
-                  </div>
-                }
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Outlet />
+      </Header>
+      <main className={`flex-1 p-2 flex flex-col gap-2 ${cardsData.length == 0 && 'justify-center items-center text-neutral-500'}`}>
+        {cardsData.length != 0 ?
+          cardsData.map(card => (
+            <div key={card._id} data-key={card._id} className="group p-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">
+              <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
+              <p className="text-xs font-extralight justify-self-end">{formatDate(card.dateUpdated)}</p>
+              <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
+              <div className="col-span-2 hidden justify-evenly text-xs group-hover:flex">
+                <button className="flex gap-1"><Info size={15} />Info</button>
+                <Form action={`${card._id}/edit`} className="flex items-center"><button className="flex gap-1"><SquarePen size={15} />Edit</button></Form>
+                <Form method="post" action={`${card._id}/delete`} className="flex items-center"><button type="submit" className="flex gap-1"><Trash2 size={15} /> Delete</button></Form>
+              </div>
+            </div>
+          ))
+          :
+          <>
+            <CopyX size={80} />
+            <p className="text-center text-sm">There is no card added. Go to <Pickaxe size={18} className="inline" /> "Mine" to mining sentence and add some card.</p>
+          </>
+        }
+        <Outlet />
+        {location.state && <Toast message={location.state.message} />}
+      </main>
     </>
   )
 }

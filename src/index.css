@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scrollbar-gutter: stable;
-  scrollbar-color: var(--secondary-color) transparent;
-  scrollbar-width: thin;
+@layer base {
+  @font-face {
+    font-family: "Plus Jakarta Sans";
+    src: url('./assets/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf');
+  }
+
+  html {
+    font-family: "Plus Jakarta Sans", system-ui, Arial, Helvetica, sans-serif;
+    scrollbar-gutter: stable;
+    scrollbar-color: var(--secondary-color) transparent;
+    scrollbar-width: thin;
+  }
 }

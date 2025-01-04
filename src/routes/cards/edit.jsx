@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Form, redirect, useLoaderData, useNavigate } from "react-router-dom";
+import { ArrowLeft, Save } from "lucide-react";
 import { editCard, getCard } from "../../db";
+import TextArea from "../../components/TextArea";
 
 export async function action({ request, params }) {
   const cardsForm = await request.formData();
@@ -50,46 +52,52 @@ export default function CardEdit() {
     };
   }
 
+  function handleBackButton() {
+    navigate('/cards');
+  }
+
   function handleEscDown(e) {
-    console.log(e.key);
     if (e.key == "Escape") {
       navigate('/cards');
     };
   }
 
   return (
-    <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-3/5 h-fit">
-      <Form method="post" action="" className="p-3 flex flex-col items-center gap-3 border rounded">
-        <h1>Edit Card</h1>
-        <textarea
+    <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="bottom-0 border rounded-lg">
+      <Form method="post" action="" className="p-3 h-fit flex flex-col items-center gap-2">
+        <div className="w-full flex justify-between items-center">
+          <button type="button" onClick={handleBackButton} className="flex gap-1 text-xs"><ArrowLeft size={15} /> Back</button>
+          <h1>Edit Card</h1>
+          <button type="submit" className="flex gap-1 text-xs"><Save size={15} />Submit</button>
+        </div>
+        <TextArea
           type="text"
           name="sentence"
           id="sentence"
           value={sentence}
           onChange={handleSentenceChange}
           onSelect={handleSentenceSelect}
-          className="w-3/4 text-center text-xl border rounded p-2"
+          className="w-full text-xs border rounded p-2"
           placeholder="Put sentence here..."
-        ></textarea>
+        ></TextArea>
         <input
           type="text"
           name="target"
           id="target"
           value={target}
-          className="w-3/4 text-center text-lg border rounded p-2"
-          placeholder="Highlight some words from sentence..."
+          className="w-full border rounded p-2"
+          placeholder="Highlight words from sentence..."
           readOnly
         />
-        <textarea
+        <TextArea
           type="text"
           name="def"
           id="def"
           value={def}
           onChange={handleDefChange}
-          className="w-3/4 text-center text-md border rounded p-2"
+          className="w-full text-xs border rounded p-2"
           placeholder="Add def from dictionary..."
-        ></textarea>
-        <button type="submit" className="p-2 border rounded">Submit</button>
+        ></TextArea>
       </Form>
     </dialog>
   )
