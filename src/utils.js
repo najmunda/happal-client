@@ -1,14 +1,22 @@
-export async function registerUser({ name, email, password, confirmPass }) {
-  if (password == confirmPass) {
-    const req = new Request("http://localhost:3000/register", {
-      body: {
-        name,
-        email,
-        password,
-      }
-    });
-    const response = await fetch(req);
-  } else {
+export function getEndTodayUTC() {
+  // Return date of early day (client timezone)
+  const date = new Date();
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1, 0, 0, 0, 0);
+}
 
+export function msToDHM(milisecond) {
+  // Turn milisecond to XdXhXm (day, hour, minute)
+  let timeStr = ""
+  if (milisecond >= 86400000) {
+    timeStr += Math.floor(milisecond / 86400000) + 'd';
+    milisecond %= 86400000;
   }
+  if (milisecond >= 3600000) {
+    timeStr += Math.floor(milisecond / 3600000) + 'h';
+    milisecond %= 3600000;
+  }
+  if (milisecond >= 60000) {
+    timeStr += Math.floor(milisecond / 60000) + 'm';
+  }
+  return timeStr;
 }

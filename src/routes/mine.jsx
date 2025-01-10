@@ -18,7 +18,7 @@ export async function action({ request }) {
   }
 
   if (errors.length == 0) {
-    const result = await addCards(cardsData);
+    const result = await addCards(cardsData.map(card => card.data));
     return { success: true, errors };
   } else { // There empty input
     return { success: false, errors };
@@ -39,7 +39,7 @@ export default function Mine() {
 
   function handleSubmitButton() {
     const cardForms = formContainerRef.current.querySelectorAll('form');
-    const cardsData = Array.from(cardForms, form => Object.assign(Object.fromEntries(new FormData(form)), { name: form.name }));
+    const cardsData = Array.from(cardForms, form => ({ data: Object.fromEntries(new FormData(form)), name: form.name }));
     submit({ data: cardsData }, { method: "post", encType: "application/json" });
   }
 
@@ -72,7 +72,7 @@ export default function Mine() {
             isError={errors ? errors.includes(`card_${formIndex}`) : false}
           />
         )}
-        <div className="p-4 flex flex-col justify-center items-center gap-2 text-center text-neutral-500 border border-dashed rounded-lg">
+        <div className="p-4 flex flex-col justify-center items-center gap-2 text-center text-neutral-400 border-2 border-dashed rounded-lg">
           <p>Click <SquarePlus size={18} className="inline" /> to input another card.</p>
           <p>Click <SaveAll size={18} className="inline" /> to save all inputed cards</p>
         </div>

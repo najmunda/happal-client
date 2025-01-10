@@ -14,7 +14,7 @@ export default function Cards() {
   const cardsData = useLoaderData();
   const location = useLocation();
 
-  console.log("location ", location.state);
+  console.log(cardsData);
 
   function formatDate(dateISOString) {
     const date = new Date(dateISOString);
@@ -31,7 +31,7 @@ export default function Cards() {
           </> : <></>
         }
       </Header>
-      <main className={`flex-1 p-2 flex flex-col gap-2 ${cardsData.length == 0 && 'justify-center items-center text-neutral-500'}`}>
+      <main className={`flex-1 p-2 flex flex-col gap-2 ${cardsData.length == 0 && 'justify-center items-center text-neutral-400'}`}>
         {cardsData.length != 0 ?
           cardsData.map(card => (
             <div key={card._id} data-key={card._id} className="group p-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">

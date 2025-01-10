@@ -3,7 +3,7 @@ import Root/*, { action as rootAction }*/ from './routes/root'
 import Home from "./routes/home.jsx";
 // Mine
 import Mine, { action as mineAction } from "./routes/mine.jsx";
-import Sorb from "./routes/sorb.jsx";
+import Sorb, { loader as sorbLoader, action as sorbAction } from "./routes/sorb.jsx";
 // Cards
 import Cards, { loader as cardsLoader } from './routes/cards/cards.jsx'
 import CardEdit, { loader as editLoader, action as editAction } from "./routes/cards/edit.jsx";
@@ -29,6 +29,8 @@ export default function App() {
         {
           path: "/sorb",
           element: <Sorb />,
+          loader: sorbLoader,
+          action: sorbAction,
         },
         {
           path: "/cards",
