@@ -13,7 +13,6 @@ export async function loader() {
 
 export async function action({ request }) {
   const { id, rating } = await request.json();
-  console.log(id, rating);
   const result = await updateSRS(id, rating);
   return result;
 }
@@ -21,7 +20,7 @@ export async function action({ request }) {
 export default function Sorb() {
 
   const { cards, nextReview, cardsTotal } = useLoaderData();
-  console.log({ cards, nextReview, cardsTotal })
+  //console.log({ cards, nextReview, cardsTotal })
   const topCard = cards.at(0);
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
@@ -30,6 +29,7 @@ export default function Sorb() {
   // Handlers
 
   let firstTouchY = null;
+  let swiped = false;
 
   function getTouches(e) {
     return e.touches;
@@ -41,7 +41,7 @@ export default function Sorb() {
   }
 
   function handleTouchMove(e) {
-    if (!firstTouchY) {
+    if (!firstTouchY || swiped) {
       return;
     }
 
@@ -49,15 +49,16 @@ export default function Sorb() {
     const touchYDiff = secondTouch.clientY - firstTouchY;
 
     if (touchYDiff > 0) {
+      swiped = true;
       handleCardDown();
     } else if (touchYDiff < 0) {
+      swiped = true;
       handleCardUp();
     }
   }
 
   function handleCardUp() {
     if (isOpen) {
-      //setCards(cards.slice(1));
       setIsOpen(false);
       submit({ id: topCard._id, rating: 1 }, { method: "post", encType: "application/json" });
     }
