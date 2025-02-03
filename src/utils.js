@@ -1,3 +1,8 @@
+export function formatDate(dateISOString) {
+  const date = new Date(dateISOString);
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+}
+
 export function getEndTodayUTC() {
   // Return date of early day (client timezone)
   const date = new Date();

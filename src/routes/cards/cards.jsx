@@ -1,8 +1,9 @@
-import { Form, Outlet, useLoaderData, useLocation } from "react-router-dom";
+import { Form, Link, Outlet, useLoaderData, useLocation } from "react-router-dom";
 import { CopyX, Info, Pickaxe, Search, SquarePen, Table, Trash2 } from "lucide-react";
 import { getCards } from "../../db";
 import Header from "../../components/Header";
 import Toast from "../../components/Toast";
+import { formatDate } from "../../utils";
 
 export async function loader() {
   const cardsData = await getCards();
@@ -15,11 +16,6 @@ export default function Cards() {
   const location = useLocation();
 
   console.log(cardsData);
-
-  function formatDate(dateISOString) {
-    const date = new Date(dateISOString);
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
-  }
 
   return (
     <>
@@ -36,10 +32,9 @@ export default function Cards() {
           cardsData.map(card => (
             <div key={card._id} data-key={card._id} className="group p-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">
               <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
-              <p className="text-xs font-extralight justify-self-end">{formatDate(card.dateUpdated)}</p>
               <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
               <div className="col-span-2 hidden justify-evenly text-xs group-hover:flex">
-                <button className="flex gap-1"><Info size={15} />Info</button>
+                <Link className="flex gap-1" to={`${card._id}`}><Info size={15} />Info</Link>
                 <Form action={`${card._id}/edit`} className="flex items-center"><button className="flex gap-1"><SquarePen size={15} />Edit</button></Form>
                 <Form method="post" action={`${card._id}/delete`} className="flex items-center"><button type="submit" className="flex gap-1"><Trash2 size={15} /> Delete</button></Form>
               </div>

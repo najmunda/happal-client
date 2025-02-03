@@ -8,6 +8,8 @@ PouchDB.plugin(plugin);
 const db = new PouchDB('sorbit');
 //const remoteCouch = false;
 
+export const adapter = db.adapter;
+
 export async function getCards() {
   return await db.allDocs({
     include_docs: true,
@@ -24,12 +26,12 @@ export async function getCard(cardId) {
 }
 
 export async function addCards(newCards) {
-  const dateNow = new Date()
-  const emptyCard = createEmptyCard(dateNow);
+  const dateCreate = new Date()
+  const emptyCard = createEmptyCard(dateCreate);
   newCards = newCards.map(cardData => ({
     _id: `card-${crypto.randomUUID()}`,
     ...cardData,
-    dateUpdated: dateNow.toISOString(),
+    date_created: dateCreate.toISOString(),
     srs: {
       card: emptyCard,
       log: null,
@@ -39,9 +41,8 @@ export async function addCards(newCards) {
 }
 
 export async function editCard(cardId, editData) {
-  const dateEdited = new Date().toISOString();
   return getCard(cardId).then((card) => {
-    return Object.assign(card, { ...editData, dateUpdated: dateEdited });
+    return Object.assign(card, { ...editData });
   }).then((editedCard) => {
     return db.put(editedCard);
   }).catch((error) => {

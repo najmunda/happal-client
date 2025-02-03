@@ -63,13 +63,8 @@ export default function CardEdit() {
   }
 
   return (
-    <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="bottom-0 border rounded-lg">
-      <Form method="post" action="" className="p-3 h-fit flex flex-col items-center gap-2">
-        <div className="w-full flex justify-between items-center">
-          <button type="button" onClick={handleBackButton} className="flex gap-1 text-xs"><ArrowLeft size={15} /> Back</button>
-          <h1>Edit Card</h1>
-          <button type="submit" className="flex gap-1 text-xs"><Save size={15} />Submit</button>
-        </div>
+    <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full bottom-0 border rounded-lg">
+      <Form method="post" action="" className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
         <TextArea
           type="text"
           name="sentence"
@@ -77,7 +72,7 @@ export default function CardEdit() {
           value={sentence}
           onChange={handleSentenceChange}
           onSelect={handleSentenceSelect}
-          className="w-full text-xs border rounded p-2"
+          className="w-full border rounded p-2"
           placeholder="Put sentence here..."
         ></TextArea>
         <input
@@ -85,7 +80,7 @@ export default function CardEdit() {
           name="target"
           id="target"
           value={target}
-          className="w-full border rounded p-2"
+          className="w-full font-lg border rounded p-2"
           placeholder="Highlight words from sentence..."
           readOnly
         />
@@ -95,9 +90,13 @@ export default function CardEdit() {
           id="def"
           value={def}
           onChange={handleDefChange}
-          className="w-full text-xs border rounded p-2"
+          className="w-full border rounded p-2"
           placeholder="Add def from dictionary..."
         ></TextArea>
+        <div className="pt-2 w-full flex justify-between items-center">
+          <button type="button" onClick={handleBackButton} className="px-2">Close</button>
+          <button type="submit" className="px-2">Save</button>
+        </div>
       </Form>
     </dialog>
   )
