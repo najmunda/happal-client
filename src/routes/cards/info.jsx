@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { redirect, useLoaderData, useNavigate } from "react-router-dom";
 import { Interweave } from "interweave";
-import { ArrowLeft, Save, Eye, Info, Repeat2 } from "lucide-react";
+import { Eye, Repeat2 } from "lucide-react";
 import { editCard, getCard } from "../../db";
 import { formatDate } from "../../utils";
 
@@ -48,7 +48,7 @@ export default function CardInfo() {
   const due = card.srs.card.due;
   const lastReview = card.srs.card.last_review;
   const reps = card.srs.card.reps;
-  const dateCreated = card.srs.date_created;
+  const dateCreated = card.date_created;
 
   return (
     <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full bottom-0 border rounded-lg">

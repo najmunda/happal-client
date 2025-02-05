@@ -1,35 +1,52 @@
+import { useState } from "react";
 import { Form, Link, Outlet, useLoaderData, useLocation } from "react-router-dom";
-import { CopyX, Info, Pickaxe, Search, SquarePen, Table, Trash2 } from "lucide-react";
-import { getCards } from "../../db";
+import { CopyX, Info, Pickaxe, Search, SearchX, SlidersHorizontal, SquarePen, Trash2 } from "lucide-react";
+import { getCardsCustom, getCardsTotal } from "../../db";
 import Header from "../../components/Header";
+import CardsOptionDialog from "../../components/CardsOptionDialog";
 import Toast from "../../components/Toast";
-import { formatDate } from "../../utils";
 
-export async function loader() {
-  const cardsData = await getCards();
-  return cardsData.rows.map(row => row.doc);
+export async function loader({request}) {
+  const url = new URL(request.url);
+  const searchParams = Object.fromEntries(url.searchParams);
+  const cardsData = await getCardsCustom(searchParams);
+  const cardsTotal = await getCardsTotal();
+  return {
+    cards: cardsData?.docs ?? [],
+    cardsTotal, // All cards total (nothing excluded)
+    searchParams,
+  };
 }
 
 export default function Cards() {
 
-  const cardsData = useLoaderData();
+  const {cards, cardsTotal, searchParams} = useLoaderData();
   const location = useLocation();
+  const [isSettingOpen, setIsSettingOpen] = useState(false);
 
-  console.log(cardsData);
+  console.log(cards);
+
+  function handleSettingToggle() {
+    setIsSettingOpen(true);
+  }
+
+  function handleSettingClose() {
+    setIsSettingOpen(false);
+  }
 
   return (
     <>
       <Header>
-        {cardsData.length != 0 ?
+        {cardsTotal != 0 ?
           <>
-            <button className="h-fit"><Table size={20} /></button>
             <button className="h-fit"><Search size={20} /></button>
+            <button className="h-fit" onClick={handleSettingToggle}><SlidersHorizontal size={20} /></button>
           </> : <></>
         }
       </Header>
-      <main className={`flex-1 p-2 flex flex-col gap-2 ${cardsData.length == 0 && 'justify-center items-center text-neutral-400'}`}>
-        {cardsData.length != 0 ?
-          cardsData.map(card => (
+      <main className={`flex-1 p-2 flex flex-col gap-2 ${cards.length == 0 && 'justify-center items-center text-neutral-400'}`}>
+        {cards.length != 0 ?
+          cards.map(card => (
             <div key={card._id} data-key={card._id} className="group p-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">
               <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
               <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
@@ -40,12 +57,19 @@ export default function Cards() {
               </div>
             </div>
           ))
-          :
-          <>
-            <CopyX size={80} />
-            <p className="text-center text-sm">There is no card added. Go to <Pickaxe size={18} className="inline" /> "Mine" to mining sentence and add some card.</p>
-          </>
+          : cardsTotal != 0 ? (
+            <>
+              <SearchX size={80} />
+              <p className="text-center text-sm">Kartu tidak ditemukan. Coba cari dengan kata lain atau ubah nilai filter & sortir.</p>
+            </>
+          ) : (
+            <>
+              <CopyX size={80} />
+              <p className="text-center text-sm">Belum ada kartu yang ditambahkan. Klik <Pickaxe size={18} className="inline" /> "Mine" untuk menambah kartu.</p>
+            </>
+          )
         }
+        <CardsOptionDialog isOpen={isSettingOpen} searchParams={searchParams} handleDialogClose={handleSettingClose} />
         <Outlet />
         {location.state && <Toast message={location.state.message} />}
       </main>

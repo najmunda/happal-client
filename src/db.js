@@ -10,11 +10,41 @@ const db = new PouchDB('sorbit');
 
 export const adapter = db.adapter;
 
-export async function getCards() {
-  return await db.allDocs({
-    include_docs: true,
+export async function getCardsTotal() {
+  return db.allDocs({
     startkey: "card-",
+  }).then((data) => {
+    return data.rows.length;
+  }).catch((error) => {
+    console.log(error);
   });
+}
+
+const SortBy = Object.freeze({
+  create: 'date_created',
+  due: 'srs.card.due',
+  review: 'srs.card.last_review',
+});
+
+export async function getCardsCustom(options) {
+  const order = options['order'] ?? "desc";
+  const sortBy = options['sortby'] ?? "create";
+  return db.createIndex({
+    index: {
+      fields: [SortBy[sortBy]],
+      ddoc: `${sortBy}-index`,
+    }
+  }).then(() => {
+    return db.find({
+      selector: {
+        [SortBy[sortBy]]: { $gt: 0 }
+      },
+      sort: [{ [SortBy[sortBy]]: order }],
+      use_index: `${sortBy}-index`,
+    });
+  }).catch((error) => {
+    console.log(error);
+  })
 }
 
 export async function getCard(cardId) {
@@ -61,7 +91,7 @@ export async function getTodayCards() {
   return db.createIndex({
     index: {
       fields: ['srs.card.due'],
-      ddoc: "srs-card-index",
+      ddoc: "srs-card-today-index",
     }
   }).then(async () => {
     const result = await db.find({
@@ -69,7 +99,7 @@ export async function getTodayCards() {
         "srs.card.due": { $lt: endToday.toISOString() }
       },
       sort: [{ "srs.card.due": "asc" }],
-      use_index: "srs-card-index",
+      use_index: "srs-card-today-index",
     });
     return result;
   }).then((result) => {

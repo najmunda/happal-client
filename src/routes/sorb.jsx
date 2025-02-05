@@ -3,12 +3,12 @@ import { Interweave } from "interweave";
 import { ChevronsDown, ChevronsUp, CopyX, Pickaxe, Smile } from "lucide-react"
 import { useLoaderData, useSubmit } from "react-router-dom";
 import Header from "../components/Header"
-import { getCards, getTodayCards, updateSRS } from "../db";
+import { getCardsTotal, getTodayCards, updateSRS } from "../db";
 
 export async function loader() {
   const { docs, nextReview } = await getTodayCards();
-  const cardsTotal = await getCards();
-  return { cards: docs, nextReview, cardsTotal: cardsTotal.rows.length };
+  const cardsTotal = await getCardsTotal();
+  return { cards: docs, nextReview, cardsTotal };
 }
 
 export async function action({ request }) {
