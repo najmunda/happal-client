@@ -21,22 +21,22 @@ export async function getCardsTotal() {
   });
 }
 
-export async function searchCards(q) {
-  const options = {
-    keys: ['doc.target', 'doc.sentence',  'doc.def'],
-    includeScore: true,
-  }
-  return db.allDocs({
-    startkey: "card-",
-    include_docs: true,
-  }).then((data) => {
-    const fuse = new Fuse(data.rows, options);
-    const result = fuse.search(q);
-    return result.map(card => card.item.doc);
-  }).catch((error) => {
-    console.log(error);
-  });
-}
+// export async function searchCards(q) {
+//   const options = {
+//     keys: ['doc.target', 'doc.sentence',  'doc.def'],
+//     includeScore: true,
+//   }
+//   return db.allDocs({
+//     startkey: "card-",
+//     include_docs: true,
+//   }).then((data) => {
+//     const fuse = new Fuse(data.rows, options);
+//     const result = fuse.search(q);
+//     return result.map(card => card.item.doc);
+//   }).catch((error) => {
+//     console.log(error);
+//   });
+// }
 
 const SortBy = Object.freeze({
   create: 'date_created',
@@ -44,22 +44,44 @@ const SortBy = Object.freeze({
   review: 'srs.card.last_review',
 });
 
+const Show = Object.freeze({
+  all: [0, 1, 2, 3],
+  new: [0],
+  learn: [1, 3],
+  review: [2],
+});
+
 export async function getCardsCustom(options) {
+  const q = options['q'] ?? "";
+  const show = options['show'] ?? "all";
   const order = options['order'] ?? "desc";
   const sortBy = options['sortby'] ?? "create";
   return db.createIndex({
     index: {
-      fields: [SortBy[sortBy]],
+      fields: [SortBy[sortBy], "srs.card.state"],
       ddoc: `${sortBy}-index`,
     }
   }).then(() => {
     return db.find({
       selector: {
-        [SortBy[sortBy]]: { $gt: 0 }
+        [SortBy[sortBy]]: { $gt: 0 },
+        "srs.card.state": { $in: Show[show] },
       },
       sort: [{ [SortBy[sortBy]]: order }],
       use_index: `${sortBy}-index`,
     });
+  }).then((data) => {
+    if (data.docs && q != "") {
+      const options = {
+        keys: ['target', 'sentence',  'def'],
+        includeScore: true,
+      }
+      const fuse = new Fuse(data.docs, options);
+      const result = fuse.search(q);
+      console.log(result);
+      return result.map(card => card.item);
+    }
+    return data.docs;
   }).catch((error) => {
     console.log(error);
   })
