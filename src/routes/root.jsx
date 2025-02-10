@@ -11,6 +11,7 @@ export const action = (logout) => async function ({ request }) {
 export default function Root() {
   return (
     <>
+      <Header />
       <Outlet />
       <Navigation />
     </>

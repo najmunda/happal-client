@@ -77,55 +77,50 @@ export default function Sorb() {
   }
 
   return (
-    <>
-      <Header>
-
-      </Header>
-      <main className={`flex-1 flex flex-col justify-center p-2`}>
-        {cards.length != 0 ?
-          <>
-            <div
-              ref={currentCardRef}
-              onClick={handleCardClick}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              className="flex-1 p-2 flex flex-col items-center justify-between bg-white text-center rounded-lg border"
-            >
-              {isOpen &&
-                <button className="flex flex-col items-center gap-1">
-                  <ChevronsUp />
-                  <p className="text-xs">{nextReview.good}</p>
-                </button>
-              }
-              <div className="flex-1 flex flex-col justify-center items-center gap-2">
-                <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
-                <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.target}</mark></p>
-                <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
-              </div>
-              {isOpen &&
-                <button className="flex flex-col-reverse items-center gap-1">
-                  <ChevronsDown />
-                  <p className="text-xs">{nextReview.again}</p>
-                </button>
-              }
+    <main className={`flex-1 flex flex-col justify-center p-2`}>
+      {cards.length != 0 ?
+        <>
+          <div
+            ref={currentCardRef}
+            onClick={handleCardClick}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            className="flex-1 p-2 flex flex-col items-center justify-between bg-white text-center rounded-lg border"
+          >
+            {isOpen &&
+              <button className="flex flex-col items-center gap-1">
+                <ChevronsUp />
+                <p className="text-xs">{nextReview.good}</p>
+              </button>
+            }
+            <div className="flex-1 flex flex-col justify-center items-center gap-2">
+              <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
+              <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.target}</mark></p>
+              <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
             </div>
-          </>
-          :
-          <div className="flex-1 p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-400 rounded-lg border-2 border-neutral-300 border-dashed">
-            {cardsTotal != 0 ?
-              <>
-                <Smile size={80} />
-                <p className="text-center text-sm">Good Job! All today's card is reviewed. Come back tomorrow!</p>
-              </>
-              :
-              <>
-                <CopyX size={80} />
-                <p className="text-center text-sm">There is no card added. Go to <Pickaxe size={18} className="inline" /> "Mine" to mining sentence and add some card.</p>
-              </>
+            {isOpen &&
+              <button className="flex flex-col-reverse items-center gap-1">
+                <ChevronsDown />
+                <p className="text-xs">{nextReview.again}</p>
+              </button>
             }
           </div>
-        }
-      </main>
-    </>
+        </>
+        :
+        <div className="flex-1 p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-400 rounded-lg border-2 border-neutral-300 border-dashed">
+          {cardsTotal != 0 ?
+            <>
+              <Smile size={80} />
+              <p className="text-center text-sm">Good Job! All today's card is reviewed. Come back tomorrow!</p>
+            </>
+            :
+            <>
+              <CopyX size={80} />
+              <p className="text-center text-sm">There is no card added. Go to <Pickaxe size={18} className="inline" /> "Mine" to mining sentence and add some card.</p>
+            </>
+          }
+        </div>
+      }
+    </main>
   )
 }
