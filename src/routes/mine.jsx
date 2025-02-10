@@ -12,7 +12,7 @@ export async function action({ request }) {
   // Client Validation
   const errors = []
   for (const cardData of cardsData) {
-    if (Object.values(cardData).includes("")) {
+    if (Object.values(cardData.data).includes("")) {
       errors.push(cardData.name);
     }
   }
@@ -35,7 +35,7 @@ export default function Mine() {
   const navigation = useNavigation();
 
   function handleAddButton() {
-    setFormIndexes([...formIndexes, formIndexes.at(-1) + 1]);
+    setFormIndexes(prevFormIndexes => [...prevFormIndexes, prevFormIndexes.at(-1) + 1]);
   }
 
   function handleSubmitButton() {
@@ -47,7 +47,7 @@ export default function Mine() {
   function handleCardsButtons(e) {
     if (e.target.tagName == "BUTTON") {
       const deletedFormIndex = e.target.parentElement.parentElement.dataset.formindex;
-      setFormIndexes(formIndexes.filter(formIndex => formIndex != deletedFormIndex));
+      setFormIndexes(prevFormIndexes => prevFormIndexes.filter(formIndex => formIndex != deletedFormIndex));
     }
   }
 
@@ -58,25 +58,31 @@ export default function Mine() {
     }
   }, [success]);
 
-  return (
-    <main ref={formContainerRef} onClick={handleCardsButtons} className="flex-1 p-2 flex flex-col gap-2">
-      {navigation.state === "loading" ? (
+  return success ? (
+    <main className="flex-1 p-2 flex flex-col gap-2">
+      <Loading className='flex-1 flex flex-col justify-center items-center' />
+      <Navigate to={"/mine"} />
+    </main>
+  ) : (
+    <main ref={formContainerRef} className="flex-1 p-2 flex flex-col gap-2">
+      {navigation.state === "submitting" || navigation.state === "loading" ? (
         <Loading className='flex-1 flex flex-col justify-center items-center' />
       ) : (
         <>
-          {formIndexes.map(formIndex =>
-            <CardForm
-              key={`${randomNum}${formIndex}`}
-              formIndex={formIndex}
-              cardCount={formIndexes.length}
-              isError={errors ? errors.includes(`card_${formIndex}`) : false}
-            />
-          )}
+          <section onClick={handleCardsButtons} className="flex flex-col gap-2">
+            {formIndexes.map(formIndex =>
+              <CardForm
+                key={`${randomNum}${formIndex}`}
+                formIndex={formIndex}
+                cardCount={formIndexes.length}
+                isError={errors ? errors.includes(`card_${formIndex}`) : false}
+              />
+            )}
+          </section>
           <button onClick={handleAddButton} className="p-2 flex items-center justify-center gap-2 bg-white border rounded-lg"><SquarePlus size={20} />Add Form</button>
           <button onClick={handleSubmitButton} className="p-2 flex items-center justify-center gap-2 bg-white border rounded-lg"><SaveAll size={20} />Save Words</button>
         </>
       )}
-      {success && <Navigate to={"/mine"} />}
     </main>
   )
 }
