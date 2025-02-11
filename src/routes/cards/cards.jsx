@@ -22,13 +22,12 @@ export default function Cards() {
   const {cards, cardsTotal, searchParams} = useLoaderData();
   const location = useLocation();
   const navigation = useNavigation();
-
-  console.log(cards);
+  const isLoading = navigation.state === "loading" && navigation.location?.pathname == location.pathname;
 
   return (
     <main className='flex-1 p-2 flex flex-col items-stretch gap-2'>
       {cardsTotal != 0 ? <CardsSettings searchParams={searchParams} /> : <></>}
-      {navigation.state === "loading" ? 
+      {isLoading ? 
         <Loading className='flex-1 flex flex-col justify-center items-center' /> 
         : cards.length != 0 ?
           cards.map(card => (

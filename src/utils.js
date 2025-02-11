@@ -25,3 +25,8 @@ export function msToDHM(milisecond) {
   }
   return timeStr;
 }
+
+export function getFirstPath(pathString = "") {
+  const arr = [...pathString.matchAll(/^\/([a-z]+)\/?/g)];
+  return arr.length ? arr[0][1] : '';
+}
