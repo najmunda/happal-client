@@ -1,4 +1,3 @@
-import Header from "../components/Header"
 import { adapter } from "../db"
 
 export default function Home() {

@@ -1,9 +1,9 @@
 import { useRef, useState } from "react"
 import { Interweave } from "interweave";
 import { ChevronsDown, ChevronsUp, CopyX, Pickaxe, Smile } from "lucide-react"
-import { useLoaderData, useSubmit } from "react-router-dom";
-import Header from "../components/Header"
+import { useLoaderData, useNavigation, useSubmit } from "react-router-dom";
 import { getCardsTotal, getTodayCards, updateSRS } from "../db";
+import Loading from "../components/Loading";
 
 export async function loader() {
   const { docs, nextReview } = await getTodayCards();
@@ -20,11 +20,11 @@ export async function action({ request }) {
 export default function Sorb() {
 
   const { cards, nextReview, cardsTotal } = useLoaderData();
-  //console.log({ cards, nextReview, cardsTotal })
   const topCard = cards.at(0);
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const currentCardRef = useRef();
+  const navigation = useNavigation()
 
   // Handlers
 
@@ -76,9 +76,14 @@ export default function Sorb() {
     setIsOpen(true);
   }
 
+  // Loading
+  const isLoading = navigation.state == "submitting" || navigation.state == "loading"
+
   return (
     <main className={`flex-1 flex flex-col justify-center p-2`}>
-      {cards.length != 0 ?
+      {isLoading ? (
+        <Loading className='flex-1 flex flex-col justify-center items-center' /> 
+      ) : cards.length != 0 ?
         <>
           <div
             ref={currentCardRef}

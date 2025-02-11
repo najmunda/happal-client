@@ -1,6 +1,7 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation, useNavigation } from "react-router-dom"
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
+import Loading from "../components/Loading";
 
 /*
 export const action = (logout) => async function ({ request }) {
@@ -9,10 +10,19 @@ export const action = (logout) => async function ({ request }) {
   */
 
 export default function Root() {
+  const navigation = useNavigation();
+  const location = useLocation();
+  
+  const isPageChange = navigation.location?.pathname != location.pathname && navigation.state === "loading";
+
   return (
     <>
       <Header />
-      <Outlet />
+      {isPageChange ? 
+        <Loading className='flex-1 flex flex-col justify-center items-center' /> 
+      :
+        <Outlet />
+      }
       <Navigation />
     </>
   );
