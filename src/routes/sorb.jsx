@@ -1,7 +1,8 @@
 import { useRef, useState } from "react"
 import { Interweave } from "interweave";
-import { ChevronsDown, ChevronsUp, CopyX, Pickaxe, Smile } from "lucide-react"
+import { ChevronsLeft, ChevronsRight, CopyX, Pickaxe, Smile, ThumbsDown, ThumbsUp } from "lucide-react"
 import { useLoaderData, useNavigation, useSubmit } from "react-router-dom";
+import anime from "animejs";
 import { getCardsTotal, getTodayCards, updateSRS } from "../db";
 import Loading from "../components/Loading";
 
@@ -28,7 +29,7 @@ export default function Sorb() {
 
   // Handlers
 
-  let firstTouchY = null;
+  let firstTouchX = null;
   let swiped = false;
 
   function getTouches(e) {
@@ -37,36 +38,35 @@ export default function Sorb() {
 
   function handleTouchStart(e) {
     const firstTouch = getTouches(e)[0];
-    firstTouchY = firstTouch.clientY;
+    firstTouchX = firstTouch.clientX;
   }
 
   function handleTouchMove(e) {
-    if (!firstTouchY || swiped) {
+    if (!firstTouchX || swiped) {
       return;
     }
 
     const secondTouch = getTouches(e)[0];
-    const touchYDiff = secondTouch.clientY - firstTouchY;
+    const touchXDiff = secondTouch.clientX - firstTouchX;
 
-    if (touchYDiff > 0) {
+    if (touchXDiff > 0) {
       swiped = true;
-      handleCardDown();
-    } else if (touchYDiff < 0) {
+      handleCardRight();
+    } else if (touchXDiff < 0) {
       swiped = true;
-      handleCardUp();
+      handleCardLeft();
     }
   }
 
-  function handleCardUp() {
+  function handleCardRight() {
     if (isOpen) {
       setIsOpen(false);
       submit({ id: topCard._id, rating: 1 }, { method: "post", encType: "application/json" });
     }
   }
 
-  function handleCardDown() {
+  function handleCardLeft() {
     if (isOpen) {
-      //setCards([...cards.slice(1), cards.at(0)]);
       setIsOpen(false);
       submit({ id: topCard._id, rating: 0 }, { method: "post", encType: "application/json" });
     }
@@ -90,12 +90,15 @@ export default function Sorb() {
             onClick={handleCardClick}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
-            className="flex-1 p-2 flex flex-col items-center justify-between bg-white text-center rounded-lg border"
+            className="flex-1 p-2 flex flex-col items-stretch justify-around bg-white text-center rounded-lg border"
           >
             {isOpen &&
-              <button className="flex flex-col items-center gap-1">
-                <ChevronsUp />
+              <button className="p-2 flex flex-row-reverse items-center gap-2">
+                <ChevronsRight />
                 <p className="text-xs">{nextReview.good}</p>
+                <hr className="flex-1 border-black" />
+                <p className="text-xs">Good</p>
+                <ThumbsUp />
               </button>
             }
             <div className="flex-1 flex flex-col justify-center items-center gap-2">
@@ -104,9 +107,12 @@ export default function Sorb() {
               <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
             </div>
             {isOpen &&
-              <button className="flex flex-col-reverse items-center gap-1">
-                <ChevronsDown />
+              <button className="p-2 flex items-center gap-2">
+                <ChevronsLeft />
                 <p className="text-xs">{nextReview.again}</p>
+                <hr className="flex-1 border-1 border-black" />
+                <p className="text-xs">Again</p>
+                <ThumbsDown />
               </button>
             }
           </div>
