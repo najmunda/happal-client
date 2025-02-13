@@ -14,29 +14,13 @@ export const adapter = db.adapter;
 export async function getCardsTotal() {
   return db.allDocs({
     startkey: "card-",
+    endkey: 'card-\ufff0',
   }).then((data) => {
     return data.rows.length;
   }).catch((error) => {
     console.log(error);
   });
 }
-
-// export async function searchCards(q) {
-//   const options = {
-//     keys: ['doc.target', 'doc.sentence',  'doc.def'],
-//     includeScore: true,
-//   }
-//   return db.allDocs({
-//     startkey: "card-",
-//     include_docs: true,
-//   }).then((data) => {
-//     const fuse = new Fuse(data.rows, options);
-//     const result = fuse.search(q);
-//     return result.map(card => card.item.doc);
-//   }).catch((error) => {
-//     console.log(error);
-//   });
-// }
 
 const SortBy = Object.freeze({
   create: 'date_created',
