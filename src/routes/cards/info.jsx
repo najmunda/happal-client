@@ -1,15 +1,8 @@
-import { redirect, useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
+import { useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
 import { Interweave } from "interweave";
 import { Eye, Repeat2 } from "lucide-react";
-import { editCard, getCard } from "../../db";
-import { formatDate } from "../../utils";
-
-export async function action({ request, params }) {
-  const cardsForm = await request.formData();
-  const cardsData = Object.fromEntries(cardsForm);
-  await editCard(params.cardId, cardsData);
-  return redirect('/cards');
-}
+import { getCard } from "../../db";
+import { formatDate } from "../../utils"
 
 export async function loader({ params }) {
   const card = await getCard(params.cardId);
@@ -71,7 +64,7 @@ export default function CardInfo() {
           </div>
         </div>
       </section>
-      <div className="pt-2 w-full flex justify-end items-center">
+      <div className="pt-2 w-full flex justify-between items-center">
         <button type="button" onClick={handleBackButton} className="px-2">Close</button>
       </div>
     </section>

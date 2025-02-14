@@ -1,5 +1,5 @@
 import { Link, Outlet, useLoaderData, useLocation, useNavigate, useNavigation } from "react-router-dom";
-import { CopyX, Info, Pickaxe, SearchX, SquarePen, Trash2 } from "lucide-react";
+import { CalendarSync, CopyX, Info, Pickaxe, SearchX, SquarePen, Trash2 } from "lucide-react";
 import { getCardsCustom, getCardsTotal } from "../../db";
 import CardsSettings from "../../components/CardsSettings";
 import Loading from "../../components/Loading";
@@ -76,7 +76,8 @@ export default function Cards() {
                 <div className="col-span-2 hidden justify-evenly text-xs group-hover:flex">
                   <Link className="flex gap-1" to={`${card._id}`}><Info size={15} />Info</Link>
                   <Link className="flex gap-1" to={`${card._id}/edit`}><SquarePen size={15} />Edit</Link>
-                  <Link className="flex gap-1" to={`${card._id}/delete`}><Trash2 size={15} /> Delete</Link>
+                  <Link className="flex gap-1" to={`${card._id}/reset`}><CalendarSync size={15} />Reset</Link>
+                  <Link className="flex gap-1" to={`${card._id}/delete`}><Trash2 size={15} /> Hapus</Link>
                 </div>
               </div>
             ))}

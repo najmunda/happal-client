@@ -6,8 +6,9 @@ import Mine, { action as mineAction } from "./routes/mine.jsx";
 import Sorb, { loader as sorbLoader, action as sorbAction } from "./routes/sorb.jsx";
 // Cards
 import Cards, { loader as cardsLoader } from './routes/cards/cards.jsx'
-import CardInfo, { loader as infoLoader, action as infoAction } from "./routes/cards/info.jsx";
+import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
 import CardEdit, { loader as editLoader, action as editAction } from "./routes/cards/edit.jsx";
+import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
 import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
 
 export default function App() {
@@ -42,7 +43,6 @@ export default function App() {
               path: ":cardId",
               element: <CardInfo />,
               loader: infoLoader,
-              action: infoAction,
             },
             {
               path: ":cardId/edit",
@@ -54,6 +54,11 @@ export default function App() {
               path: ":cardId/delete",
               action: deleteAction,
               element: <CardDelete />
+            },
+            {
+              path: ":cardId/reset",
+              action: resetAction,
+              element: <CardReset />
             },
           ]
         },

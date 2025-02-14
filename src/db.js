@@ -104,6 +104,18 @@ export async function editCard(cardId, editData) {
   });
 }
 
+export async function resetCard(cardId) {
+  const f = fsrs();
+  const dateNow = new Date()
+  return db.get(cardId).then((cardData) => {
+    return f.forget(cardData.srs.card, dateNow, false);
+  }).then((resetSRS) => {
+    return editCard(cardId, { srs: resetSRS });
+  }).catch((error) => {
+    console.log(error);
+  });;
+}
+
 export async function deleteCard(cardId) {
   const card = await db.get(cardId);
   return await db.remove(card);
