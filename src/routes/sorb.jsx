@@ -2,7 +2,6 @@ import { useRef, useState } from "react"
 import { Interweave } from "interweave";
 import { ChevronsLeft, ChevronsRight, CopyX, Pickaxe, Smile, ThumbsDown, ThumbsUp } from "lucide-react"
 import { useLoaderData, useNavigation, useSubmit } from "react-router-dom";
-import anime from "animejs";
 import { getCardsTotal, getTodayCards, updateSRS } from "../db";
 import Loading from "../components/Loading";
 

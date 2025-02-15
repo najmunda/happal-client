@@ -1,16 +1,20 @@
 import { BookType } from "lucide-react";
+import Navigation from "./Navigation";
 
 
-export default function Header({ children }) {
+export default function Header() {
   return (
-    <header className="w-full sticky top-0 px-4 py-2 border border-b flex items-center justify-between bg-white">
+    <header className="h-14 sticky top-0 px-4 py-2 border border-b flex items-center justify-between bg-white">
       <div className="flex gap-1">
         <BookType />
         <p>Sorbit</p>
       </div>
-      <div className="h-fit flex justify-end items-center gap-4">
-        {children}
-      </div>
+      <nav className="hidden md:block md:flex-1">
+        <Navigation />
+      </nav>
+      <button className="h-full">
+        <img src="/profile.png" alt="" className="h-full rounded-full" />
+      </button>
     </header>
   );
 }

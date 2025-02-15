@@ -24,7 +24,11 @@ export default function Root() {
       :
         <Outlet />
       }
-      <Navigation />
+      <footer className="px-4 py-2 order-last flex md:hidden sticky bg-white bottom-0 border">
+        <nav className="flex-1 md:hidden">
+          <Navigation />
+        </nav>
+      </footer>
     </>
   );
 }
