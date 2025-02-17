@@ -79,9 +79,9 @@ export default function Sorb() {
   const isLoading = navigation.state == "submitting" || navigation.state == "loading"
 
   return (
-    <main className={`flex-1 flex flex-col justify-center p-2`}>
+    <main className={`flex-1 flex flex-col justify-center items-center p-2`}>
       {isLoading ? (
-        <Loading className='flex-1 flex flex-col justify-center items-center' /> 
+        <Loading className='flex-1 flex flex-col justify-center items-stretch' /> 
       ) : cards.length != 0 ?
         <>
           <div
@@ -89,7 +89,7 @@ export default function Sorb() {
             onClick={handleCardClick}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
-            className="flex-1 p-2 flex flex-col items-stretch justify-around bg-white text-center rounded-lg border"
+            className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch justify-around bg-white text-center rounded-lg border"
           >
             {isOpen &&
               <button className="p-2 flex flex-row-reverse items-center gap-2">
