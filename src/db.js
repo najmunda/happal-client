@@ -141,12 +141,20 @@ export async function getTodayCards() {
   }).then((result) => {
     const f = fsrs();
     const now = new Date();
+    // Get Top Card
     const topCard = result.docs.at(0);
+    // Get next review time
     const goodCard = topCard && f.next(topCard.srs.card, now, Rating.Good);
     const goodNextTime = topCard && msToDHM(goodCard.card.due - goodCard.card.last_review);
     const againCard = topCard && f.next(topCard.srs.card, now, Rating.Again);
     const againNextTime = topCard && msToDHM(againCard.card.due - againCard.card.last_review);
-    return { docs: result.docs, nextReview: { good: goodNextTime, again: againNextTime } };
+    // Get cards left
+    const cardsLeft = Object.groupBy(result.docs, ({srs}) => srs.card.state == 2 || srs.card.state == 0 ? srs.card.state : 1 );
+    return { 
+      topCard, 
+      nextReview: { good: goodNextTime, again: againNextTime },
+      cardsLeft: {new: cardsLeft['0'] ?? [], learn: cardsLeft['1'] ?? [], review: cardsLeft['2'] ?? []}
+    };
   }).catch((error) => {
     console.log(error);
   })

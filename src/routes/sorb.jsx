@@ -4,11 +4,12 @@ import { ChevronsLeft, ChevronsRight, CopyX, Pickaxe, Smile, ThumbsDown, ThumbsU
 import { useLoaderData, useNavigation, useSubmit } from "react-router-dom";
 import { getCardsTotal, getTodayCards, updateSRS } from "../db";
 import Loading from "../components/Loading";
+import CardsCounter from "../components/CardsCounter";
 
 export async function loader() {
-  const { docs, nextReview } = await getTodayCards();
+  const {topCard, nextReview, cardsLeft} = await getTodayCards();
   const cardsTotal = await getCardsTotal();
-  return { cards: docs, nextReview, cardsTotal };
+  return { topCard, nextReview, cardsLeft, cardsTotal };
 }
 
 export async function action({ request }) {
@@ -19,8 +20,7 @@ export async function action({ request }) {
 
 export default function Sorb() {
 
-  const { cards, nextReview, cardsTotal } = useLoaderData();
-  const topCard = cards.at(0);
+  const { topCard, nextReview, cardsLeft, cardsTotal } = useLoaderData();
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const currentCardRef = useRef();
@@ -79,42 +79,45 @@ export default function Sorb() {
   const isLoading = navigation.state == "submitting" || navigation.state == "loading"
 
   return (
-    <main className={`flex-1 flex flex-col justify-center items-center p-2`}>
-      {isLoading ? (
-        <Loading className='flex-1 flex flex-col justify-center items-stretch' /> 
-      ) : cards.length != 0 ?
+    <main className={`flex-1 flex flex-col justify-center items-center gap-2 p-2`}>
+      {cardsLeft.learn.length != 0 || cardsLeft.new.length != 0 || cardsLeft.review.length != 0 ?
         <>
-          <div
-            ref={currentCardRef}
-            onClick={handleCardClick}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch justify-around bg-white text-center rounded-lg border"
-          >
-            {isOpen &&
-              <button className="p-2 flex flex-row-reverse items-center gap-2">
-                <ChevronsRight />
-                <p className="text-xs">{nextReview.good}</p>
-                <hr className="flex-1 border-black" />
-                <p className="text-xs">Good</p>
-                <ThumbsUp />
-              </button>
-            }
-            <div className="flex-1 flex flex-col justify-center items-center gap-2">
-              <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
-              <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.target}</mark></p>
-              <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
+          {isLoading ? (
+            <Loading className='flex-1 flex flex-col justify-center items-stretch' /> 
+          ) : (
+            <div
+              ref={currentCardRef}
+              onClick={handleCardClick}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch justify-around bg-white text-center rounded-lg border"
+            >
+              {isOpen &&
+                <button className="p-2 flex flex-row-reverse items-center gap-2">
+                  <ChevronsRight />
+                  <p className="text-xs">{nextReview.good}</p>
+                  <hr className="flex-1 border-black" />
+                  <p className="text-xs">Good</p>
+                  <ThumbsUp />
+                </button>
+              }
+              <div className="flex-1 flex flex-col justify-center items-center gap-2">
+                <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
+                <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.target}</mark></p>
+                <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
+              </div>
+              {isOpen &&
+                <button className="p-2 flex items-center gap-2">
+                  <ChevronsLeft />
+                  <p className="text-xs">{nextReview.again}</p>
+                  <hr className="flex-1 border-1 border-black" />
+                  <p className="text-xs">Again</p>
+                  <ThumbsDown />
+                </button>
+              }
             </div>
-            {isOpen &&
-              <button className="p-2 flex items-center gap-2">
-                <ChevronsLeft />
-                <p className="text-xs">{nextReview.again}</p>
-                <hr className="flex-1 border-1 border-black" />
-                <p className="text-xs">Again</p>
-                <ThumbsDown />
-              </button>
-            }
-          </div>
+          )}
+          <CardsCounter newTotal={cardsLeft.new.length} learnTotal={cardsLeft.learn.length} reviewTotal={cardsLeft.review.length} />
         </>
         :
         <div className="flex-1 p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-400 rounded-lg border-2 border-neutral-300 border-dashed">
