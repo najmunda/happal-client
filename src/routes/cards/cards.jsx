@@ -68,7 +68,7 @@ export default function Cards() {
       {isLoading ? 
         <Loading className='flex-1 flex flex-col justify-center items-center' /> 
         : cards.length != 0 ? (
-          <section onClick={handleDialogOpen} className='flex flex-col items-stretch gap-2'>
+          <section onClick={handleDialogOpen} className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2'>
             {cards.map(card => (
               <div key={card._id} data-key={card._id} className="group px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">
                 <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
