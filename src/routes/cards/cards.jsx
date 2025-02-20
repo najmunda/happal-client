@@ -78,7 +78,7 @@ export default function Cards() {
               <div key={card._id} data-key={card._id} className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">
                 <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
                 <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
-                <div className="col-span-2 invisible flex justify-evenly text-xs group-hover:visible">
+                <div className="col-span-2 flex justify-evenly text-xs">
                   <Link className="flex gap-1" to={`${card._id}`}><Info size={15} />Info</Link>
                   <Link className="flex gap-1" to={`${card._id}/edit`}><SquarePen size={15} />Edit</Link>
                   {card.srs?.card.state !== 0 && <Link className="flex gap-1" to={`${card._id}/reset`}><CalendarSync size={15} />Reset</Link>}

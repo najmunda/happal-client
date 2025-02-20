@@ -1,14 +1,22 @@
 import { Form, useSubmit } from "react-router-dom";
 import { ArrowDownNarrowWide, CalendarArrowDown, ChevronDown, Filter, Search } from "lucide-react";
+import { useEffect } from "react";
 
 export default function CardsSettings({searchParams}) {
 
   const submit = useSubmit();
-  const {q, show, order, sortby} = searchParams;
+  const {q = "", show = "all", order = "desc", sortby = "create"} = searchParams;
 
   function handleFormChange(e) {
     submit(e.currentTarget)
   }
+
+  useEffect(() => {
+    document.getElementById("q").value = q;
+    document.getElementById("show").value = show;
+    document.getElementById("order").value = order;
+    document.getElementById("sortby").value = sortby;
+  }, [q, show, order, sortby]);
 
   return (
     <Form onChange={handleFormChange} className="flex flex-col md:flex-row gap-2">
