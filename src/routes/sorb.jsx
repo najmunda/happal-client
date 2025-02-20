@@ -1,6 +1,6 @@
-import { useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Interweave } from "interweave";
-import { ChevronsLeft, ChevronsRight, CopyX, Pickaxe, Smile, ThumbsDown, ThumbsUp } from "lucide-react"
+import { CopyX, Pickaxe, Smile, SquareArrowLeft, SquareArrowRight, ThumbsDown, ThumbsUp } from "lucide-react"
 import { useLoaderData, useNavigation, useSubmit } from "react-router-dom";
 import { getCardsTotal, getTodayCards, updateSRS } from "../db";
 import Loading from "../components/Loading";
@@ -59,6 +59,7 @@ export default function Sorb() {
 
   function handleCardRight() {
     if (isOpen) {
+      console.log('right');
       setIsOpen(false);
       submit({ id: topCard._id, rating: 1 }, { method: "post", encType: "application/json" });
     }
@@ -66,6 +67,7 @@ export default function Sorb() {
 
   function handleCardLeft() {
     if (isOpen) {
+      console.log('left');
       setIsOpen(false);
       submit({ id: topCard._id, rating: 0 }, { method: "post", encType: "application/json" });
     }
@@ -74,6 +76,23 @@ export default function Sorb() {
   function handleCardClick() {
     setIsOpen(true);
   }
+
+  const handleKeyUp = useCallback((e) => {
+    if (isOpen) {
+      if (e.key == "ArrowLeft") {
+        handleCardLeft()
+      } else if (e.key == "ArrowRight") {
+        handleCardRight()
+      }
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyUp]);
 
   // Loading
   const isLoading = navigation.state == "submitting" || navigation.state == "loading"
@@ -85,37 +104,51 @@ export default function Sorb() {
           {isLoading ? (
             <Loading className='flex-1 flex flex-col justify-center items-stretch' /> 
           ) : (
-            <div
-              ref={currentCardRef}
-              onClick={handleCardClick}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch justify-around bg-white text-center rounded-lg border"
-            >
-              {isOpen &&
-                <button className="p-2 flex flex-row-reverse items-center gap-2">
-                  <ChevronsRight />
-                  <p className="text-xs">{nextReview.good}</p>
-                  <hr className="flex-1 border-black" />
-                  <p className="text-xs">Good</p>
-                  <ThumbsUp />
-                </button>
-              }
-              <div className="flex-1 flex flex-col justify-center items-center gap-2">
-                <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
-                <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.target}</mark></p>
-                <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
+              <div
+                ref={currentCardRef}
+                onClick={handleCardClick}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch justify-around bg-white text-center rounded-lg border"
+              >
+                {isOpen &&
+                  <>
+                    <section className="p-2 flex flex-row-reverse items-center gap-2">
+                      <button onClick={handleCardRight} className="p-2 flex items-center gap-2 rounded-lg border">
+                        <ThumbsUp />
+                        <p className="text-xs">{nextReview.good}</p>
+                        <p className="text-xs">Good</p>
+                      </button>
+                      <hr className="flex-1 border-black" />
+                    </section>
+                    <section className="flex items-center justify-center gap-1 text-neutral-300">
+                      <p className="text-xs">Swipe Right / Click "Good" button / press </p>
+                      <SquareArrowRight />
+                    </section>
+                  </>
+                }
+                <div className="flex-1 flex flex-col justify-center items-center gap-2">
+                  <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
+                  <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.target}</mark></p>
+                  <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
+                </div>
+                {isOpen &&
+                  <>
+                    <section className="flex items-center justify-center gap-1 text-neutral-300">
+                      <p className="text-xs">Swipe Left / Click "Again" button / press</p>
+                      <SquareArrowLeft />
+                    </section>
+                    <section className="p-2 flex items-center gap-2">
+                      <button onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border">
+                        <ThumbsDown />
+                        <p className="text-xs">{nextReview.again}</p>
+                        <p className="text-xs">Again</p>
+                      </button>
+                      <hr className="flex-1 border-1 border-black" />
+                    </section>
+                  </>
+                }
               </div>
-              {isOpen &&
-                <button className="p-2 flex items-center gap-2">
-                  <ChevronsLeft />
-                  <p className="text-xs">{nextReview.again}</p>
-                  <hr className="flex-1 border-1 border-black" />
-                  <p className="text-xs">Again</p>
-                  <ThumbsDown />
-                </button>
-              }
-            </div>
           )}
           <CardsCounter newTotal={cardsLeft.new.length} learnTotal={cardsLeft.learn.length} reviewTotal={cardsLeft.review.length} />
         </>
