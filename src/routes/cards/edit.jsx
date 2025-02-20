@@ -43,7 +43,7 @@ export default function CardEdit() {
 
   function handleBackButton() {
     handleDialogClose();
-    navigate('/cards');
+    navigate(-1);
   }
 
   return (
@@ -78,7 +78,7 @@ export default function CardEdit() {
       ></TextArea>
       <div className="pt-2 w-full flex justify-between items-center">
         <button type="button" onClick={handleBackButton} className="px-2">Close</button>
-        <button type="submit" className="px-2">Save</button>
+        <button type="submit" onClick={handleBackButton} className="px-2">Save</button>
       </div>
     </Form>
   )

@@ -14,7 +14,7 @@ export default function CardReset() {
 
   function handleBackButton() {
     handleDialogClose();
-    navigate('/cards');
+    navigate(-1);
   }
 
   return (
@@ -22,7 +22,7 @@ export default function CardReset() {
       <p className="text-center">Apakah anda yakin untuk mereset jadwal kartu ini?</p>
       <div className="pt-2 w-full flex justify-center items-center gap-2">
         <button type="button" onClick={handleBackButton} className="px-2">Batal</button>
-        <button type="submit" className="px-2">Reset</button>
+        <button type="submit" onClick={handleBackButton} className="px-2">Reset</button>
       </div>
     </Form>
   );

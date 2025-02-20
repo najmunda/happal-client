@@ -5,6 +5,11 @@ import CardsSettings from "../../components/CardsSettings";
 import Loading from "../../components/Loading";
 import { useEffect, useRef } from "react";
 
+export function revalidate({nextUrl}) {
+  const isRevalidate = nextUrl.pathname === "/cards"
+  return isRevalidate;
+}
+
 export async function loader({request}) {
   const url = new URL(request.url);
   const searchParams = Object.fromEntries(url.searchParams);
@@ -22,7 +27,7 @@ export default function Cards() {
   const {cards, cardsTotal, searchParams} = useLoaderData();
   const location = useLocation();
   const navigation = useNavigation();
-  const isLoading = (navigation.state === "loading" || navigation.state === "submitting") && navigation.location?.pathname == location.pathname;
+  const isLoading = (navigation.state === "loading" || navigation.state === "submitting") || navigation.location?.pathname == location.pathname;
   const isDialogLoading = navigation.state === "loading" || navigation.state === "submitting"
 
   // Dialog
@@ -70,13 +75,13 @@ export default function Cards() {
         : cards.length != 0 ? (
           <section onClick={handleDialogOpen} className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2'>
             {cards.map(card => (
-              <div key={card._id} data-key={card._id} className="group px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">
+              <div key={card._id} data-key={card._id} className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">
                 <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
                 <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
-                <div className="col-span-2 hidden justify-evenly text-xs group-hover:flex">
+                <div className="col-span-2 invisible flex justify-evenly text-xs group-hover:visible">
                   <Link className="flex gap-1" to={`${card._id}`}><Info size={15} />Info</Link>
                   <Link className="flex gap-1" to={`${card._id}/edit`}><SquarePen size={15} />Edit</Link>
-                  <Link className="flex gap-1" to={`${card._id}/reset`}><CalendarSync size={15} />Reset</Link>
+                  {card.srs?.card.state !== 0 && <Link className="flex gap-1" to={`${card._id}/reset`}><CalendarSync size={15} />Reset</Link>}
                   <Link className="flex gap-1" to={`${card._id}/delete`}><Trash2 size={15} /> Hapus</Link>
                 </div>
               </div>
@@ -95,7 +100,7 @@ export default function Cards() {
           </section>
         )
       }
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full bottom-0 border rounded-lg">
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full sm:max-w-sm md:max-w-md bottom-0 border rounded-lg">
         {isDialogLoading ? (
           <Loading className='h-[33dvh] flex flex-col justify-center items-center' />
         ) : (

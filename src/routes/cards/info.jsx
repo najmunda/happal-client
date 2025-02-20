@@ -17,7 +17,7 @@ export default function CardInfo() {
 
   function handleBackButton() {
     handleDialogClose();
-    navigate('/cards');
+    navigate(-1);
   }
 
   const sentence = card.sentence.replace(card.target, `<b>${card.target}</b>`);

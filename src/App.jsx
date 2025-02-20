@@ -5,7 +5,7 @@ import Home from "./routes/home.jsx";
 import Mine, { action as mineAction } from "./routes/mine.jsx";
 import Sorb, { loader as sorbLoader, action as sorbAction } from "./routes/sorb.jsx";
 // Cards
-import Cards, { loader as cardsLoader } from './routes/cards/cards.jsx'
+import Cards, { revalidate as cardsRevalidate, loader as cardsLoader } from './routes/cards/cards.jsx'
 import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
 import CardEdit, { loader as editLoader, action as editAction } from "./routes/cards/edit.jsx";
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
@@ -37,6 +37,7 @@ export default function App() {
         {
           path: "/cards",
           element: <Cards />,
+          shouldRevalidate: cardsRevalidate,
           loader: cardsLoader,
           children: [
             {
