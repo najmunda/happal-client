@@ -1,34 +1,32 @@
-import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import TextArea from "./TextArea";
 
-export default function CardForm({ formIndex, cardCount, isError }) {
+export default function CardForm({ form, cardCount, isError, handleFormChange }) {
 
-  const [sentence, setSentence] = useState("");
-  const [target, setTarget] = useState("");
-  const [def, setDef] = useState("");
+  const formIndex = form.index;
+  const {sentence, target, def} = form;
 
   function handleSentenceChange(e) {
     if (e.currentTarget.value == "") {
-      setTarget("");
-      setDef("");
+      handleFormChange({index: formIndex, sentence: e.currentTarget.value, target: "", def: ""});
+    } else {
+      handleFormChange({index: formIndex, sentence: e.currentTarget.value, target, def});
     }
-    setSentence(e.currentTarget.value);
   }
 
   function handleSentenceSelect(e) {
     const substring = e.currentTarget.value.substring(e.target.selectionStart, e.target.selectionEnd);
     if (substring != "") {
-      setTarget(substring);
+      handleFormChange({index: formIndex, sentence, target: substring, def});
     }
   }
 
   function handleDefChange(e) {
-    setDef(e.currentTarget.value);
+    handleFormChange({index: formIndex, sentence, target, def: e.currentTarget.value});
   }
 
   return (
-    <form name={`card_${formIndex}`} data-formindex={formIndex} className={`group p-2 flex flex-col items-center gap-2 bg-white border ${isError ? "border-red-500 border-2" : ""} rounded-lg`}>
+    <form name={`card_${formIndex}`} data-formindex={formIndex} className={`h-fit p-2 flex flex-col items-center gap-2 bg-white border ${isError ? "border-red-500 border-2" : ""} rounded-lg`}>
       <TextArea
         type="text"
         name={`sentence`}
@@ -61,7 +59,7 @@ export default function CardForm({ formIndex, cardCount, isError }) {
         required
       ></TextArea>
       {cardCount != 1 ?
-        <div className="hidden justify-evenly text-xs group-hover:flex">
+        <div className="flex justify-evenly text-xs">
           {cardCount != 1 ? <button type="button" value="delete" className="flex gap-1"><Trash2 size={15} /> Delete</button> : <></>}
         </div> : <></>
       }

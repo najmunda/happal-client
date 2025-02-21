@@ -13,4 +13,20 @@
     scrollbar-color: var(--secondary-color) transparent;
     scrollbar-width: thin;
   }
+
+  :root {
+    --column: 1;
+  }
+
+  @media (min-width:768px) {
+    :root {
+      --column: 2;
+    }
+  }
+
+  @media (min-width:1024px) {
+    :root {
+      --column: 3;
+    }
+  }
 }

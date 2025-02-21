@@ -1,3 +1,12 @@
+export function createEmptyForm(formIndex) {
+  return {
+    index: formIndex,
+    sentence: "",
+    target: "",
+    def: "",
+  };
+}
+
 export function formatDate(dateISOString) {
   const date = new Date(dateISOString);
   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;

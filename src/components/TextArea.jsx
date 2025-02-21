@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export default function TextArea(props) {
+export default function TextArea({ className, ...props}) {
 
   const textAreaRef = useRef();
 
@@ -10,6 +10,6 @@ export default function TextArea(props) {
   });
 
   return (
-    <textarea {...props} ref={textAreaRef}></textarea>
+    <textarea className={`overflow-hidden resize-none ${className ?? ""}`} {...props} ref={textAreaRef}></textarea>
   );
 }
