@@ -10,6 +10,7 @@ import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
 import CardEdit, { loader as editLoader, action as editAction } from "./routes/cards/edit.jsx";
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
 import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
+import Account from "./routes/account.jsx";
 
 export default function App() {
 
@@ -62,6 +63,10 @@ export default function App() {
               element: <CardReset />
             },
           ]
+        },
+        {
+          path: "/account",
+          element: <Account />,
         },
       ]
     },

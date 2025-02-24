@@ -1,5 +1,6 @@
 import { BookType } from "lucide-react";
 import Navigation from "./Navigation";
+import { Link } from "react-router-dom";
 
 
 export default function Header() {
@@ -12,9 +13,9 @@ export default function Header() {
       <nav className="hidden md:block md:flex-1">
         <Navigation />
       </nav>
-      <button className="h-full">
+      <Link to={"/account"} className="h-full">
         <img src="/profile.png" alt="" className="h-full rounded-full" />
-      </button>
+      </Link>
     </header>
   );
 }
