@@ -6,7 +6,7 @@ import Fuse from "fuse.js";
 
 PouchDB.plugin(plugin);
 
-const db = new PouchDB('sorbit');
+const db = new PouchDB('sorbit', {revs_limit: 30, purged_infos_limit: 10,});
 //const remoteCouch = false;
 
 export const adapter = db.adapter;
