@@ -95,17 +95,17 @@ export default function Mine() {
     }, (new Array(column)).fill([]))
 
   return success ? (
-    <main className="flex-1 p-2 flex flex-col gap-2">
+    <main className="container w-dvw md:w-full flex-1 p-2 flex flex-col gap-2">
       <Loading className='flex-1 flex flex-col justify-center items-center' />
       <Navigate to={"/mine"} />
     </main>
   ) : (
-    <main ref={formContainerRef} className="flex-1 pb-2 px-2 flex flex-col">
+    <main ref={formContainerRef} className="container w-dvw md:w-full flex-1 pb-2 px-2 flex flex-col">
       {navigation.state === "submitting" || navigation.state === "loading" ? (
         <Loading className='flex-1 flex flex-col justify-center items-center' />
       ) : (
         <>
-          <section className="py-2 flex gap-2 sticky top-14 bg-neutral-200">
+          <section className="py-2 flex gap-2 sticky top-14 bg-green-50">
             <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white border rounded-lg"><SquarePlus size={20} />Add Form</button>
             <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white border rounded-lg"><SaveAll size={20} />Save Words</button>
           </section>

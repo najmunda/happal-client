@@ -44,7 +44,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
         id={`target_${formIndex}`}
         value={target}
         className="w-full text-center border rounded p-2"
-        placeholder="Highlight words from sentence..."
+        placeholder="Highlight words/phrase from sentence..."
         readOnly
         required
       />

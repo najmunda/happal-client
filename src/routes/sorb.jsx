@@ -84,6 +84,8 @@ export default function Sorb() {
       } else if (e.key == "ArrowRight") {
         handleCardRight()
       }
+    } else if (e.key == "Spacebar" || e.key == " ") {
+      handleCardClick()
     }
   }, [isOpen]);
 
@@ -98,7 +100,7 @@ export default function Sorb() {
   const isLoading = navigation.state == "submitting" || navigation.state == "loading"
 
   return (
-    <main className={`flex-1 flex flex-col justify-center items-center gap-2 p-2`}>
+    <main className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}>
       {cardsLeft.learn.length != 0 || cardsLeft.new.length != 0 || cardsLeft.review.length != 0 ?
         <>
           {isLoading ? (
@@ -122,21 +124,20 @@ export default function Sorb() {
                       <hr className="flex-1 border-black" />
                     </section>
                     <section className="flex items-center justify-center gap-1 text-neutral-300">
-                      <p className="text-xs">Swipe Right / Click "Good" button / press </p>
-                      <SquareArrowRight />
+                      <p className="text-xs">Swipe Right / Click "Good" button / press <kbd>→</kbd> </p>
                     </section>
                   </>
                 }
-                <div className="flex-1 flex flex-col justify-center items-center gap-2">
+                <div className="flex-1 flex flex-col justify-center items-center gap-2 relative">
                   <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
                   <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.target}</mark></p>
                   <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
+                  {!isOpen && <p className="text-xs text-neutral-300">Press <kbd>Space</kbd> / Tap / Click Card to reveal definition & meaning.</p>}
                 </div>
                 {isOpen &&
                   <>
                     <section className="flex items-center justify-center gap-1 text-neutral-300">
-                      <p className="text-xs">Swipe Left / Click "Again" button / press</p>
-                      <SquareArrowLeft />
+                      <p className="text-xs">Swipe Left / Click "Again" button / press <kbd>{'<'}</kbd></p>
                     </section>
                     <section className="p-2 flex items-center gap-2">
                       <button onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border">

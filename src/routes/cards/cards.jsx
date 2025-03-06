@@ -68,7 +68,7 @@ export default function Cards() {
   }, [location.pathname]);
 
   return (
-    <main className='flex-1 p-2 flex flex-col items-stretch gap-2'>
+    <main className='container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2'>
       {cardsTotal != 0 ? <CardsSettings searchParams={searchParams} /> : <></>}
       {isLoading ? 
         <Loading className='flex-1 flex flex-col justify-center items-center' /> 

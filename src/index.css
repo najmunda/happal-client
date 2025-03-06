@@ -29,4 +29,11 @@
       --column: 3;
     }
   }
+
+  kbd {
+    padding: 0.25rem; 
+    border-radius: 0.25rem; 
+    border-width: 1px; 
+    border-bottom-width: 4px; 
+  }
 }

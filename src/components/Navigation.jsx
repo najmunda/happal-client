@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Inbox, LayoutDashboard, Pickaxe, Repeat } from "lucide-react"
 
-function NavButton({to, Icon, label}) {
+export function NavButton({to, Icon, label}) {
   return (
     <li>
       <Link to={to} className="flex flex-col md:flex-row items-center gap-1 md:gap-3">
