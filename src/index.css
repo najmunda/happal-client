@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+
   @font-face {
     font-family: "Plus Jakarta Sans";
     src: url('./assets/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf');
@@ -16,6 +17,8 @@
 
   :root {
     --column: 1;
+    --line-color: var(--color-black);
+    --bg-color: var(--color-white);
   }
 
   @media (min-width:768px) {

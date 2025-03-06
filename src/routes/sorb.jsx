@@ -111,17 +111,17 @@ export default function Sorb() {
                 onClick={handleCardClick}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
-                className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch justify-around bg-white text-center rounded-lg border"
+                className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch justify-around bg-(--bg-color) text-center rounded-lg border border-[var(--line-color)]"
               >
                 {isOpen &&
                   <>
                     <section className="p-2 flex flex-row-reverse items-center gap-2">
-                      <button onClick={handleCardRight} className="p-2 flex items-center gap-2 rounded-lg border">
+                      <button onClick={handleCardRight} className="p-2 flex items-center gap-2 rounded-lg border border-[var(--line-color)]">
                         <ThumbsUp />
                         <p className="text-xs">{nextReview.good}</p>
                         <p className="text-xs">Good</p>
                       </button>
-                      <hr className="flex-1 border-black" />
+                      <hr className="flex-1 border-[var(--line-color)]" />
                     </section>
                     <section className="flex items-center justify-center gap-1 text-neutral-300">
                       <p className="text-xs">Swipe Right / Click "Good" button / press <kbd>→</kbd> </p>
@@ -140,12 +140,12 @@ export default function Sorb() {
                       <p className="text-xs">Swipe Left / Click "Again" button / press <kbd>{'<'}</kbd></p>
                     </section>
                     <section className="p-2 flex items-center gap-2">
-                      <button onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border">
+                      <button onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border border-[var(--line-color)]">
                         <ThumbsDown />
                         <p className="text-xs">{nextReview.again}</p>
                         <p className="text-xs">Again</p>
                       </button>
-                      <hr className="flex-1 border-1 border-black" />
+                      <hr className="flex-1 border-1 border-[var(--line-color)]" />
                     </section>
                   </>
                 }

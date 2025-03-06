@@ -20,12 +20,12 @@ export default function CardsSettings({searchParams}) {
 
   return (
     <Form onChange={handleFormChange} className="flex flex-col md:flex-row gap-2">
-      <section className="flex-1 px-4 py-2 flex justify-between items-center gap-4 bg-white border rounded-lg">
+      <section className="flex-1 px-4 py-2 flex justify-between items-center gap-4 bg-(--bg-color) border border-[var(--line-color)] rounded-lg">
         <input type="text" name="q" id="q" defaultValue={q} placeholder="Cari kartu..." className="p-0 flex-1 border-0 focus:ring-0" />
         <Search />
       </section>
       <section className="flex items-center gap-2 overflow-auto">
-        <section className="p-2 flex flex-col justify-center bg-white border rounded-lg relative">
+        <section className="p-2 flex flex-col justify-center bg-(--bg-color) border border-[var(--line-color)] rounded-lg relative">
           <div className="w-full flex justify-between items-center gap-2">
             <Filter size={18} className="shrink-0" />
             <label htmlFor="show" className="text-xs text-nowrap line-clamp-1">Tampilkan</label>
@@ -38,7 +38,7 @@ export default function CardsSettings({searchParams}) {
             <option value="learn">Kartu Belajar</option>
           </select>
         </section>
-        <section className="p-2 flex flex-col justify-center bg-white border rounded-lg relative">
+        <section className="p-2 flex flex-col justify-center bg-(--bg-color) border border-[var(--line-color)] rounded-lg relative">
           <div className={`w-full flex justify-between items-center gap-2 ${q ? 'text-neutral-400' : ''}`}>
             <ArrowDownNarrowWide size={18} className="shrink-0" />
             <label htmlFor="order" className="text-xs text-nowrap line-clamp-1">Urutan</label>
@@ -49,7 +49,7 @@ export default function CardsSettings({searchParams}) {
             <option value="asc">Menaik</option>
           </select>
         </section>
-        <section className="p-2 flex flex-col justify-center bg-white border rounded-lg relative">
+        <section className="p-2 flex flex-col justify-center bg-(--bg-color) border border-[var(--line-color)] rounded-lg relative">
           <div className={`w-full flex justify-between items-center gap-2 ${q ? 'text-neutral-400' : ''}`}>
             <CalendarArrowDown size={18} className="shrink-0" />
             <label htmlFor="sortby" className="text-xs text-nowrap line-clamp-1">Urut berdasarkan</label>

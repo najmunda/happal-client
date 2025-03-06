@@ -14,7 +14,7 @@ export function NavButton({to, Icon, label}) {
 
 export default function Navigation() {
   return (
-    <ul className="flex justify-around md:justify-center gap-2 md:gap-10 font-extralight items-center">
+    <ul className="flex justify-around md:justify-center gap-2 md:gap-10 bg-(--bg-color) font-extralight items-center">
       <NavButton to={"/"} Icon={<LayoutDashboard />} label={'Home'} />
       <NavButton to={"/mine"} Icon={<Pickaxe />} label={'Mine'} />
       <NavButton to={"/sorb"} Icon={<Repeat />} label={'Sorb'} />

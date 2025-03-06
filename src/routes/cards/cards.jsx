@@ -75,7 +75,7 @@ export default function Cards() {
         : cards.length != 0 ? (
           <section onClick={handleDialogOpen} className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2'>
             {cards.map(card => (
-              <div key={card._id} data-key={card._id} className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border rounded-lg">
+              <div key={card._id} data-key={card._id} className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-(--bg-color) border border-[var(--line-color)] rounded-lg">
                 <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
                 <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
                 <div className="col-span-2 flex justify-evenly text-xs">
@@ -100,7 +100,7 @@ export default function Cards() {
           </section>
         )
       }
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full sm:max-w-sm md:max-w-md bottom-0 border rounded-lg">
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full sm:max-w-sm md:max-w-md bottom-0 border border-[var(--line-color)] rounded-lg">
         {isDialogLoading ? (
           <Loading className='h-[33dvh] flex flex-col justify-center items-center' />
         ) : (
