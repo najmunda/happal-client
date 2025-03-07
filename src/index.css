@@ -1,6 +1,4 @@
 @tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @layer base {
 
@@ -17,8 +15,6 @@
 
   :root {
     --column: 1;
-    --line-color: var(--color-black);
-    --bg-color: var(--color-white);
   }
 
   @media (min-width:768px) {
@@ -40,3 +36,6 @@
     border-bottom-width: 4px; 
   }
 }
+
+@tailwind components;
+@tailwind utilities;

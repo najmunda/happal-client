@@ -26,7 +26,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
   }
 
   return (
-    <form name={`card_${formIndex}`} data-formindex={formIndex} className={`h-fit p-2 flex flex-col items-center gap-2 bg-(--bg-color) border ${isError ? "border-red-500 border-2" : "border-[var(--line-color)]"} rounded-lg`}>
+    <form name={`card_${formIndex}`} data-formindex={formIndex} className={`h-fit p-2 flex flex-col items-center gap-2 bg-white border ${isError ? "border-red-500 border-2" : "border-[var(--line-color)]"} rounded-lg`}>
       <TextArea
         type="text"
         name={`sentence`}
