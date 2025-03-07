@@ -1,13 +1,16 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Inbox, LayoutDashboard, Pickaxe, Repeat } from "lucide-react"
 
 export function NavButton({to, Icon, label}) {
   return (
     <li>
-      <Link to={to} className="flex flex-col md:flex-row items-center gap-1 md:gap-3">
+      <NavLink 
+        to={to} 
+        className={({isActive}) => `p-2 flex flex-col md:flex-row items-center gap-1 md:gap-3 rounded-lg ${isActive ? "border border-black bg-green-100" : ""}`}
+      >
         {Icon}
         <p className="text-sm">{label}</p>
-      </Link>
+      </NavLink>
     </li>
   );
 }

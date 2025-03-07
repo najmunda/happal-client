@@ -1,6 +1,6 @@
 import { BookType, CircleUser } from "lucide-react";
 import Navigation from "./Navigation";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 
 export default function Header() {
@@ -14,9 +14,11 @@ export default function Header() {
         <nav className="hidden md:block md:flex-1">
           <Navigation />
         </nav>
-        <Link to={"/account"}>
+        <NavLink 
+          to={"/account"} 
+          className={({isActive}) => `p-2 rounded-full ${isActive ? "border border-black bg-green-100" : ""}`}>
           <CircleUser />
-        </Link>
+        </NavLink>
       </div>
     </header>
   );
