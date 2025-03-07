@@ -59,17 +59,15 @@ export default function Sorb() {
 
   function handleCardRight() {
     if (isOpen) {
-      console.log('right');
-      setIsOpen(false);
       submit({ id: topCard._id, rating: 1 }, { method: "post", encType: "application/json" });
+      setTimeout(() => setIsOpen(false), 100);
     }
   }
 
   function handleCardLeft() {
     if (isOpen) {
-      console.log('left');
-      setIsOpen(false);
       submit({ id: topCard._id, rating: 0 }, { method: "post", encType: "application/json" });
+      setTimeout(() => setIsOpen(false), 100);
     }
   }
 
@@ -111,7 +109,7 @@ export default function Sorb() {
                 onClick={handleCardClick}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
-                className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch justify-around bg-(--bg-color) text-center rounded-lg border border-[var(--line-color)]"
+                className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-(--bg-color) text-center rounded-lg border border-[var(--line-color)]"
               >
                 {isOpen &&
                   <>
@@ -123,24 +121,24 @@ export default function Sorb() {
                       </button>
                       <hr className="flex-1 border-[var(--line-color)]" />
                     </section>
-                    <section className="flex items-center justify-center gap-1 text-neutral-300">
+                    <section className="flex items-center justify-center gap-1 text-neutral-400">
                       <p className="text-xs">Swipe Right / Click "Good" button / press <kbd>→</kbd> </p>
                     </section>
                   </>
                 }
                 <div className="flex-1 flex flex-col justify-center items-center gap-2 relative">
                   <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
-                  <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.target}</mark></p>
-                  <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-300 bg-neutral-300 rounded'}`}>{topCard.def}</mark></p>
-                  {!isOpen && <p className="text-xs text-neutral-300">Press <kbd>Space</kbd> / Tap / Click Card to reveal definition & meaning.</p>}
+                  <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-400 bg-neutral-400 rounded'}`}>{topCard.target}</mark></p>
+                  <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-400 bg-neutral-400 rounded'}`}>{topCard.def}</mark></p>
+                  {!isOpen && <p className="text-xs text-neutral-400">Press <kbd>Space</kbd> / Tap / Click Card to reveal definition & meaning.</p>}
                 </div>
                 {isOpen &&
                   <>
-                    <section className="flex items-center justify-center gap-1 text-neutral-300">
+                    <section className="flex items-center justify-center gap-1 text-neutral-400">
                       <p className="text-xs">Swipe Left / Click "Again" button / press <kbd>{'<'}</kbd></p>
                     </section>
                     <section className="p-2 flex items-center gap-2">
-                      <button onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border border-[var(--line-color)]">
+                      <button type="button" onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border border-[var(--line-color)]">
                         <ThumbsDown />
                         <p className="text-xs">{nextReview.again}</p>
                         <p className="text-xs">Again</p>
