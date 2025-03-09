@@ -60,7 +60,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
       ></TextArea>
       {cardCount != 1 ?
         <div className="flex justify-evenly text-xs">
-          {cardCount != 1 ? <button type="button" value="delete" className="px-2 py-1 flex gap-1 hover:bg-neutral-100 rounded-lg"><Trash2 size={15} /> Delete</button> : <></>}
+          {cardCount != 1 ? <button type="button" value="delete" className="px-2 py-1 flex gap-1 hover:bg-neutral-100 rounded-lg"><Trash2 size={15} /> Hapus Form</button> : <></>}
         </div> : <></>
       }
     </form>

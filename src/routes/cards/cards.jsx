@@ -86,6 +86,13 @@ export default function Cards() {
                 </div>
               </div>
             ))}
+            <div className="group px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border border-black rounded-lg">
+              <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">Cards?</p>
+              <p className="text-xs font-light text-nowrap truncate col-span-2">Halaman ini untuk mengatur kartu-kartu kamu.</p>
+              <div className="col-span-2 flex justify-evenly text-xs">
+                <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to="help"><Info size={15} />Lebih lanjut</Link>
+              </div>
+            </div>
           </section>
         )
         : cardsTotal != 0 ? (
@@ -100,7 +107,7 @@ export default function Cards() {
           </section>
         )
       }
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full sm:max-w-sm md:max-w-md bottom-0 border border-black rounded-lg">
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 border border-black rounded-lg">
         {isDialogLoading ? (
           <Loading className='h-[33dvh] flex flex-col justify-center items-center' />
         ) : (

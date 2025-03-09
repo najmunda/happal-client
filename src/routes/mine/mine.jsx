@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react"
-import { Navigate, useActionData, useNavigation, useSubmit } from "react-router-dom"
-import { SaveAll, SquarePlus } from "lucide-react";
-import CardForm from "../components/CardForm"
-import { addCards } from "../db";
-import Loading from "../components/Loading";
-import { createEmptyForm } from "../utils";
+import { Link, Navigate, Outlet, useActionData, useNavigate, useNavigation, useSubmit } from "react-router-dom"
+import { HelpCircle, SaveAll, SquarePlus } from "lucide-react";
+import CardForm from "../../components/CardForm"
+import { addCards } from "../../db";
+import Loading from "../../components/Loading";
+import { createEmptyForm } from "../../utils";
 
 export async function action({ request }) {
   const requestJson = await request.json();
@@ -94,6 +94,41 @@ export default function Mine() {
       return array
     }, (new Array(column)).fill([]))
 
+  // Dialog
+
+  const dialogRef = useRef();
+  const navigate = useNavigate();
+
+  function handleDialogOpen() {
+    dialogRef.current.showModal();
+  }
+
+  function handleDialogClose() {
+    dialogRef.current.close();
+  }
+
+  function handleBackdropClick(e) {
+    if (e.target == dialogRef.current) {
+      dialogRef.current.close();
+      navigate('/mine');
+    };
+  }
+
+  function handleEscDown(e) {
+    if (e.key == "Escape") {
+      dialogRef.current.close();
+      navigate('/mine');
+    };
+  }
+
+  useEffect(() => {
+    if (location.pathname !== "/mine") {
+      dialogRef.current.showModal();
+    } else {
+      dialogRef.current.close();
+    }
+  }, [location.pathname]);
+
   return success ? (
     <main className="container w-dvw md:w-full flex-1 p-2 flex flex-col gap-2">
       <Loading className='flex-1 flex flex-col justify-center items-center' />
@@ -106,6 +141,7 @@ export default function Mine() {
       ) : (
         <>
           <section className="py-2 flex gap-2 sticky top-14 bg-white z-10">
+            <Link onClick={handleDialogOpen} className="p-2 flex items-center justify-center gap-2 border border-black rounded-lg hover:bg-neutral-100" to="help"><HelpCircle size={20} />Help</Link>
             <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 border border-black rounded-lg hover:bg-neutral-100"><SquarePlus size={20} />Add Form</button>
             <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 border border-black rounded-lg hover:bg-neutral-100"><SaveAll size={20} />Save Words</button>
           </section>
@@ -126,6 +162,9 @@ export default function Mine() {
           </section>
         </>
       )}
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 border border-black rounded-lg">
+        <Outlet context={[handleDialogClose]} />
+      </dialog>
     </main>
   )
 }

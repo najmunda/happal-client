@@ -13,6 +13,11 @@
     scrollbar-width: thin;
   }
 
+  /* dialog {
+    scrollbar-color: var(--secondary-color) transparent;
+    scrollbar-width: thin;
+  } */
+
   :root {
     --column: 1;
   }

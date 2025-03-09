@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Interweave } from "interweave";
-import { CopyX, Pickaxe, Smile, SquareArrowLeft, SquareArrowRight, ThumbsDown, ThumbsUp } from "lucide-react"
-import { useLoaderData, useNavigation, useSubmit } from "react-router-dom";
-import { getCardsTotal, getTodayCards, updateSRS } from "../db";
-import Loading from "../components/Loading";
-import CardsCounter from "../components/CardsCounter";
+import { CopyX, Pickaxe, Smile, ThumbsDown, ThumbsUp } from "lucide-react"
+import { Outlet, useLoaderData, useNavigate, useNavigation, useSubmit } from "react-router-dom";
+import { getCardsTotal, getTodayCards, updateSRS } from "../../db";
+import Loading from "../../components/Loading";
+import CardsCounter from "../../components/CardsCounter";
 
 export async function loader() {
   const {topCard, nextReview, cardsLeft} = await getTodayCards();
@@ -97,6 +97,41 @@ export default function Sorb() {
   // Loading
   const isLoading = navigation.state == "submitting" || navigation.state == "loading"
 
+  // Dialog
+
+  const dialogRef = useRef();
+  const navigate = useNavigate();
+
+  function handleDialogOpen() {
+    dialogRef.current.showModal();
+  }
+
+  function handleDialogClose() {
+    dialogRef.current.close();
+  }
+
+  function handleBackdropClick(e) {
+    if (e.target == dialogRef.current) {
+      dialogRef.current.close();
+      navigate('/sorb');
+    };
+  }
+
+  function handleEscDown(e) {
+    if (e.key == "Escape") {
+      dialogRef.current.close();
+      navigate('/sorb');
+    };
+  }
+
+  useEffect(() => {
+    if (location.pathname !== "/sorb") {
+      dialogRef.current.showModal();
+    } else {
+      dialogRef.current.close();
+    }
+  }, [location.pathname]);
+
   return (
     <main className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}>
       {cardsLeft.learn.length != 0 || cardsLeft.new.length != 0 || cardsLeft.review.length != 0 ?
@@ -149,7 +184,7 @@ export default function Sorb() {
                 }
               </div>
           )}
-          <CardsCounter newTotal={cardsLeft.new.length} learnTotal={cardsLeft.learn.length} reviewTotal={cardsLeft.review.length} />
+          <CardsCounter newTotal={cardsLeft.new.length} learnTotal={cardsLeft.learn.length} reviewTotal={cardsLeft.review.length} handleDialogOpen={handleDialogOpen} />
         </>
         :
         <div className="flex-1 p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-400 rounded-lg border-2 border-neutral-300 border-dashed">
@@ -166,6 +201,9 @@ export default function Sorb() {
           }
         </div>
       }
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 border border-black rounded-lg">
+        <Outlet context={[handleDialogClose]} />
+      </dialog>
     </main>
   )
 }
