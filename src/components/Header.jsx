@@ -16,7 +16,7 @@ export default function Header() {
         </nav>
         <NavLink 
           to={"/account"} 
-          className={({isActive}) => `p-2 rounded-full ${isActive ? "border border-black bg-green-100" : ""}`}>
+          className={({isActive}) => `p-2 rounded-full hover:bg-neutral-100 ${isActive ? "border border-black bg-green-100" : ""}`}>
           <CircleUser />
         </NavLink>
       </div>

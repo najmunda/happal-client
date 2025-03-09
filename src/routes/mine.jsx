@@ -106,8 +106,8 @@ export default function Mine() {
       ) : (
         <>
           <section className="py-2 flex gap-2 sticky top-14 bg-white z-10">
-            <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 border border-[var(--line-color)] rounded-lg"><SquarePlus size={20} />Add Form</button>
-            <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 border border-[var(--line-color)] rounded-lg"><SaveAll size={20} />Save Words</button>
+            <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 border border-black rounded-lg hover:bg-neutral-100"><SquarePlus size={20} />Add Form</button>
+            <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 border border-black rounded-lg hover:bg-neutral-100"><SaveAll size={20} />Save Words</button>
           </section>
           <section onClick={handleCardsButtons} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {formsMasonry.map((column, index) => (

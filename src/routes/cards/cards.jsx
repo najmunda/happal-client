@@ -75,14 +75,14 @@ export default function Cards() {
         : cards.length != 0 ? (
           <section onClick={handleDialogOpen} className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2'>
             {cards.map(card => (
-              <div key={card._id} data-key={card._id} className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border border-[var(--line-color)] rounded-lg">
+              <div key={card._id} data-key={card._id} className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border border-black rounded-lg">
                 <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
                 <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
                 <div className="col-span-2 flex justify-evenly text-xs">
-                  <Link className="flex gap-1" to={`${card._id}`}><Info size={15} />Info</Link>
-                  <Link className="flex gap-1" to={`${card._id}/edit`}><SquarePen size={15} />Edit</Link>
-                  {card.srs?.card.state !== 0 && <Link className="flex gap-1" to={`${card._id}/reset`}><CalendarSync size={15} />Reset</Link>}
-                  <Link className="flex gap-1" to={`${card._id}/delete`}><Trash2 size={15} /> Hapus</Link>
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}`}><Info size={15} />Info</Link>
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/edit`}><SquarePen size={15} />Edit</Link>
+                  {card.srs?.card.state !== 0 && <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/reset`}><CalendarSync size={15} />Reset</Link>}
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/delete`}><Trash2 size={15} /> Hapus</Link>
                 </div>
               </div>
             ))}
@@ -100,7 +100,7 @@ export default function Cards() {
           </section>
         )
       }
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full sm:max-w-sm md:max-w-md bottom-0 border border-[var(--line-color)] rounded-lg">
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full sm:max-w-sm md:max-w-md bottom-0 border border-black rounded-lg">
         {isDialogLoading ? (
           <Loading className='h-[33dvh] flex flex-col justify-center items-center' />
         ) : (
