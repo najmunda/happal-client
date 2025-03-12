@@ -1,15 +1,22 @@
 import PouchDB from "pouchdb-browser";
-import plugin from "pouchdb-find";
+import findPlugin from "pouchdb-find";
+import upsertPlugin from "pouchdb-upsert";
 import { createEmptyCard, fsrs, Rating } from "ts-fsrs";
-import { getEndTodayUTC, msToDHM } from "./utils";
+import { getEndTodayUTC, getStartTodayUTC, msToDHM } from "./utils";
 import Fuse from "fuse.js";
 
-PouchDB.plugin(plugin);
+PouchDB.plugin(findPlugin);
+PouchDB.plugin(upsertPlugin);
 
 const db = new PouchDB('sorbit', {revs_limit: 30, purged_infos_limit: 10,});
 //const remoteCouch = false;
 
-export const adapter = db.adapter;
+// Init
+async function setupDB() {
+
+}
+
+await setupDB();
 
 export async function getCardsTotal() {
   return db.allDocs({
@@ -91,7 +98,11 @@ export async function addCards(newCards) {
       log: null,
     },
   }));
-  return await db.bulkDocs(newCards);
+  return db.bulkDocs(newCards).then(result => {
+    return setMonthlyHistory(newCards.length, 0)
+  }).catch((error) => {
+    console.log(error);
+  });
 }
 
 export async function editCard(cardId, editData) {
@@ -164,9 +175,66 @@ export async function updateSRS(cardId, rating) {
   const f = fsrs()
   return getCard(cardId).then((card) => {
     return f.next(card.srs.card, new Date(), rating == 0 ? Rating.Again : Rating.Good);
-  }).then((schedulingCard) => {
-    return editCard(cardId, { srs: schedulingCard });
+  }).then(async (schedulingCard) => {
+    return editCard(cardId, { srs: schedulingCard }).then(response => {
+      const scheduledDays = schedulingCard.card.scheduled_days;
+      if (scheduledDays > 0) {
+        return setMonthlyHistory(0, 1);
+      }
+      return response;
+    }).catch(error => {
+      throw error;
+    });
   }).catch((error) => {
+    console.log(error);
+  });
+}
+
+// Home
+
+export async function getMonthlyHistory() {
+  const startToday = getStartTodayUTC();
+  const initHistory = {
+    _id: 'monthly-history',
+    month: startToday.getMonth(),
+  };
+  return db.get('monthly-history').then(historyDoc => {
+    return {historyDoc, init: false};
+  }).catch(async (err) => {
+    if (err.name === 'not_found') {
+      return {historyDoc: initHistory, init: true};
+    } else {
+      throw err;
+    }
+  }).then(async ({historyDoc, init}) => {
+    // Reset when month change
+    if (init) {
+      await db.put(initHistory);
+    } else if (historyDoc.month != startToday.getMonth()) {
+      await db.remove(historyDoc);
+      await db.put(initHistory);
+    }
+    return db.get('monthly-history');
+  }).catch(function (error) {
+    console.log(error);
+  });
+}
+
+async function setMonthlyHistory(newCountAdd = 0, reviewCountAdd = 0) {
+  const todayDate = getStartTodayUTC().getDate().toString();
+  return getMonthlyHistory().then(async (historyDoc) => {
+    const history = historyDoc[todayDate];
+    if (history) {
+      historyDoc[todayDate] = {...historyDoc[todayDate], newCount: history.newCount + newCountAdd, reviewCount: history.reviewCount + reviewCountAdd};
+    } else {
+      historyDoc[todayDate] = {newCount: newCountAdd, reviewedCount: reviewCountAdd};
+    }
+    return db.put(historyDoc);
+  }).then(async (response) => {
+    const history = await db.get('monthly-history');
+    console.log(history);
+    return response;
+  }).catch(function (error) {
     console.log(error);
   });
 }

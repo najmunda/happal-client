@@ -18,7 +18,7 @@ export function NavButton({to, Icon, label}) {
 export default function Navigation() {
   return (
     <ul className="flex justify-around md:justify-center gap-2 md:gap-10 bg-white font-extralight items-center">
-      <NavButton to={"/"} Icon={<LayoutDashboard />} label={'Home'} />
+      {/* <NavButton to={"/"} Icon={<LayoutDashboard />} label={'Home'} /> */}
       <NavButton to={"/mine"} Icon={<Pickaxe />} label={'Mine'} />
       <NavButton to={"/sorb"} Icon={<Repeat />} label={'Sorb'} />
       <NavButton to={"/cards"} Icon={<Inbox />} label={'Cards'} />

@@ -1,7 +1,8 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import Root/*, { action as rootAction }*/ from './routes/root'
-import Home from "./routes/home.jsx";
 import Account from "./routes/account.jsx";
+// Home
+import Home, { loader as homeLoader} from "./routes/home.jsx";
 // Mine
 import Mine, { action as mineAction } from "./routes/mine/mine.jsx";
 import MineHelp from "./routes/mine/help";
@@ -26,7 +27,9 @@ export default function App() {
       children: [
         {
           index: true,
-          element: <Home />,
+          // element: <Home />,
+          element: <Navigate to={'/sorb'} />,
+          loader: homeLoader,
         },
         {
           path: "/mine",
