@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Link, Navigate, Outlet, useActionData, useNavigate, useNavigation, useOutletContext, useSubmit } from "react-router-dom"
 import { HelpCircle, SaveAll, SquarePlus } from "lucide-react";
 import CardForm from "../../components/CardForm"
-import { addCards } from "../../db";
+import { addCardDocs } from "../../db";
 import Loading from "../../components/Loading";
 import { createEmptyForm } from "../../utils";
 import toast from "react-hot-toast";
@@ -20,7 +20,7 @@ export async function action({ request }) {
   }
 
   if (errors.length == 0) {
-    const result = await addCards(cardsData.map(card => card.data));
+    const result = await addCardDocs(cardsData.map(card => card.data));
     return { success: true, errors };
   } else { // There empty input
     return { success: false, errors };

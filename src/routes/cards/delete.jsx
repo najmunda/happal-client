@@ -1,11 +1,11 @@
 import { useActionData, useLocation, useNavigate, useOutletContext, useSubmit } from "react-router-dom";
-import { deleteCard } from "../../db";
+import { deleteCardDoc } from "../../db";
 import { useEffect } from "react";
 import Loading from "../../components/Loading";
 
 export async function action({ params, request }) {
   const {redirect} = await request.json();
-  await deleteCard(params.cardId)
+  await deleteCardDoc(params.cardId)
   return {
     data: { action: "delete" },
     redirect,

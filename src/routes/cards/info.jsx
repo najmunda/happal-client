@@ -1,11 +1,11 @@
 import { useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
 import { Interweave } from "interweave";
 import { Eye, Repeat2 } from "lucide-react";
-import { getCard } from "../../db";
+import { getCardDoc } from "../../db";
 import { formatDate } from "../../utils"
 
 export async function loader({ params }) {
-  const card = await getCard(params.cardId);
+  const card = await getCardDoc(params.cardId);
   return card;
 }
 

@@ -7,9 +7,9 @@ import Loading from "../../components/Loading";
 import CardsCounter from "../../components/CardsCounter";
 
 export async function loader() {
-  const {topCard, nextReview, cardsLeft} = await getTodayCards();
+  const {topCardDoc, nextReview, cardsLeft} = await getTodayCards();
   const cardsTotal = await getCardsTotal();
-  return { topCard, nextReview, cardsLeft, cardsTotal };
+  return { topCardDoc, nextReview, cardsLeft, cardsTotal };
 }
 
 export async function action({ request }) {
@@ -20,7 +20,7 @@ export async function action({ request }) {
 
 export default function Sorb() {
 
-  const { topCard, nextReview, cardsLeft, cardsTotal } = useLoaderData();
+  const { topCardDoc, nextReview, cardsLeft, cardsTotal } = useLoaderData();
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const currentCardRef = useRef();
@@ -59,14 +59,14 @@ export default function Sorb() {
 
   function handleCardRight() {
     if (isOpen) {
-      submit({ id: topCard._id, rating: 1 }, { method: "post", encType: "application/json" });
+      submit({ id: topCardDoc._id, rating: 1 }, { method: "post", encType: "application/json" });
       setTimeout(() => setIsOpen(false), 100);
     }
   }
 
   function handleCardLeft() {
     if (isOpen) {
-      submit({ id: topCard._id, rating: 0 }, { method: "post", encType: "application/json" });
+      submit({ id: topCardDoc._id, rating: 0 }, { method: "post", encType: "application/json" });
       setTimeout(() => setIsOpen(false), 100);
     }
   }
@@ -162,9 +162,9 @@ export default function Sorb() {
                   </>
                 }
                 <div className="flex-1 flex flex-col justify-center items-center gap-2 relative">
-                  <p><Interweave content={topCard.sentence.replace(topCard.target, `<b>${topCard.target}</b>`)} /></p>
-                  <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-400 bg-neutral-400 rounded'}`}>{topCard.target}</mark></p>
-                  <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-400 bg-neutral-400 rounded'}`}>{topCard.def}</mark></p>
+                  <p><Interweave content={topCardDoc.sentence.replace(topCardDoc.target, `<b>${topCardDoc.target}</b>`)} /></p>
+                  <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-400 bg-neutral-400 rounded'}`}>{topCardDoc.target}</mark></p>
+                  <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-400 bg-neutral-400 rounded'}`}>{topCardDoc.def}</mark></p>
                   {!isOpen && <p className="text-xs text-neutral-400">Press <kbd>Space</kbd> / Tap / Click Card to reveal definition & meaning.</p>}
                 </div>
                 {isOpen &&

@@ -21,7 +21,7 @@ export async function loader({request}) {
     cards : cardsData ?? [],
     cardsTotal, // All cards total (nothing excluded)
     searchParams,
-  };
+  }; 
 }
 
 export default function Cards() {

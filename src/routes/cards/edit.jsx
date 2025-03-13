@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Form, useActionData, useLoaderData, useLocation, useNavigate, useOutletContext } from "react-router-dom";
-import { editCard, getCard } from "../../db";
+import { editCardDoc, getCardDoc } from "../../db";
 import TextArea from "../../components/TextArea";
 
 export async function action({ request, params }) {
@@ -8,7 +8,7 @@ export async function action({ request, params }) {
   const formObject = Object.fromEntries(formData);
   const {redirect} = formObject;
   delete formObject['redirect'];
-  await editCard(params.cardId, formObject);
+  await editCardDoc(params.cardId, formObject);
   return {
     data: { action: "edit" },
     redirect,
@@ -16,7 +16,7 @@ export async function action({ request, params }) {
 }
 
 export async function loader({ params }) {
-  const card = await getCard(params.cardId);
+  const card = await getCardDoc(params.cardId);
   return card;
 }
 
