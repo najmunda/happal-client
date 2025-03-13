@@ -4,6 +4,8 @@ import { getCardsCustom, getCardsTotal } from "../../db";
 import CardsSettings from "../../components/CardsSettings";
 import Loading from "../../components/Loading";
 import { useEffect, useRef } from "react";
+import toast from "react-hot-toast";
+import Toast from "../../components/Toast";
 
 export function revalidate({nextUrl}) {
   const isRevalidate = nextUrl.pathname === "/cards"
@@ -29,6 +31,7 @@ export default function Cards() {
   const navigation = useNavigation();
   const isLoading = (navigation.state === "loading" || navigation.state === "submitting") || navigation.location?.pathname == location.pathname;
   const isDialogLoading = navigation.state === "loading" || navigation.state === "submitting"
+  const currentPathNQuery = location.pathname + location.search;
 
   // Dialog
 
@@ -48,14 +51,14 @@ export default function Cards() {
   function handleBackdropClick(e) {
     if (e.target == dialogRef.current) {
       dialogRef.current.close();
-      navigate('/cards');
+      navigate(-1);
     };
   }
 
   function handleEscDown(e) {
     if (e.key == "Escape") {
       dialogRef.current.close();
-      navigate('/cards');
+      navigate(-1);
     };
   }
 
@@ -66,6 +69,21 @@ export default function Cards() {
       dialogRef.current.close();
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (location?.state) {
+      const {action} =  location.state;
+      toast.custom((t) => {
+        if (action == "delete") {
+          return <Toast message="Card Deleted" color="red" />
+        } else if (action == "reset") {
+          return <Toast message="Card Reset" color="yellow" />
+        } else if (action == "edit") {
+          return <Toast message="Card Edited" color="green" />
+        }
+      });
+    }
+  }, [location]);
 
   return (
     <main className='container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2'>
@@ -79,10 +97,10 @@ export default function Cards() {
                 <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
                 <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
                 <div className="col-span-2 flex justify-evenly text-xs">
-                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}`}><Info size={15} />Info</Link>
-                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/edit`}><SquarePen size={15} />Edit</Link>
-                  {card.srs?.card.state !== 0 && <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/reset`}><CalendarSync size={15} />Reset</Link>}
-                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/delete`}><Trash2 size={15} /> Hapus</Link>
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}`} state={{prevPathNQuery: currentPathNQuery}}><Info size={15} />Info</Link>
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/edit`} state={{prevPathNQuery: currentPathNQuery}}><SquarePen size={15} />Edit</Link>
+                  {card.srs?.card.state !== 0 && <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/reset`} state={{prevPathNQuery: currentPathNQuery}}><CalendarSync size={15} />Reset</Link>}
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/delete`} state={{prevPathNQuery: currentPathNQuery}}><Trash2 size={15} /> Hapus</Link>
                 </div>
               </div>
             ))}

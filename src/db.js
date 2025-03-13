@@ -129,7 +129,7 @@ export async function resetCard(cardId) {
 
 export async function deleteCard(cardId) {
   const card = await db.get(cardId);
-  return await db.remove(card);
+  return db.remove(card);
 }
 
 // SORB

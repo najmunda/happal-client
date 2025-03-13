@@ -1,13 +1,18 @@
-import { useState } from "react";
-import { Form, redirect, useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Form, useActionData, useLoaderData, useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { editCard, getCard } from "../../db";
 import TextArea from "../../components/TextArea";
 
 export async function action({ request, params }) {
-  const cardsForm = await request.formData();
-  const cardsData = Object.fromEntries(cardsForm);
-  await editCard(params.cardId, cardsData);
-  return redirect('/cards');
+  const formData = await request.formData();
+  const formObject = Object.fromEntries(formData);
+  const {redirect} = formObject;
+  delete formObject['redirect'];
+  await editCard(params.cardId, formObject);
+  return {
+    data: { action: "edit" },
+    redirect,
+  };
 }
 
 export async function loader({ params }) {
@@ -20,6 +25,9 @@ export default function CardEdit() {
   const card = useLoaderData();
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
+  const actionData = useActionData();
+  const location = useLocation();
+  const prevPathNQuery = location.state?.prevPathNQuery;
 
   const [sentence, setSentence] = useState(card.sentence);
   const [target, setTarget] = useState(card.target);
@@ -43,11 +51,19 @@ export default function CardEdit() {
 
   function handleBackButton() {
     handleDialogClose();
-    navigate(-1);
+    navigate(prevPathNQuery);
   }
+
+  useEffect(() => {
+    if (actionData) {
+      const {data, redirect} = actionData;
+      navigate(redirect, {state: data})
+    }
+  }, [actionData]);
 
   return (
     <Form method="post" className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
+      <input type="text" name="redirect" id="redirect" className="hidden" defaultValue={prevPathNQuery} />
       <TextArea
         type="text"
         name="sentence"
@@ -78,7 +94,7 @@ export default function CardEdit() {
       ></TextArea>
       <div className="pt-2 w-full flex justify-between items-center">
         <button type="button" onClick={handleBackButton} className="px-2">Close</button>
-        <button type="submit" onClick={handleBackButton} className="px-2">Save</button>
+        <button type="submit" onClick={handleDialogClose} className="px-2">Save</button>
       </div>
     </Form>
   )

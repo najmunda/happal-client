@@ -19,6 +19,7 @@
     "pouchdb-upsert": "^2.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.5.2",
     "react-router-dom": "^6.28.0",
     "ts-fsrs": "^4.6.0"
   },

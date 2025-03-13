@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import { Link, Navigate, Outlet, useActionData, useNavigate, useNavigation, useSubmit } from "react-router-dom"
+import { Link, Navigate, Outlet, useActionData, useNavigate, useNavigation, useOutletContext, useSubmit } from "react-router-dom"
 import { HelpCircle, SaveAll, SquarePlus } from "lucide-react";
 import CardForm from "../../components/CardForm"
 import { addCards } from "../../db";
 import Loading from "../../components/Loading";
 import { createEmptyForm } from "../../utils";
+import toast from "react-hot-toast";
 
 export async function action({ request }) {
   const requestJson = await request.json();
@@ -67,6 +68,11 @@ export default function Mine() {
     if (success) {
       setForms([createEmptyForm(1)]);
       setRandomNum(Math.floor(Math.random() * 10));
+      toast.custom((t) => (
+        <div className="p-2 w-fit bg-green-200 border border-black rounded-lg">
+          <p>Card Added</p>
+        </div>
+      ));
     }
   }, [success]);
 
