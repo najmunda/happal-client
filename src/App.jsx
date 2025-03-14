@@ -16,6 +16,7 @@ import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
 import CardEdit, { loader as editLoader, action as editAction } from "./routes/cards/edit.jsx";
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
 import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
+import RootError from "./routes/root/error.jsx";
 
 export default function App() {
 
@@ -26,70 +27,75 @@ export default function App() {
       //action: rootAction(logout),
       children: [
         {
-          index: true,
-          // element: <Home />,
-          element: <Navigate to={'/sorb'} />,
-          loader: homeLoader,
-        },
-        {
-          path: "/mine",
-          element: <Mine />,
-          action: mineAction,
+          errorElement: <RootError />,
           children: [
             {
-              path: "help",
-              element: <MineHelp />,
-            },
-          ]
-        },
-        {
-          path: "/sorb",
-          element: <Sorb />,
-          loader: sorbLoader,
-          action: sorbAction,
-          children: [
-            {
-              path: "help",
-              element: <SorbHelp />,
-            },
-          ]
-        },
-        {
-          path: "/cards",
-          element: <Cards />,
-          shouldRevalidate: cardsRevalidate,
-          loader: cardsLoader,
-          children: [
-            {
-              path: "help",
-              element: <CardHelp />,
+              index: true,
+              // element: <Home />,
+              element: <Navigate to={'/sorb'} />,
+              loader: homeLoader,
             },
             {
-              path: ":cardId",
-              element: <CardInfo />,
-              loader: infoLoader,
+              path: "/mine",
+              element: <Mine />,
+              action: mineAction,
+              children: [
+                {
+                  path: "help",
+                  element: <MineHelp />,
+                },
+              ]
             },
             {
-              path: ":cardId/edit",
-              element: <CardEdit />,
-              loader: editLoader,
-              action: editAction,
+              path: "/sorb",
+              element: <Sorb />,
+              loader: sorbLoader,
+              action: sorbAction,
+              children: [
+                {
+                  path: "help",
+                  element: <SorbHelp />,
+                },
+              ]
             },
             {
-              path: ":cardId/delete",
-              action: deleteAction,
-              element: <CardDelete />
+              path: "/cards",
+              element: <Cards />,
+              shouldRevalidate: cardsRevalidate,
+              loader: cardsLoader,
+              children: [
+                {
+                  path: "help",
+                  element: <CardHelp />,
+                },
+                {
+                  path: ":cardId",
+                  element: <CardInfo />,
+                  loader: infoLoader,
+                },
+                {
+                  path: ":cardId/edit",
+                  element: <CardEdit />,
+                  loader: editLoader,
+                  action: editAction,
+                },
+                {
+                  path: ":cardId/delete",
+                  action: deleteAction,
+                  element: <CardDelete />
+                },
+                {
+                  path: ":cardId/reset",
+                  action: resetAction,
+                  element: <CardReset />
+                },
+              ]
             },
             {
-              path: ":cardId/reset",
-              action: resetAction,
-              element: <CardReset />
+              path: "/account",
+              element: <Account />,
             },
-          ]
-        },
-        {
-          path: "/account",
-          element: <Account />,
+          ],
         },
       ]
     },
