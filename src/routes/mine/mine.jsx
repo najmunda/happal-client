@@ -6,6 +6,7 @@ import { addCardDocs } from "../../db";
 import Loading from "../../components/Loading";
 import { createEmptyForm } from "../../utils";
 import toast from "react-hot-toast";
+import Toast from "../../components/Toast";
 
 export async function action({ request }) {
   const requestJson = await request.json();
@@ -21,8 +22,10 @@ export async function action({ request }) {
 
   if (errors.length == 0) {
     const result = await addCardDocs(cardsData.map(card => card.data));
-    return { success: true, errors };
+    toast.custom((t) => (<Toast message="Kartu ditambahkan" color="green" />));
+    return { success: true };
   } else { // There empty input
+    toast.custom((t) => (<Toast message="Terdapat kartu kosong" color="red" />));
     return { success: false, errors };
   }
 }
@@ -68,11 +71,6 @@ export default function Mine() {
     if (success) {
       setForms([createEmptyForm(1)]);
       setRandomNum(Math.floor(Math.random() * 10));
-      toast.custom((t) => (
-        <div className="p-2 w-fit bg-green-200 border border-black rounded-lg">
-          <p>Card Added</p>
-        </div>
-      ));
     }
   }, [success]);
 

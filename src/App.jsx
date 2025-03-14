@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
-import Root/*, { action as rootAction }*/ from './routes/root'
+import Root/*, { action as rootAction }*/ from './routes/root/root.jsx'
 import Account from "./routes/account.jsx";
 // Home
 import Home, { loader as homeLoader} from "./routes/home.jsx";

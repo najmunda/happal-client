@@ -1,8 +1,8 @@
 import { Outlet, useLocation, useNavigation } from "react-router-dom"
-import Header from "../components/Header";
-import Navigation from "../components/Navigation";
-import Loading from "../components/Loading";
-import { getFirstPath } from "../utils";
+import Header from "../../components/Header";
+import Navigation from "../../components/Navigation";
+import Loading from "../../components/Loading";
+import { getFirstPath } from "../../utils";
 import { Toaster } from "react-hot-toast";
 
 /*
