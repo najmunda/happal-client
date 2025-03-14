@@ -21,6 +21,7 @@ export async function action({ request }) {
 export default function Sorb() {
 
   const { topCardDoc, nextReview, cardsLeft, cardsTotal } = useLoaderData();
+  console.log(cardsLeft);
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const currentCardRef = useRef();
@@ -163,8 +164,10 @@ export default function Sorb() {
                 }
                 <div className="flex-1 flex flex-col justify-center items-center gap-2 relative">
                   <p><Interweave content={topCardDoc.sentence.replace(topCardDoc.target, `<b>${topCardDoc.target}</b>`)} /></p>
-                  <p className="text-2xl font-bold"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-400 bg-neutral-400 rounded'}`}>{topCardDoc.target}</mark></p>
-                  <p className="text-sm"><mark className={`${isOpen ? "bg-inherit" : 'text-neutral-400 bg-neutral-400 rounded'}`}>{topCardDoc.def}</mark></p>
+                  {isOpen && <>
+                    <p className="text-2xl font-bold">{topCardDoc.target}</p>
+                    <p className="text-sm">{topCardDoc.def}</p>
+                  </>}
                   {!isOpen && <p className="text-xs text-neutral-400">Press <kbd>Space</kbd> / Tap / Click Card to reveal definition & meaning.</p>}
                 </div>
                 {isOpen &&
