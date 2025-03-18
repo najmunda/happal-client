@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import Root/*, { action as rootAction }*/ from './routes/root/root.jsx'
 import Account from "./routes/account.jsx";
 // Home
-import Home, { loader as homeLoader} from "./routes/home.jsx";
+// import Home, { loader as homeLoader} from "./routes/home.jsx";
 // Mine
 import Mine, { action as mineAction } from "./routes/mine/mine.jsx";
 import MineHelp from "./routes/mine/help";
@@ -17,6 +17,7 @@ import CardEdit, { loader as editLoader, action as editAction } from "./routes/c
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
 import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
 import RootError from "./routes/root/error.jsx";
+import About from "./routes/about.jsx";
 
 export default function App() {
 
@@ -31,9 +32,7 @@ export default function App() {
           children: [
             {
               index: true,
-              // element: <Home />,
-              element: <Navigate to={'/sorb'} />,
-              loader: homeLoader,
+              element: <About />,
             },
             {
               path: "/mine",
@@ -94,6 +93,10 @@ export default function App() {
             {
               path: "/account",
               element: <Account />,
+            },
+            {
+              path: "/*",
+              element: <Navigate to={'/'} />,
             },
           ],
         },
