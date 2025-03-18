@@ -65,7 +65,7 @@ export default function CardInfo() {
         </div>
       </section>
       <div className="pt-2 w-full flex justify-between items-center">
-        <button type="button" onClick={handleBackButton} className="px-2">Close</button>
+        <button type="button" onClick={handleBackButton} className="px-2 hover:bg-neutral-100">Close</button>
       </div>
     </section>
   )

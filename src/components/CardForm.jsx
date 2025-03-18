@@ -26,7 +26,8 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
   }
 
   return (
-    <form name={`card_${formIndex}`} data-formindex={formIndex} className={`h-fit p-2 flex flex-col items-center gap-2 bg-white border ${isError ? "border-red-500 border-2" : "border-black"} rounded-lg`}>
+    <form name={`card_${formIndex}`} data-formindex={formIndex} className={`h-fit p-2 flex flex-col items-center gap-2 bg-white shadow ${isError ? "border-2 border-red-100" : ""} rounded-lg hover:shadow-md relative`}>
+      {isError ? <div className="bg-red-400 size-4 -top-1 -right-2 absolute rounded-full"></div> : <></>}
       <TextArea
         type="text"
         name={`sentence`}
@@ -34,7 +35,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
         value={sentence}
         onChange={handleSentenceChange}
         onSelect={handleSentenceSelect}
-        className="w-full text-center text-xs border border-black rounded p-2"
+        className="w-full text-center text-xs border border-neutral-200 rounded p-2"
         placeholder="Put sentence here..."
         required
       ></TextArea>
@@ -43,7 +44,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
         name={`target`}
         id={`target_${formIndex}`}
         value={target}
-        className="w-full text-center border border-black rounded p-2"
+        className="w-full text-center border border-neutral-200 rounded p-2"
         placeholder="Highlight words/phrase from sentence..."
         readOnly
         required
@@ -54,7 +55,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
         id={`def_${formIndex}`}
         value={def}
         onChange={handleDefChange}
-        className="w-full text-center text-xs border border-black rounded p-2"
+        className="w-full text-center text-xs border border-neutral-200 rounded p-2"
         placeholder="Add def from dictionary..."
         required
       ></TextArea>

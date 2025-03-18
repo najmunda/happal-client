@@ -6,7 +6,7 @@ export function NavButton({to, Icon, label}) {
     <li>
       <NavLink 
         to={to} 
-        className={({isActive}) => `p-2 flex flex-col md:flex-row items-center gap-1 md:gap-3 rounded-lg hover:bg-neutral-100 ${isActive ? "border border-black bg-green-100" : ""}`}
+        className={({isActive}) => `p-2 flex flex-col md:flex-row items-center gap-1 md:gap-3 rounded-lg hover:bg-neutral-100 ${isActive ? "bg-green-300" : ""}`}
       >
         {Icon}
         <p className="text-sm">{label}</p>

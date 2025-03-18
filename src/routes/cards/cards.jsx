@@ -75,11 +75,11 @@ export default function Cards() {
       const {action} =  location.state;
       toast.custom((t) => {
         if (action == "delete") {
-          return <Toast message="Card Deleted" color="red" />
+          return <Toast message="Kartu Dihapus" color="red" />
         } else if (action == "reset") {
-          return <Toast message="Card Reset" color="yellow" />
+          return <Toast message="Kartu Direset" color="yellow" />
         } else if (action == "edit") {
-          return <Toast message="Card Edited" color="green" />
+          return <Toast message="Kartu Diedit" color="green" />
         }
       });
     }
@@ -93,39 +93,39 @@ export default function Cards() {
         : cards.length != 0 ? (
           <section onClick={handleDialogOpen} className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2'>
             {cards.map(card => (
-              <div key={card._id} data-key={card._id} className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border border-black rounded-lg">
+              <div key={card._id} data-key={card._id} className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white rounded-lg shadow hover:shadow-md">
                 <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">{card.target}</p>
                 <p className="text-xs font-light text-nowrap truncate col-span-2">{card.sentence}</p>
                 <div className="col-span-2 flex justify-evenly text-xs">
-                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}`} state={{prevPathNQuery: currentPathNQuery}}><Info size={15} />Info</Link>
-                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/edit`} state={{prevPathNQuery: currentPathNQuery}}><SquarePen size={15} />Edit</Link>
-                  {card.srs?.card.state !== 0 && <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/reset`} state={{prevPathNQuery: currentPathNQuery}}><CalendarSync size={15} />Reset</Link>}
-                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to={`${card._id}/delete`} state={{prevPathNQuery: currentPathNQuery}}><Trash2 size={15} /> Hapus</Link>
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-green-100 hover:text-green-500" to={`${card._id}`} state={{prevPathNQuery: currentPathNQuery}}><Info size={15} />Info</Link>
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-blue-100 hover:text-blue-500" to={`${card._id}/edit`} state={{prevPathNQuery: currentPathNQuery}}><SquarePen size={15} />Edit</Link>
+                  {card.srs?.card.state !== 0 && <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-yellow-100 hover:text-yellow-500" to={`${card._id}/reset`} state={{prevPathNQuery: currentPathNQuery}}><CalendarSync size={15} />Reset</Link>}
+                  <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-red-100 hover:text-red-500" to={`${card._id}/delete`} state={{prevPathNQuery: currentPathNQuery}}><Trash2 size={15} /> Hapus</Link>
                 </div>
               </div>
             ))}
-            <div className="group px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white border border-black rounded-lg">
+            <div className="group px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white rounded-lg shadow hover:shadow-md">
               <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">Cards?</p>
               <p className="text-xs font-light text-nowrap truncate col-span-2">Halaman ini untuk mengatur kartu-kartu kamu.</p>
               <div className="col-span-2 flex justify-evenly text-xs">
-                <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-neutral-100" to="help"><Info size={15} />Lebih lanjut</Link>
+                <Link className="px-2 py-1 flex gap-1 rounded-lg hover:bg-green-100 hover:text-green-500" to="help"><Info size={15} />Lebih lanjut</Link>
               </div>
             </div>
           </section>
         )
         : cardsTotal != 0 ? (
-          <section className="p-2 flex-1 flex flex-col justify-center items-center text-neutral-400">
+          <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-neutral-500">
             <SearchX size={80} />
             <p className="text-center text-sm">Kartu tidak ditemukan. Coba cari dengan kata lain atau ubah nilai filter & sortir.</p>
           </section>
         ) : (
-          <section className="p-2 flex-1 flex flex-col justify-center items-center text-neutral-400">
+          <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-neutral-500">
             <CopyX size={80} />
             <p className="text-center text-sm">Belum ada kartu yang ditambahkan. Klik <Pickaxe size={18} className="inline" /> "Mine" untuk menambah kartu.</p>
           </section>
         )
       }
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 border border-black rounded-lg">
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg">
         {isDialogLoading ? (
           <Loading className='h-[33dvh] flex flex-col justify-center items-center' />
         ) : (

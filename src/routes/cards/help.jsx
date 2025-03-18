@@ -35,7 +35,7 @@ export default function CardHelp() {
         </table>
       </section>
       <div className="pt-2 w-full flex justify-center items-center">
-        <button type="button" onClick={handleBackButton} className="px-2">Close</button>
+        <button type="button" onClick={handleBackButton} className="px-2 hover:bg-neutral-100 rounded-lg">Close</button>
       </div>
     </section>
   )

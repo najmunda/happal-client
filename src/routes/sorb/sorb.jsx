@@ -145,17 +145,17 @@ export default function Sorb() {
                 onClick={handleCardClick}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
-                className={`w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg border border-black ${isOpen ? "" : "hover:bg-neutral-100"}`}
+                className={`w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg shadow ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
               >
                 {isOpen &&
                   <>
                     <section className="p-2 flex flex-row-reverse items-center gap-2">
-                      <button onClick={handleCardRight} className="p-2 flex items-center gap-2 rounded-lg border border-black hover:bg-neutral-100">
+                      <button onClick={handleCardRight} className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100">
                         <ThumbsUp />
                         <p className="text-xs">{nextReview.good}</p>
                         <p className="text-xs">Good</p>
                       </button>
-                      <hr className="flex-1 border-black" />
+                      <hr className="flex-1 border-neutral-200" />
                     </section>
                     <section className="flex items-center justify-center gap-1 text-neutral-400">
                       <p className="text-xs">Swipe Right / Click "Good" button / press <kbd>→</kbd> </p>
@@ -176,12 +176,12 @@ export default function Sorb() {
                       <p className="text-xs">Swipe Left / Click "Again" button / press <kbd>{'<'}</kbd></p>
                     </section>
                     <section className="p-2 flex items-center gap-2">
-                      <button type="button" onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border border-black hover:bg-neutral-100">
+                      <button type="button" onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100">
                         <ThumbsDown />
                         <p className="text-xs">{nextReview.again}</p>
                         <p className="text-xs">Again</p>
                       </button>
-                      <hr className="flex-1 border-1 border-black" />
+                      <hr className="flex-1 border-1 border-neutral-200" />
                     </section>
                   </>
                 }
@@ -190,7 +190,7 @@ export default function Sorb() {
           <CardsCounter newTotal={cardsLeft.new.length} learnTotal={cardsLeft.learn.length} reviewTotal={cardsLeft.review.length} handleDialogOpen={handleDialogOpen} />
         </>
         :
-        <div className="flex-1 p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-400 rounded-lg border-2 border-neutral-300 border-dashed">
+        <div className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-500 rounded-lg border-2 border-neutral-300 border-dashed">
           {cardsTotal != 0 ?
             <>
               <Smile size={80} />
@@ -204,7 +204,7 @@ export default function Sorb() {
           }
         </div>
       }
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 border border-black rounded-lg">
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg">
         <Outlet context={[handleDialogClose]} />
       </dialog>
     </main>

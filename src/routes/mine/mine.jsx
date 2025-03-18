@@ -139,15 +139,15 @@ export default function Mine() {
       <Navigate to={"/mine"} />
     </main>
   ) : (
-    <main ref={formContainerRef} className="container w-dvw md:w-full flex-1 pb-2 px-2 flex flex-col">
+    <main ref={formContainerRef} className="container w-dvw md:w-full flex-1 pb-2 px-2 flex flex-col bg-inherit">
       {navigation.state === "submitting" || navigation.state === "loading" ? (
         <Loading className='flex-1 flex flex-col justify-center items-center' />
       ) : (
         <>
-          <section className="py-2 flex gap-2 sticky top-14 bg-white z-10">
-            <Link onClick={handleDialogOpen} className="p-2 flex items-center justify-center gap-2 border border-black rounded-lg hover:bg-neutral-100" to="help"><HelpCircle size={20} />Help</Link>
-            <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 border border-black rounded-lg hover:bg-neutral-100"><SquarePlus size={20} />Add Form</button>
-            <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 border border-black rounded-lg hover:bg-neutral-100"><SaveAll size={20} />Save Words</button>
+          <section className="py-2 flex gap-2 sticky top-14 bg-inherit z-10">
+            <Link onClick={handleDialogOpen} className="p-2 flex items-center justify-center gap-2 bg-white shadow rounded-lg hover:shadow-md" to="help"><HelpCircle size={20} />Help</Link>
+            <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white shadow rounded-lg hover:shadow-md"><SquarePlus size={20} />Add Form</button>
+            <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white shadow rounded-lg hover:shadow-md"><SaveAll size={20} />Save Words</button>
           </section>
           <section onClick={handleCardsButtons} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {formsMasonry.map((column, index) => (
@@ -166,7 +166,7 @@ export default function Mine() {
           </section>
         </>
       )}
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 border border-black rounded-lg">
+      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg">
         <Outlet context={[handleDialogClose]} />
       </dialog>
     </main>

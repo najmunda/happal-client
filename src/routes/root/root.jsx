@@ -25,7 +25,7 @@ export default function Root() {
       :
         <Outlet />
       }
-      <footer className="px-4 py-2 w-dvw md:w-full order-last flex md:hidden sticky bg-white bottom-0">
+      <footer className="px-4 w-dvw md:w-full order-last flex md:hidden sticky bg-white rounded-t-lg bottom-0 shadow">
         <nav className="flex-1 md:hidden">
           <Navigation />
         </nav>
