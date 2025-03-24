@@ -1,5 +1,4 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { CalendarSync, Info, SquarePen, Trash2 } from "lucide-react";
 
 export default function SorbHelp() {
 

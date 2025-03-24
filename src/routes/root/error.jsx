@@ -1,9 +1,6 @@
 import { CircleX } from "lucide-react";
-import { useRouteError } from "react-router-dom";
 
 export default function RootError() {
-  const error = useRouteError();
-  console.log(error);
 
   return (
     <main className="container w-dvw md:w-full flex-1 p-2 flex flex-col gap-2">

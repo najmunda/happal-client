@@ -1,4 +1,4 @@
-import { BookType, CircleUser } from "lucide-react";
+import { CircleUser } from "lucide-react";
 import Navigation from "./Navigation";
 import { Link, NavLink } from "react-router-dom";
 
@@ -16,7 +16,7 @@ export default function Header() {
         </nav>
         <NavLink 
           to={"/account"} 
-          className={({isActive}) => `p-2 rounded-full hover:bg-neutral-100 ${isActive ? "bg-green-300" : ""}`}>
+          className={({isActive}) => `p-2 rounded-full hover:bg-green-300 ${isActive ? "bg-green-300" : ""}`}>
           <CircleUser />
         </NavLink>
       </div>

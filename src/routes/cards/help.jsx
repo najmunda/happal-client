@@ -29,13 +29,13 @@ export default function CardHelp() {
               <th className="flex gap-1 items-center"><CalendarSync size={15} />Reset</th><td>: Mereset jadwal munculnya sebuah kartu pada "Sorb".</td>
             </tr>
             <tr>
-              <th className="flex gap-1 items-center"><Trash2 size={15} />Delete</th><td>: Menghapus kartu.</td>
+              <th className="flex gap-1 items-center"><Trash2 size={15} />Hapus</th><td>: Menghapus kartu.</td>
             </tr>
           </tbody>
         </table>
       </section>
       <div className="pt-2 w-full flex justify-center items-center">
-        <button type="button" onClick={handleBackButton} className="px-2 hover:bg-neutral-100 rounded-lg">Close</button>
+        <button type="button" onClick={handleBackButton} className="px-2 hover:bg-neutral-100 rounded-lg">Tutup</button>
       </div>
     </section>
   )

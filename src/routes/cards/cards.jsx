@@ -82,6 +82,7 @@ export default function Cards() {
           return <Toast message="Kartu Diedit" color="green" />
         }
       });
+      history.replaceState(location.state, '');
     }
   }, [location]);
 

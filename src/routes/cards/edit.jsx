@@ -93,8 +93,8 @@ export default function CardEdit() {
         placeholder="Add def from dictionary..."
       ></TextArea>
       <div className="pt-2 w-full flex justify-between items-center">
-        <button type="button" onClick={handleBackButton} className="px-2 hover:bg-neutral-100 rounded-lg">Close</button>
-        <button type="submit" onClick={handleDialogClose} className="px-2 hover:bg-blue-100 hover:text-blue-500 rounded-lg">Save</button>
+        <button type="button" onClick={handleBackButton} className="px-2 hover:bg-neutral-100 rounded-lg">Tutup</button>
+        <button type="submit" onClick={handleDialogClose} className="px-2 hover:bg-blue-100 hover:text-blue-500 rounded-lg">Simpan</button>
       </div>
     </Form>
   )

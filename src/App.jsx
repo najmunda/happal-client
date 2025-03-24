@@ -25,7 +25,6 @@ export default function App() {
     {
       path: "/",
       element: <Root />,
-      //action: rootAction(logout),
       children: [
         {
           errorElement: <RootError />,
@@ -95,7 +94,7 @@ export default function App() {
               element: <Account />,
             },
             {
-              path: "/*",
+              path: "*",
               element: <Navigate to={'/'} />,
             },
           ],
@@ -104,6 +103,13 @@ export default function App() {
     },
   ]);
 
-  return <RouterProvider router={router} />
+  return <
+    RouterProvider 
+    router={router} 
+    future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }} 
+  />
 }
 

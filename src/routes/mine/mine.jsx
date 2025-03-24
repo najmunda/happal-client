@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Link, Navigate, Outlet, useActionData, useNavigate, useNavigation, useOutletContext, useSubmit } from "react-router-dom"
+import { Link, Navigate, Outlet, useActionData, useNavigate, useNavigation, useSubmit } from "react-router-dom"
 import { HelpCircle, SaveAll, SquarePlus } from "lucide-react";
 import CardForm from "../../components/CardForm"
 import { addCardDocs } from "../../db";
@@ -144,10 +144,10 @@ export default function Mine() {
         <Loading className='flex-1 flex flex-col justify-center items-center' />
       ) : (
         <>
-          <section className="py-2 flex gap-2 sticky top-14 bg-inherit z-10">
-            <Link onClick={handleDialogOpen} className="p-2 flex items-center justify-center gap-2 bg-white shadow rounded-lg hover:shadow-md" to="help"><HelpCircle size={20} />Help</Link>
-            <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white shadow rounded-lg hover:shadow-md"><SquarePlus size={20} />Add Form</button>
-            <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white shadow rounded-lg hover:shadow-md"><SaveAll size={20} />Save Words</button>
+          <section className="py-2 flex gap-2 sticky top-14 bg-inherit z-10 overflow-y-auto">
+            <Link onClick={handleDialogOpen} className="p-2 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md" to="help"><HelpCircle size={20} />Bantuan</Link>
+            <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md"><SquarePlus size={20} />Tambah Kartu</button>
+            <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md"><SaveAll size={20} />Simpan Kartu</button>
           </section>
           <section onClick={handleCardsButtons} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {formsMasonry.map((column, index) => (

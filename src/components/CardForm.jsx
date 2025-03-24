@@ -36,7 +36,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
         onChange={handleSentenceChange}
         onSelect={handleSentenceSelect}
         className="w-full text-center text-xs border border-neutral-200 rounded p-2"
-        placeholder="Put sentence here..."
+        placeholder="Taruh kalimat disini..."
         required
       ></TextArea>
       <input
@@ -45,7 +45,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
         id={`target_${formIndex}`}
         value={target}
         className="w-full text-center border border-neutral-200 rounded p-2"
-        placeholder="Highlight words/phrase from sentence..."
+        placeholder="Highlight kata/frasa pada kalimat..."
         readOnly
         required
       />
@@ -56,7 +56,7 @@ export default function CardForm({ form, cardCount, isError, handleFormChange })
         value={def}
         onChange={handleDefChange}
         className="w-full text-center text-xs border border-neutral-200 rounded p-2"
-        placeholder="Add def from dictionary..."
+        placeholder="Tambah definisi dari kamus..."
         required
       ></TextArea>
       {cardCount != 1 ?

@@ -21,7 +21,6 @@ export async function action({ request }) {
 export default function Sorb() {
 
   const { topCardDoc, nextReview, cardsLeft, cardsTotal } = useLoaderData();
-  console.log(cardsLeft);
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const currentCardRef = useRef();
@@ -145,7 +144,7 @@ export default function Sorb() {
                 onClick={handleCardClick}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
-                className={`w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg shadow ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
+                className={`w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg shadow ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
               >
                 {isOpen &&
                   <>
@@ -158,7 +157,7 @@ export default function Sorb() {
                       <hr className="flex-1 border-neutral-200" />
                     </section>
                     <section className="flex items-center justify-center gap-1 text-neutral-400">
-                      <p className="text-xs">Swipe Right / Click "Good" button / press <kbd>→</kbd> </p>
+                      <p className="text-xs">Swipe Kanan / Klik tombol "Good" / Tekan <kbd>{'>'}</kbd> </p>
                     </section>
                   </>
                 }
@@ -168,12 +167,12 @@ export default function Sorb() {
                     <p className="text-2xl font-bold">{topCardDoc.target}</p>
                     <p className="text-sm">{topCardDoc.def}</p>
                   </>}
-                  {!isOpen && <p className="text-xs text-neutral-400">Press <kbd>Space</kbd> / Tap / Click Card to reveal definition & meaning.</p>}
+                  {!isOpen && <p className="text-xs text-neutral-400">Tekan <kbd>Space</kbd> / Tap / Klik Kartu untuk membuka definisi dan arti.</p>}
                 </div>
                 {isOpen &&
                   <>
                     <section className="flex items-center justify-center gap-1 text-neutral-400">
-                      <p className="text-xs">Swipe Left / Click "Again" button / press <kbd>{'<'}</kbd></p>
+                      <p className="text-xs">Swipe Kiri / Klik tombol "Again" / Tekan <kbd>{'<'}</kbd></p>
                     </section>
                     <section className="p-2 flex items-center gap-2">
                       <button type="button" onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100">
@@ -194,12 +193,12 @@ export default function Sorb() {
           {cardsTotal != 0 ?
             <>
               <Smile size={80} />
-              <p className="text-center text-sm">Good Job! All today's card is reviewed. Come back tomorrow!</p>
+              <p className="text-center text-sm">Good Job! Semua kartu sudah direview. Kembali lagi besok!</p>
             </>
             :
             <>
               <CopyX size={80} />
-              <p className="text-center text-sm">There is no card added. Go to <Pickaxe size={18} className="inline" /> "Mine" to mining sentence and add some card.</p>
+              <p className="text-center text-sm">Tidak ada kartu tersimpan. Klik <Pickaxe size={18} className="inline" /> "Mine" untuk menambah kartu.</p>
             </>
           }
         </div>
