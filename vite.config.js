@@ -1,8 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import fs from 'fs'
-import path from 'path'
 import { visualizer } from "rollup-plugin-visualizer"
 
 // https://vite.dev/config/
@@ -40,11 +38,5 @@ export default defineConfig({
     }),
     visualizer({open: true, filename:'bundle-visualization.html'}),
   ],
-  server: {
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, 'cert/localhost+2-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'cert/localhost+2.pem')),
-    },
-  },
   define: { global: "window" },
 })
