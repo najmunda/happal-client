@@ -1,9 +1,10 @@
 import { CircleUser } from "lucide-react";
 import Navigation from "./Navigation";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useRouteLoaderData } from "react-router-dom";
 
 
 export default function Header() {
+  const { avatarBlob } = useRouteLoaderData('root');
   return (
     <header className="h-14 sticky top-0 w-full bg-white flex justify-center z-10 rounded-lg shadow">
       <div className="h-full container w-dvw md:w-full sticky top-0 px-4 py-2 flex items-center justify-between">
@@ -16,8 +17,11 @@ export default function Header() {
         </nav>
         <NavLink 
           to={"/account"} 
-          className={({isActive}) => `p-2 rounded-full hover:bg-green-300 ${isActive ? "bg-green-300" : ""}`}>
-          <CircleUser />
+          className={({isActive}) => `${avatarBlob ? "" : "p-2"} rounded-full hover:bg-green-300 ${isActive ? "bg-green-300" : ""}`}>
+          {avatarBlob ? 
+            <img src={URL.createObjectURL(avatarBlob)} className="size-10 rounded-full" alt="" /> 
+            : 
+            <CircleUser />}
         </NavLink>
       </div>
     </header>

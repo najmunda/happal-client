@@ -11,6 +11,21 @@ export const action = (logout) => async function ({ request }) {
 }
   */
 
+export async function loader() {
+  const response = await fetch('/api/user/me');
+  console.log(response);
+  let authedUser = null;
+  let avatarBlob = null;
+  if (response.ok) {
+    authedUser = await response.json();
+    const avatarResponse = await fetch(`https://ui-avatars.com/api/?name=${authedUser.username}`);
+    avatarBlob = await avatarResponse.blob();
+  }
+  console.log(authedUser);
+  const responseStatus = response.status.toString();
+  return { responseStatus, authedUser, avatarBlob };
+}
+
 export default function Root() {
   const navigation = useNavigation();
   const location = useLocation();

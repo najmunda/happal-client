@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
-import Root/*, { action as rootAction }*/ from './routes/root/root.jsx'
-import Account from "./routes/account.jsx";
+import Root, {loader as rootloader}/*, { action as rootAction }*/ from './routes/root/root.jsx'
+import Account, { action as accountAction } from "./routes/account.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
 // Mine
@@ -23,8 +23,10 @@ export default function App() {
 
   const router = createBrowserRouter([
     {
+      id: "root",
       path: "/",
       element: <Root />,
+      loader: rootloader,
       children: [
         {
           errorElement: <RootError />,
@@ -89,8 +91,9 @@ export default function App() {
                 },
               ]
             },
-            {
+            { 
               path: "/account",
+              action: accountAction,
               element: <Account />,
             },
             {
@@ -102,6 +105,9 @@ export default function App() {
       ]
     },
   ]);
+
+  // authedUser
+  
 
   return <
     RouterProvider 
