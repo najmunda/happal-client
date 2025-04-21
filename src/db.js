@@ -11,6 +11,28 @@ PouchDB.plugin(upsertPlugin);
 const db = new PouchDB('sorbit', {revs_limit: 30, purged_infos_limit: 10,});
 //const remoteCouch = false;
 
+export async function syncDB() {
+  const remoteDb = new PouchDB(`${location.origin}/api/db`);
+
+  remoteDb.info().then(function (result) {
+    console.log(result);
+  }).catch(function (err) {
+    console.log(err);
+  });
+
+  return new Promise((resolve, reject) => {
+    db.sync(remoteDb, {
+      style: 'main_only',
+      filter: doc => doc._id.startsWith("card-"),
+    }).on('complete', (info) => {
+      resolve(info);
+    }).on('error', (error) => {
+      console.log(error);
+      reject(error);
+    });
+  });
+}
+
 // cardDoc = document with id card-* stored in pouchdb
 // card = object inside CardDoc (cardDoc.srs.card)
 // response = response from pouchdb api (db.put, db.remove, etc.)

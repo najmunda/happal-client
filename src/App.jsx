@@ -16,6 +16,7 @@ import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
 import CardEdit, { loader as editLoader, action as editAction } from "./routes/cards/edit.jsx";
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
 import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
+import { action as syncAction } from "./routes/sync.jsx";
 import RootError from "./routes/root/error.jsx";
 import About from "./routes/about.jsx";
 
@@ -95,6 +96,11 @@ export default function App() {
               path: "/account",
               action: accountAction,
               element: <Account />,
+            },
+            { 
+              path: "/sync",
+              action: syncAction,
+              element: <Navigate to={'/'} />,
             },
             {
               path: "*",
