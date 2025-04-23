@@ -14,12 +14,6 @@ const db = new PouchDB('sorbit', {revs_limit: 30, purged_infos_limit: 10,});
 export async function syncDB() {
   const remoteDb = new PouchDB(`${location.origin}/api/db`);
 
-  remoteDb.info().then(function (result) {
-    console.log(result);
-  }).catch(function (err) {
-    console.log(err);
-  });
-
   return new Promise((resolve, reject) => {
     db.sync(remoteDb, {
       style: 'main_only',
@@ -27,7 +21,6 @@ export async function syncDB() {
     }).on('complete', (info) => {
       resolve(info);
     }).on('error', (error) => {
-      console.log(error);
       reject(error);
     });
   });

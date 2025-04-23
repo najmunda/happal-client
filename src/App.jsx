@@ -28,87 +28,82 @@ export default function App() {
       path: "/",
       element: <Root />,
       loader: rootloader,
+      errorElement: <RootError />,
       children: [
         {
-          errorElement: <RootError />,
+          index: true,
+          element: <About />,
+        },
+        {
+          path: "/mine",
+          element: <Mine />,
+          action: mineAction,
           children: [
             {
-              index: true,
-              element: <About />,
+              path: "help",
+              element: <MineHelp />,
             },
-            {
-              path: "/mine",
-              element: <Mine />,
-              action: mineAction,
-              children: [
-                {
-                  path: "help",
-                  element: <MineHelp />,
-                },
-              ]
-            },
-            {
-              path: "/sorb",
-              element: <Sorb />,
-              loader: sorbLoader,
-              action: sorbAction,
-              children: [
-                {
-                  path: "help",
-                  element: <SorbHelp />,
-                },
-              ]
-            },
-            {
-              path: "/cards",
-              element: <Cards />,
-              shouldRevalidate: cardsRevalidate,
-              loader: cardsLoader,
-              children: [
-                {
-                  path: "help",
-                  element: <CardHelp />,
-                },
-                {
-                  path: ":cardId",
-                  element: <CardInfo />,
-                  loader: infoLoader,
-                },
-                {
-                  path: ":cardId/edit",
-                  element: <CardEdit />,
-                  loader: editLoader,
-                  action: editAction,
-                },
-                {
-                  path: ":cardId/delete",
-                  action: deleteAction,
-                  element: <CardDelete />
-                },
-                {
-                  path: ":cardId/reset",
-                  action: resetAction,
-                  element: <CardReset />
-                },
-              ]
-            },
-            { 
-              path: "/account",
-              action: accountAction,
-              element: <Account />,
-            },
-            { 
-              path: "/sync",
-              action: syncAction,
-              element: <Navigate to={'/'} />,
-            },
-            {
-              path: "*",
-              element: <Navigate to={'/'} />,
-            },
-          ],
+          ]
         },
-      ]
+        {
+          path: "/sorb",
+          element: <Sorb />,
+          loader: sorbLoader,
+          action: sorbAction,
+          children: [
+            {
+              path: "help",
+              element: <SorbHelp />,
+            },
+          ]
+        },
+        {
+          path: "/cards",
+          element: <Cards />,
+          shouldRevalidate: cardsRevalidate,
+          loader: cardsLoader,
+          children: [
+            {
+              path: "help",
+              element: <CardHelp />,
+            },
+            {
+              path: ":cardId",
+              element: <CardInfo />,
+              loader: infoLoader,
+            },
+            {
+              path: ":cardId/edit",
+              element: <CardEdit />,
+              loader: editLoader,
+              action: editAction,
+            },
+            {
+              path: ":cardId/delete",
+              action: deleteAction,
+              element: <CardDelete />
+            },
+            {
+              path: ":cardId/reset",
+              action: resetAction,
+              element: <CardReset />
+            },
+          ]
+        },
+        { 
+          path: "/account",
+          action: accountAction,
+          element: <Account />,
+        },
+        { 
+          path: "/sync",
+          action: syncAction,
+        },
+        {
+          path: "*",
+          element: <Navigate to={'/'} />,
+        },
+      ],
     },
   ]);
 
