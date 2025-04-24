@@ -6,10 +6,8 @@ import Loading from "../components/Loading";
 export async function action({ request }) {
   const formData = await request.formData();
   const intent = formData.get("intent");
-  console.log("intent:", intent);
   if (intent === "logout") {
     const response = await fetch("/api/user/logout", {method: 'POST',});
-    console.log(response);
     if (response.ok) {
       return redirect('/account');
     }
@@ -18,7 +16,7 @@ export async function action({ request }) {
 
 export default function Account() {
   const { responseStatus, authedUser, avatarBlob } = useRouteLoaderData('root');
-  console.log(authedUser);
+  const lastSync = new Date(authedUser['last_sync']);
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading" || navigation.state === "submitting";
   return (
@@ -42,11 +40,10 @@ export default function Account() {
                   <img src={URL.createObjectURL(avatarBlob)} className="rounded-full" alt="" />
                   <div className="flex flex-col gap-2 justify-center">
                     <p className="text-2xl text-left">{authedUser.username}</p>
-                    <p className="text-sm text-left">Sinkron Terakhir: {authedUser['last_sync']}</p>
+                    <p className="text-xs text-left">Sinkron Terakhir: {lastSync.toLocaleString()}</p>
                   </div>
                 </div>
                 <Form method="post" className="flex flex-col divide-y-2">
-                  <button type="submit" name="intent" value="sync" className="py-2 flex gap-2 items-center hover:bg-neutral-100"><RefreshCw />Sinkronkan Kartu</button>
                   <button type="submit" name="intent" value="logout" className="py-2 flex gap-2 items-center hover:bg-neutral-100"><LogOut />Keluar</button>
                 </Form>
               </>

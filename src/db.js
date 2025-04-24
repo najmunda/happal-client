@@ -19,7 +19,11 @@ export async function syncDB() {
       style: 'main_only',
       filter: doc => doc._id.startsWith("card-"),
     }).on('complete', (info) => {
-      resolve(info);
+      fetch('/api/user/last-sync', {method: 'POST',}).then(() => {
+        resolve(info);
+      }).catch(error => {
+        reject(error);
+      });
     }).on('error', (error) => {
       reject(error);
     });
