@@ -45,7 +45,8 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
-      }
+      },
+      '/check-internet': 'http://fedoraproject.org/static/hotspot.txt',
     }
   }
 })

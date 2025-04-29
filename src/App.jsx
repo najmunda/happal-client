@@ -21,13 +21,15 @@ import RootError from "./routes/root/error.jsx";
 import About from "./routes/about.jsx";
 
 export default function App() {
-
   const router = createBrowserRouter([
     {
       id: "root",
       path: "/",
-      element: <Root />,
+      shouldRevalidate: () => {
+        return true;
+      },
       loader: rootloader,
+      element: <Root />,
       errorElement: <RootError />,
       children: [
         {

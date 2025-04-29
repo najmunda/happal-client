@@ -5,25 +5,17 @@ import Loading from "../../components/Loading";
 import { getFirstPath } from "../../utils";
 import { Toaster } from "react-hot-toast";
 
-/*
-export const action = (logout) => async function ({ request }) {
-  return logout();
-}
-  */
-
 export async function loader() {
-  const response = await fetch('/api/user/me');
-  console.log(response);
+  const serverStatusResponse = await fetch('/api/server/status');
   let authedUser = null;
   let avatarBlob = null;
-  if (response.ok) {
-    authedUser = await response.json();
+  if (serverStatusResponse.ok) {
+    const loggedUserResponse = await fetch('/api/user/me');
+    authedUser = await loggedUserResponse.json();
     const avatarResponse = await fetch(`https://ui-avatars.com/api/?name=${authedUser.username}`);
     avatarBlob = await avatarResponse.blob();
   }
-  console.log(authedUser);
-  const responseStatus = response.status.toString();
-  return { responseStatus, authedUser, avatarBlob };
+  return { serverStatus: serverStatusResponse.status.toString(), authedUser, avatarBlob };
 }
 
 export default function Root() {

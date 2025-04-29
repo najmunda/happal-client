@@ -1,5 +1,5 @@
 import { Form, redirect, useNavigation, useRouteLoaderData } from "react-router-dom"
-import { LogOut, RefreshCw } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { ServerCrash } from "lucide-react";
 import Loading from "../components/Loading";
 
@@ -15,18 +15,17 @@ export async function action({ request }) {
 }
 
 export default function Account() {
-  const { responseStatus, authedUser, avatarBlob } = useRouteLoaderData('root');
-  const lastSync = new Date(authedUser['last_sync']);
+  const { serverStatus, authedUser, avatarBlob } = useRouteLoaderData('root');
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading" || navigation.state === "submitting";
   return (
     <main className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}>
       {
-        responseStatus.match(/^5/g) ? 
-        <section className="p-2 flex-1 flex flex-col justify-center items-center text-neutral-500">
+        serverStatus.match(/^5/g) ? 
+        <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-neutral-500">
           <ServerCrash size={80} />
-          <p className="text-center text-sm">Terjadi galat pada server.</p>
-          <p className="text-center text-sm">Muat ulang halaman dan coba lagi. Atau <a href="https://x.com/najmunda" className="font-bold">Hubungi Pengembang</a>.</p>
+          <p className="text-center text-sm">Anda tidak terkoneksi internet / terjadi galat pada server.</p>
+          <p className="text-center text-sm">Cek koneksi internet anda, muat ulang halaman dan coba lagi. Atau <a href="https://x.com/najmunda" className="font-bold">Hubungi Pengembang</a>.</p>
         </section>
         :
         <div
@@ -40,7 +39,7 @@ export default function Account() {
                   <img src={URL.createObjectURL(avatarBlob)} className="rounded-full" alt="" />
                   <div className="flex flex-col gap-2 justify-center">
                     <p className="text-2xl text-left">{authedUser.username}</p>
-                    <p className="text-xs text-left">Sinkron Terakhir: {lastSync.toLocaleString()}</p>
+                    <p className="text-xs text-left">Sinkron Terakhir: {(new Date(authedUser['last_sync'])).toLocaleString()}</p>
                   </div>
                 </div>
                 <Form method="post" className="flex flex-col divide-y-2">
