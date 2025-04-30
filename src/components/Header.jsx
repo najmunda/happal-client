@@ -5,7 +5,7 @@ import SyncButton from "./SyncButton";
 
 
 export default function Header() {
-  const { serverStatus, avatarBlob } = useRouteLoaderData('root');
+  const { authedUser, avatarBlob } = useRouteLoaderData('root');
   return (
     <header className="h-14 sticky top-0 w-full bg-white flex justify-center z-10 rounded-lg shadow">
       <div className="h-full container w-dvw md:w-full sticky top-0 px-4 py-2 flex items-center justify-between">
@@ -17,7 +17,7 @@ export default function Header() {
           <Navigation />
         </nav>
         <div className="flex items-center justify-end gap-2">
-          {serverStatus.match(/^2[0-9]+/g) && <SyncButton /> }
+          {authedUser && <SyncButton /> }
           <NavLink 
             to={"/account"} 
             className={({isActive}) => `${avatarBlob ? "" : "p-2 hover:bg-green-300"} rounded-full ${isActive ? "bg-green-300" : ""}`}>

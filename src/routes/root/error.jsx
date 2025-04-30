@@ -5,7 +5,6 @@ import Navigation from "../../components/Navigation";
 
 export default function RootError() {
   const error = useRouteError();
-  console.log(error);
   return (
     <>
       <Header/>

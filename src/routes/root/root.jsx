@@ -11,9 +11,11 @@ export async function loader() {
   let avatarBlob = null;
   if (serverStatusResponse.ok) {
     const loggedUserResponse = await fetch('/api/user/me');
-    authedUser = await loggedUserResponse.json();
-    const avatarResponse = await fetch(`https://ui-avatars.com/api/?name=${authedUser.username}`);
-    avatarBlob = await avatarResponse.blob();
+    if (loggedUserResponse.ok) {
+      authedUser = await loggedUserResponse.json();
+      const avatarResponse = await fetch(`https://ui-avatars.com/api/?name=${authedUser.username}`);
+      avatarBlob = await avatarResponse.blob();
+    }
   }
   return { serverStatus: serverStatusResponse.status.toString(), authedUser, avatarBlob };
 }
