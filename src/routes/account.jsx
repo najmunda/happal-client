@@ -16,6 +16,7 @@ export async function action({ request }) {
 
 export default function Account() {
   const { serverStatus, authedUser, avatarBlob } = useRouteLoaderData('root');
+  console.log(authedUser['last_sync']);
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading" || navigation.state === "submitting";
   return (
@@ -39,7 +40,13 @@ export default function Account() {
                   <img src={URL.createObjectURL(avatarBlob)} className="rounded-full" alt="" />
                   <div className="flex flex-col gap-2 justify-center">
                     <p className="text-2xl text-left">{authedUser.username}</p>
-                    <p className="text-xs text-left">Sinkron Terakhir: {(new Date(authedUser['last_sync'])).toLocaleString()}</p>
+                    <p className="text-xs text-left">
+                      {authedUser['last_sync'] ? (
+                        `Sinkron Terakhir: ${(new Date(authedUser['last_sync'])).toLocaleString()}`
+                      ) : (
+                        'Kartu anda belum disinkronkan.'
+                      )}
+                    </p>
                   </div>
                 </div>
                 <Form method="post" className="flex flex-col divide-y-2">
