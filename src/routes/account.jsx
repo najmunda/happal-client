@@ -16,7 +16,6 @@ export async function action({ request }) {
 
 export default function Account() {
   const { serverStatus, authedUser, avatarBlob } = useRouteLoaderData('root');
-  console.log(authedUser['last_sync']);
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading" || navigation.state === "submitting";
   return (

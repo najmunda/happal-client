@@ -8,11 +8,15 @@ import Fuse from "fuse.js";
 PouchDB.plugin(findPlugin);
 PouchDB.plugin(upsertPlugin);
 
-const db = new PouchDB('sorbit', {revs_limit: 30, purged_infos_limit: 10,});
-//const remoteCouch = false;
+const db = new PouchDB('sorbit', {
+  auto_compaction: true,
+  revs_limit: 500,
+});
 
 export async function syncDB() {
-  const remoteDb = new PouchDB(`${location.origin}/api/db`);
+  const remoteDb = new PouchDB(`${location.origin}/api/db`, {
+    skip_setup: true,
+  });
 
   return new Promise((resolve, reject) => {
     db.sync(remoteDb, {
