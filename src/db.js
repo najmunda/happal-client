@@ -62,7 +62,7 @@ const Show = Object.freeze({
   review: [2],
 });
 
-export async function getCardsCustom({q = "", show = "all", order = "desc", sortby = "create"}) {
+export async function getCardsCustom({q = "", show = "all", order = "desc", sortby = "create"} = {}) {
   return db.createIndex({
     index: {
       fields: [SortBy[sortby], "srs.card.state"],
@@ -202,6 +202,29 @@ export async function updateSRS(cardId, rating) {
     }).catch(error => {
       throw error;
     });
+  }).catch((error) => {
+    throw error;
+  });
+}
+
+// Accounts
+export async function downloadAllCards() {
+  return getCardsCustom().then(cardDocs => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+    const blob = new Blob([JSON.stringify(cardDocs)], {type: "text/json"});
+    const link = document.createElement('a');
+    link.download = `${year}${month}${day}-happal.json`;
+    link.href = window.URL.createObjectURL(blob);
+    link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+    link.dispatchEvent(new MouseEvent("click", {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+    }));
+    link.remove();
   }).catch((error) => {
     throw error;
   });

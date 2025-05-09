@@ -1,15 +1,23 @@
 import { Form, redirect, useNavigation, useRouteLoaderData } from "react-router-dom"
-import { LogOut } from "lucide-react";
+import { Download, LogOut, Trash2 } from "lucide-react";
 import { ServerCrash } from "lucide-react";
 import Loading from "../components/Loading";
+import { downloadAllCards } from "../db";
 
 export async function action({ request }) {
   const formData = await request.formData();
   const intent = formData.get("intent");
-  if (intent === "logout") {
-    const response = await fetch("/api/user/logout", {method: 'POST',});
-    if (response.ok) {
-      return redirect('/account');
+  switch (intent) {
+    case "download": {
+      await downloadAllCards();
+      return null;
+    }
+    case "logout": {
+      const response = await fetch("/api/user/logout", {method: 'POST',});
+      if (response.ok) {
+        return redirect('/account');
+      }
+      return null;
     }
   }
 }
@@ -49,7 +57,8 @@ export default function Account() {
                   </div>
                 </div>
                 <Form method="post" className="flex flex-col divide-y-2">
-                  <button type="submit" name="intent" value="logout" className="py-2 flex gap-2 items-center hover:bg-neutral-100"><LogOut />Keluar</button>
+                  <button type="submit" name="intent" value="download" className="p-2 flex gap-2 items-center hover:bg-neutral-100"><Download />Unduh Kartu</button>
+                  <button type="submit" name="intent" value="logout" className="p-2 flex gap-2 items-center hover:bg-neutral-100"><LogOut />Keluar</button>
                 </Form>
               </>
             ) : (
@@ -60,6 +69,9 @@ export default function Account() {
                 <div className="flex gap-2 justify-center">
                   <a href="/api/user/login/google" className="p-2 border border-neutral-200 rounded-full hover:bg-neutral-100"><img src="/google_g_icon.png" alt="" className="size-8" /></a>
                 </div>
+                <Form method="post" className="flex flex-col border-t-2 divide-y-2">
+                  <button type="submit" name="intent" value="download" className="p-2 flex gap-2 items-center hover:bg-neutral-100"><Download />Unduh semua kartu</button>
+                </Form>
               </>
             )
           }
