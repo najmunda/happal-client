@@ -230,6 +230,19 @@ export async function downloadAllCards() {
   });
 }
 
+export async function deleteAllCards() {
+  return db.allDocs({
+    include_docs: true,
+    startkey: "card-",
+    endkey: 'card-\ufff0',
+  }).then((response) => {
+    const deletedCardsDoc = response.rows.map(cardDoc => ({...cardDoc.doc, _deleted: true}));
+    return db.bulkDocs(deletedCardsDoc);
+  }).catch((error) => {
+    throw error;
+  });
+}
+
 // Home
 
 export async function getMonthlyHistory() {

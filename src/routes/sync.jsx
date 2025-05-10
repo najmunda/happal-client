@@ -8,7 +8,6 @@ export async function action() {
     toast.custom((t) => (<Toast message="Kartu berhasil disinkronisasi." color="green" />));
     return response;
   } catch (error) {
-    console.log("error:", error);
     toast.custom((t) => (<Toast message="Terjadi galat saat sinkronisasi. Ulangi." color="red" />));
     return null;
   }
