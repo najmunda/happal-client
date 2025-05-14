@@ -1,4 +1,4 @@
-import { getMonth } from "../utils";
+import { getMonth } from "../utils/utils";
 
 export default function Calendar() {
   const todayDate = new Date();

@@ -4,7 +4,7 @@ import { HelpCircle, SaveAll, SquarePlus } from "lucide-react";
 import CardForm from "../../components/CardForm"
 import { addCardDocs } from "../../db";
 import Loading from "../../components/Loading";
-import { createEmptyForm } from "../../utils";
+import { createEmptyForm } from "../../utils/utils";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
 

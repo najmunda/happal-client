@@ -2,8 +2,9 @@ import PouchDB from "pouchdb-browser";
 import findPlugin from "pouchdb-find";
 import upsertPlugin from "pouchdb-upsert";
 import { createEmptyCard, fsrs, Rating } from "ts-fsrs";
-import { getEndTodayUTC, getStartTodayUTC, msToDHM } from "./utils";
 import Fuse from "fuse.js";
+import { getEndTodayUTC, getStartTodayUTC, msToDHM } from "./utils/utils";
+import { validateCardDoc } from "./utils/validator";
 
 PouchDB.plugin(findPlugin);
 PouchDB.plugin(upsertPlugin);
@@ -209,25 +210,30 @@ export async function updateSRS(cardId, rating) {
 
 // Accounts
 export async function downloadAllCards() {
-  return getCardsCustom().then(cardDocs => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
-    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-    const blob = new Blob([JSON.stringify(cardDocs)], {type: "text/json"});
-    const link = document.createElement('a');
-    link.download = `${year}${month}${day}-happal.json`;
-    link.href = window.URL.createObjectURL(blob);
-    link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
-    link.dispatchEvent(new MouseEvent("click", {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    }));
-    link.remove();
-  }).catch((error) => {
-    throw error;
-  });
+  return getCardsCustom()
+    .then(cardDocs => {
+      return cardDocs.map(({sentence, target, def, date_created, srs, _id}) => ({sentence, target, def, date_created, srs, _id}))
+    })
+    .then(cardDocs => {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+      const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+      const blob = new Blob([JSON.stringify(cardDocs)], {type: "text/json"});
+      const link = document.createElement('a');
+      link.download = `${year}${month}${day}-happal.json`;
+      link.href = window.URL.createObjectURL(blob);
+      link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+      link.dispatchEvent(new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+      }));
+      link.remove();
+    })
+    .catch((error) => {
+      throw error;
+    });
 }
 
 export async function deleteAllCards() {
@@ -241,6 +247,49 @@ export async function deleteAllCards() {
   }).catch((error) => {
     throw error;
   });
+}
+
+export async function importCards(importedFileObjUrl) {
+  return fetch(importedFileObjUrl)
+    .then(response => {
+      return response.blob();
+    })
+    .then(fileObj => {
+      if (fileObj.type == "application/json") {
+        const reader = new FileReader();
+        return new Promise((resolve, reject) => {
+          reader.onload = event => {
+            resolve(event.target.result);
+          };
+          reader.onerror = event => {
+            reject(event.target.result);
+          };
+          reader.readAsText(fileObj);
+        });
+      } else {
+        throw new Error('File unggahan tidak bertipe ".json". Impor dibatalkan.');
+      }
+    })
+    .then(result => {
+      const cardsArr = JSON.parse(result);
+      console.log(typeof cardsArr);
+      console.log(cardsArr);
+      for (let index = 0; index < cardsArr.length; index++) {
+        if(!validateCardDoc(cardsArr[index])) {
+          console.log(cardsArr[index])
+          throw new Error('Struktur kartu tidak valid. Impor dibatalkan.');
+        }
+      }
+      return cardsArr;
+    })
+    .then(cardsArr => {
+      // Delete all cards in client, replace with imported
+      return db.bulkDocs(cardsArr);
+    })
+    .catch(error => {
+      console.log(error);
+      throw error;
+    });
 }
 
 // Home

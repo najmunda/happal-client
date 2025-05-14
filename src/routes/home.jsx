@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router-dom";
 import { getCardsTotal, getMonthlyHistory, getTodayCards } from "../db";
-import { getStartTodayUTC, greetTime } from "../utils";
+import { getStartTodayUTC, greetTime } from "../utils/utils";
 
 export async function loader() {
   const today = getStartTodayUTC();
