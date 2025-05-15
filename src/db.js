@@ -272,11 +272,8 @@ export async function importCards(importedFileObjUrl) {
     })
     .then(result => {
       const cardsArr = JSON.parse(result);
-      console.log(typeof cardsArr);
-      console.log(cardsArr);
       for (let index = 0; index < cardsArr.length; index++) {
         if(!validateCardDoc(cardsArr[index])) {
-          console.log(cardsArr[index])
           throw new Error('Struktur kartu tidak valid. Impor dibatalkan.');
         }
       }
@@ -287,7 +284,6 @@ export async function importCards(importedFileObjUrl) {
       return db.bulkDocs(cardsArr);
     })
     .catch(error => {
-      console.log(error);
       throw error;
     });
 }

@@ -27,7 +27,6 @@ export async function loader({request}) {
 export default function Cards() {
 
   const {cards, cardsTotal, searchParams} = useLoaderData();
-  console.log(cards);
   const location = useLocation();
   const navigation = useNavigation();
   const isLoading = (navigation.state === "loading" || navigation.state === "submitting") || navigation.location?.pathname == location.pathname;
