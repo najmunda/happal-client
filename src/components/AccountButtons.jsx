@@ -22,9 +22,9 @@ export default function AccountButtons() {
 
   return (
     <>
-      <button type="submit" name="intent" value="delete" className="p-2 flex gap-2 items-center hover:bg-neutral-100"><Trash2 />Hapus semua kartu</button>
-      <button type="submit" name="intent" value="download" className="p-2 flex gap-2 items-center hover:bg-neutral-100"><Download />Unduh file cadangan</button>
-      <button type="button" onClick={handleImportButton} className="p-2 flex gap-2 items-center hover:bg-neutral-100"><FileUp />Import file cadangan</button>
+      <button type="submit" name="intent" value="delete" className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"><Trash2 />Hapus semua kartu</button>
+      <button type="submit" name="intent" value="download" className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"><Download />Unduh file cadangan</button>
+      <button type="button" onClick={handleImportButton} className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"><FileUp />Import file cadangan</button>
       <input type="file" ref={importBtnRef} accept=".json" onChange={handleImportChange} name="import" id="import" className="hidden" />
     </>
   );
