@@ -6,6 +6,14 @@ import Fuse from "fuse.js";
 import { getEndTodayUTC, getStartTodayUTC, msToDHM } from "./utils/utils";
 import { validateCardDoc } from "./utils/validator";
 
+class DbError extends Error {
+  constructor(message, cause) {
+    super(message);
+    this.cause = cause;
+    this.name = 'DbError';
+  }
+}
+
 PouchDB.plugin(findPlugin);
 PouchDB.plugin(upsertPlugin);
 
@@ -38,6 +46,7 @@ export async function syncDB() {
 // cardDoc = document with id card-* stored in pouchdb
 // card = object inside CardDoc (cardDoc.srs.card)
 // response = response from pouchdb api (db.put, db.remove, etc.)
+// Error handled on UI
 
 export async function getCardsTotal() {
   return db.allDocs({
@@ -95,11 +104,10 @@ export async function getCardsCustom({q = "", show = "all", order = "desc", sort
 }
 
 export async function getCardDoc(cardId) {
-  return db.get(cardId).then((cardDoc) => {
-    return cardDoc;
-  }).catch((error) => {
-    throw error;
-  })
+  const cardDoc = await db.get(cardId).catch(error => {
+    throw new DbError('Terjadi eror, gagal mendapatkan kartu', error);
+  });
+  return cardDoc;
 }
 
 export async function addCardDocs(newCardDocs) {
@@ -122,13 +130,12 @@ export async function addCardDocs(newCardDocs) {
 }
 
 export async function editCardDoc(cardId, editData) {
-  return getCardDoc(cardId).then((cardDoc) => {
-    return Object.assign(cardDoc, { ...editData });
-  }).then((editedCardDoc) => {
-    return db.put(editedCardDoc);
-  }).catch((error) => {
-    throw error;
+  const cardDoc = await getCardDoc(cardId);
+  const editedCardDoc = Object.assign(cardDoc, { ...editData });
+  const response = await db.put(editedCardDoc).catch(error => {
+    throw new DbError('Terjadi eror, kartu gagal diperbarui', error);
   });
+  return response;
 }
 
 export async function resetCard(cardId) {
@@ -190,22 +197,15 @@ export async function getTodayCards() {
 }
 
 export async function updateSRS(cardId, rating) {
-  const f = fsrs()
-  return getCardDoc(cardId).then((cardDoc) => {
-    return f.next(cardDoc.srs.card, new Date(), rating == 0 ? Rating.Again : Rating.Good);
-  }).then(async (schedulingCard) => {
-    return editCardDoc(cardId, { srs: schedulingCard }).then(async response => {
-      const scheduledDays = schedulingCard.card.scheduled_days;
-      if (scheduledDays > 0) {
-        await setMonthlyHistory({reviewCountAdd: 1});
-      }
-      return response;
-    }).catch(error => {
-      throw error;
-    });
-  }).catch((error) => {
-    throw error;
-  });
+  const f = fsrs();
+  const cardDoc = await getCardDoc(cardId);
+  const schedulingCard = f.next(cardDoc.srs.card, new Date(), rating == 0 ? Rating.Again : Rating.Good);
+  const response = await editCardDoc(cardId, { srs: schedulingCard });
+  // const scheduledDays = schedulingCard.card.scheduled_days;
+  // if (scheduledDays > 0) {
+  //   await setMonthlyHistory({reviewCountAdd: 1});
+  // }
+  return response;
 }
 
 // Accounts
