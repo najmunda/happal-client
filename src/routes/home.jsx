@@ -6,14 +6,14 @@ export async function loader() {
   const today = getStartTodayUTC();
   const monthlyHistory = await getMonthlyHistory();
   const newCards = monthlyHistory[today.getDate()]?.newCount ?? 0;
-  const {cardsLeft} = await getTodayCards();
-  const cardsToday = cardsLeft.new.length + cardsLeft.learn.length + cardsLeft.review.length;
+  const { cardsLeft } = await getTodayCards();
+  const cardsToday =
+    cardsLeft.new.length + cardsLeft.learn.length + cardsLeft.review.length;
   const cardsTotal = await getCardsTotal();
   return { newCards, cardsToday, cardsTotal };
 }
 
 export default function Home() {
-
   const { newCards, cardsToday, cardsTotal } = useLoaderData();
 
   return (
@@ -34,5 +34,5 @@ export default function Home() {
         </section>
       </div>
     </main>
-  )
+  );
 }

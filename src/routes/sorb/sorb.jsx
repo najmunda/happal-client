@@ -1,13 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Interweave } from "interweave";
-import { CopyX, Pickaxe, Smile, ThumbsDown, ThumbsUp } from "lucide-react"
-import { Outlet, useLoaderData, useNavigate, useNavigation, useSubmit } from "react-router-dom";
+import { CopyX, Pickaxe, Smile, ThumbsDown, ThumbsUp } from "lucide-react";
+import {
+  Outlet,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+  useSubmit,
+} from "react-router-dom";
 import { getCardsTotal, getTodayCards, updateSRS } from "../../db";
 import Loading from "../../components/Loading";
 import CardsCounter from "../../components/CardsCounter";
 
 export async function loader() {
-  const {topCardDoc, nextReview, cardsLeft} = await getTodayCards();
+  const { topCardDoc, nextReview, cardsLeft } = await getTodayCards();
   const cardsTotal = await getCardsTotal();
   return { topCardDoc, nextReview, cardsLeft, cardsTotal };
 }
@@ -19,12 +25,11 @@ export async function action({ request }) {
 }
 
 export default function Sorb() {
-
   const { topCardDoc, nextReview, cardsLeft, cardsTotal } = useLoaderData();
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const currentCardRef = useRef();
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   // Handlers
 
@@ -59,14 +64,20 @@ export default function Sorb() {
 
   function handleCardRight() {
     if (isOpen) {
-      submit({ id: topCardDoc._id, rating: 1 }, { method: "post", encType: "application/json" });
+      submit(
+        { id: topCardDoc._id, rating: 1 },
+        { method: "post", encType: "application/json" },
+      );
       setTimeout(() => setIsOpen(false), 100);
     }
   }
 
   function handleCardLeft() {
     if (isOpen) {
-      submit({ id: topCardDoc._id, rating: 0 }, { method: "post", encType: "application/json" });
+      submit(
+        { id: topCardDoc._id, rating: 0 },
+        { method: "post", encType: "application/json" },
+      );
       setTimeout(() => setIsOpen(false), 100);
     }
   }
@@ -75,27 +86,31 @@ export default function Sorb() {
     setIsOpen(true);
   }
 
-  const handleKeyUp = useCallback((e) => {
-    if (isOpen) {
-      if (e.key == "ArrowLeft") {
-        handleCardLeft()
-      } else if (e.key == "ArrowRight") {
-        handleCardRight()
+  const handleKeyUp = useCallback(
+    (e) => {
+      if (isOpen) {
+        if (e.key == "ArrowLeft") {
+          handleCardLeft();
+        } else if (e.key == "ArrowRight") {
+          handleCardRight();
+        }
+      } else if (e.key == "Spacebar" || e.key == " ") {
+        handleCardClick();
       }
-    } else if (e.key == "Spacebar" || e.key == " ") {
-      handleCardClick()
-    }
-  }, [isOpen]);
+    },
+    [isOpen],
+  );
 
   useEffect(() => {
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener("keyup", handleKeyUp);
     return () => {
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener("keyup", handleKeyUp);
     };
   }, [handleKeyUp]);
 
   // Loading
-  const isLoading = navigation.state == "submitting" || navigation.state == "loading"
+  const isLoading =
+    navigation.state == "submitting" || navigation.state == "loading";
 
   // Dialog
 
@@ -113,15 +128,15 @@ export default function Sorb() {
   function handleBackdropClick(e) {
     if (e.target == dialogRef.current) {
       dialogRef.current.close();
-      navigate('/sorb');
-    };
+      navigate("/sorb");
+    }
   }
 
   function handleEscDown(e) {
     if (e.key == "Escape") {
       dialogRef.current.close();
-      navigate('/sorb');
-    };
+      navigate("/sorb");
+    }
   }
 
   useEffect(() => {
@@ -133,79 +148,125 @@ export default function Sorb() {
   }, [location.pathname]);
 
   return (
-    <main className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}>
-      {cardsLeft.learn.length != 0 || cardsLeft.new.length != 0 || cardsLeft.review.length != 0 ?
+    <main
+      className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}
+    >
+      {cardsLeft.learn.length != 0 ||
+      cardsLeft.new.length != 0 ||
+      cardsLeft.review.length != 0 ? (
         <>
           {isLoading ? (
-            <Loading className='flex-1 flex flex-col justify-center items-stretch' /> 
+            <Loading className="flex-1 flex flex-col justify-center items-stretch" />
           ) : (
-              <div
-                ref={currentCardRef}
-                onClick={handleCardClick}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                className={`w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg shadow ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
-              >
-                {isOpen &&
+            <div
+              ref={currentCardRef}
+              onClick={handleCardClick}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              className={`w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg shadow ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
+            >
+              {isOpen && (
+                <>
+                  <section className="p-2 flex flex-row-reverse items-center gap-2">
+                    <button
+                      onClick={handleCardRight}
+                      className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100"
+                    >
+                      <ThumbsUp />
+                      <p className="text-xs">{nextReview.good}</p>
+                      <p className="text-xs">Good</p>
+                    </button>
+                    <hr className="flex-1 border-neutral-200" />
+                  </section>
+                  <section className="flex items-center justify-center gap-1 text-neutral-400">
+                    <p className="text-xs">
+                      Swipe Kanan / Klik tombol "Good" / Tekan{" "}
+                      <kbd>{">"}</kbd>{" "}
+                    </p>
+                  </section>
+                </>
+              )}
+              <div className="flex-1 flex flex-col justify-center items-center gap-2 relative">
+                <p>
+                  <Interweave
+                    content={topCardDoc.sentence.replace(
+                      topCardDoc.target,
+                      `<b>${topCardDoc.target}</b>`,
+                    )}
+                  />
+                </p>
+                {isOpen && (
                   <>
-                    <section className="p-2 flex flex-row-reverse items-center gap-2">
-                      <button onClick={handleCardRight} className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100">
-                        <ThumbsUp />
-                        <p className="text-xs">{nextReview.good}</p>
-                        <p className="text-xs">Good</p>
-                      </button>
-                      <hr className="flex-1 border-neutral-200" />
-                    </section>
-                    <section className="flex items-center justify-center gap-1 text-neutral-400">
-                      <p className="text-xs">Swipe Kanan / Klik tombol "Good" / Tekan <kbd>{'>'}</kbd> </p>
-                    </section>
-                  </>
-                }
-                <div className="flex-1 flex flex-col justify-center items-center gap-2 relative">
-                  <p><Interweave content={topCardDoc.sentence.replace(topCardDoc.target, `<b>${topCardDoc.target}</b>`)} /></p>
-                  {isOpen && <>
                     <p className="text-2xl font-bold">{topCardDoc.target}</p>
                     <p className="text-sm">{topCardDoc.def}</p>
-                  </>}
-                  {!isOpen && <p className="text-xs text-neutral-400">Tekan <kbd>Space</kbd> / Tap / Klik Kartu untuk membuka definisi dan arti.</p>}
-                </div>
-                {isOpen &&
-                  <>
-                    <section className="flex items-center justify-center gap-1 text-neutral-400">
-                      <p className="text-xs">Swipe Kiri / Klik tombol "Again" / Tekan <kbd>{'<'}</kbd></p>
-                    </section>
-                    <section className="p-2 flex items-center gap-2">
-                      <button type="button" onClick={handleCardLeft} className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100">
-                        <ThumbsDown />
-                        <p className="text-xs">{nextReview.again}</p>
-                        <p className="text-xs">Again</p>
-                      </button>
-                      <hr className="flex-1 border-1 border-neutral-200" />
-                    </section>
                   </>
-                }
+                )}
+                {!isOpen && (
+                  <p className="text-xs text-neutral-400">
+                    Tekan <kbd>Space</kbd> / Tap / Klik Kartu untuk membuka
+                    definisi dan arti.
+                  </p>
+                )}
               </div>
+              {isOpen && (
+                <>
+                  <section className="flex items-center justify-center gap-1 text-neutral-400">
+                    <p className="text-xs">
+                      Swipe Kiri / Klik tombol "Again" / Tekan <kbd>{"<"}</kbd>
+                    </p>
+                  </section>
+                  <section className="p-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCardLeft}
+                      className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100"
+                    >
+                      <ThumbsDown />
+                      <p className="text-xs">{nextReview.again}</p>
+                      <p className="text-xs">Again</p>
+                    </button>
+                    <hr className="flex-1 border-1 border-neutral-200" />
+                  </section>
+                </>
+              )}
+            </div>
           )}
-          <CardsCounter newTotal={cardsLeft.new.length} learnTotal={cardsLeft.learn.length} reviewTotal={cardsLeft.review.length} handleDialogOpen={handleDialogOpen} />
+          <CardsCounter
+            newTotal={cardsLeft.new.length}
+            learnTotal={cardsLeft.learn.length}
+            reviewTotal={cardsLeft.review.length}
+            handleDialogOpen={handleDialogOpen}
+          />
         </>
-        :
+      ) : (
         <div className="w-full flex-1 md:max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-500 rounded-lg border-2 border-neutral-300 border-dashed">
-          {cardsTotal != 0 ?
+          {cardsTotal != 0 ? (
             <>
               <Smile size={80} />
-              <p className="text-center text-sm">Good Job! Semua kartu sudah direview. Kembali lagi besok!</p>
+              <p className="text-center text-sm">
+                Good Job! Semua kartu sudah direview. Kembali lagi besok!
+              </p>
             </>
-            :
+          ) : (
             <>
               <CopyX size={80} />
-              <p className="text-center text-sm">Tidak ada kartu tersimpan. Klik <Pickaxe size={18} className="inline" /> "Mine" untuk menambah kartu.</p>
+              <p className="text-center text-sm">
+                Tidak ada kartu tersimpan. Klik{" "}
+                <Pickaxe size={18} className="inline" /> "Mine" untuk menambah
+                kartu.
+              </p>
             </>
-          }
+          )}
         </div>
-      }
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg">
+      )}
+      <dialog
+        ref={dialogRef}
+        onClick={handleBackdropClick}
+        onKeyDown={handleEscDown}
+        className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg"
+      >
         <Outlet context={[handleDialogClose]} />
       </dialog>
     </main>
-  )
+  );
 }

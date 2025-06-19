@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
-import { Form, useActionData, useLoaderData, useLocation, useNavigate, useOutletContext } from "react-router-dom";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useOutletContext,
+} from "react-router-dom";
 import { editCardDoc, getCardDoc } from "../../db";
 import TextArea from "../../components/TextArea";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
   const formObject = Object.fromEntries(formData);
-  const {redirect} = formObject;
-  delete formObject['redirect'];
+  const { redirect } = formObject;
+  delete formObject["redirect"];
   await editCardDoc(params.cardId, formObject);
   return {
     data: { action: "edit" },
@@ -21,7 +28,6 @@ export async function loader({ params }) {
 }
 
 export default function CardEdit() {
-
   const card = useLoaderData();
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
@@ -38,7 +44,10 @@ export default function CardEdit() {
   }
 
   function handleSentenceSelect(e) {
-    const substring = e.currentTarget.value.substring(e.target.selectionStart, e.target.selectionEnd);
+    const substring = e.currentTarget.value.substring(
+      e.target.selectionStart,
+      e.target.selectionEnd,
+    );
     if (substring != "") {
       setTarget(substring);
       setDef("");
@@ -56,14 +65,23 @@ export default function CardEdit() {
 
   useEffect(() => {
     if (actionData) {
-      const {data, redirect} = actionData;
-      navigate(redirect, {state: data})
+      const { data, redirect } = actionData;
+      navigate(redirect, { state: data });
     }
   }, [actionData]);
 
   return (
-    <Form method="post" className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
-      <input type="text" name="redirect" id="redirect" className="hidden" defaultValue={prevPathNQuery} />
+    <Form
+      method="post"
+      className="p-3 h-fit flex flex-col justify-evenly items-center gap-2"
+    >
+      <input
+        type="text"
+        name="redirect"
+        id="redirect"
+        className="hidden"
+        defaultValue={prevPathNQuery}
+      />
       <TextArea
         type="text"
         name="sentence"
@@ -93,9 +111,21 @@ export default function CardEdit() {
         placeholder="Add def from dictionary..."
       ></TextArea>
       <div className="pt-2 w-full flex justify-between items-center">
-        <button type="button" onClick={handleBackButton} className="px-2 hover:bg-neutral-100 rounded-lg">Tutup</button>
-        <button type="submit" onClick={handleDialogClose} className="px-2 hover:bg-blue-100 hover:text-blue-500 rounded-lg">Simpan</button>
+        <button
+          type="button"
+          onClick={handleBackButton}
+          className="px-2 hover:bg-neutral-100 rounded-lg"
+        >
+          Tutup
+        </button>
+        <button
+          type="submit"
+          onClick={handleDialogClose}
+          className="px-2 hover:bg-blue-100 hover:text-blue-500 rounded-lg"
+        >
+          Simpan
+        </button>
       </div>
     </Form>
-  )
+  );
 }

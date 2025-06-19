@@ -29,38 +29,67 @@ export function formatDate(dateISOString) {
 export function getStartTodayUTC() {
   // Return date of early day (client timezone)
   const date = new Date();
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    0,
+    0,
+    0,
+    0,
+  );
 }
 
 export function getEndTodayUTC() {
   // Return date of early day (client timezone)
   const date = new Date();
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1, 0, 0, 0, 0);
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + 1,
+    0,
+    0,
+    0,
+    0,
+  );
 }
 
 export function msToDHM(milisecond) {
   // Turn milisecond to XdXhXm (day, hour, minute)
-  let timeStr = ""
+  let timeStr = "";
   if (milisecond >= 86400000) {
-    timeStr += Math.floor(milisecond / 86400000) + 'd';
+    timeStr += Math.floor(milisecond / 86400000) + "d";
     milisecond %= 86400000;
   }
   if (milisecond >= 3600000) {
-    timeStr += Math.floor(milisecond / 3600000) + 'h';
+    timeStr += Math.floor(milisecond / 3600000) + "h";
     milisecond %= 3600000;
   }
   if (milisecond >= 60000) {
-    timeStr += Math.floor(milisecond / 60000) + 'm';
+    timeStr += Math.floor(milisecond / 60000) + "m";
   }
   return timeStr;
 }
 
 export function getFirstPath(pathString = "") {
   const arr = [...pathString.matchAll(/^\/([a-z]+)\/?/g)];
-  return arr.length ? arr[0][1] : '';
+  return arr.length ? arr[0][1] : "";
 }
 
 export function getMonth(index) {
-  const arr = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const arr = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
   return arr[index];
 }

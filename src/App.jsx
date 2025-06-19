@@ -1,5 +1,11 @@
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
-import Root, {loader as rootloader}/*, { action as rootAction }*/ from './routes/root/root.jsx'
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import {
+  loader as rootloader /*, { action as rootAction }*/,
+} from "./routes/root/root.jsx";
 import Account, { action as accountAction } from "./routes/account.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
@@ -7,13 +13,22 @@ import Account, { action as accountAction } from "./routes/account.jsx";
 import Mine, { action as mineAction } from "./routes/mine/mine.jsx";
 import MineHelp from "./routes/mine/help";
 // Sorb
-import Sorb, { loader as sorbLoader, action as sorbAction } from "./routes/sorb/sorb.jsx";
+import Sorb, {
+  loader as sorbLoader,
+  action as sorbAction,
+} from "./routes/sorb/sorb.jsx";
 import SorbHelp from "./routes/sorb/help";
 // Cards
-import Cards, { revalidate as cardsRevalidate, loader as cardsLoader } from './routes/cards/cards.jsx'
+import Cards, {
+  revalidate as cardsRevalidate,
+  loader as cardsLoader,
+} from "./routes/cards/cards.jsx";
 import CardHelp from "./routes/cards/help";
 import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
-import CardEdit, { loader as editLoader, action as editAction } from "./routes/cards/edit.jsx";
+import CardEdit, {
+  loader as editLoader,
+  action as editAction,
+} from "./routes/cards/edit.jsx";
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
 import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
 import { action as syncAction } from "./routes/sync.jsx";
@@ -45,7 +60,7 @@ export default function App() {
               path: "help",
               element: <MineHelp />,
             },
-          ]
+          ],
         },
         {
           path: "/sorb",
@@ -57,7 +72,7 @@ export default function App() {
               path: "help",
               element: <SorbHelp />,
             },
-          ]
+          ],
         },
         {
           path: "/cards",
@@ -83,42 +98,41 @@ export default function App() {
             {
               path: ":cardId/delete",
               action: deleteAction,
-              element: <CardDelete />
+              element: <CardDelete />,
             },
             {
               path: ":cardId/reset",
               action: resetAction,
-              element: <CardReset />
+              element: <CardReset />,
             },
-          ]
+          ],
         },
-        { 
+        {
           path: "/account",
           action: accountAction,
           element: <Account />,
         },
-        { 
+        {
           path: "/sync",
           action: syncAction,
         },
         {
           path: "*",
-          element: <Navigate to={'/'} />,
+          element: <Navigate to={"/"} />,
         },
       ],
     },
   ]);
 
   // authedUser
-  
 
-  return <
-    RouterProvider 
-    router={router} 
-    future={{
-      v7_startTransition: true,
-      v7_relativeSplatPath: true,
-    }} 
-  />
+  return (
+    <RouterProvider
+      router={router}
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    />
+  );
 }
-

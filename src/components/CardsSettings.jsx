@@ -1,14 +1,24 @@
 import { Form, useSubmit } from "react-router-dom";
-import { ArrowDownNarrowWide, CalendarArrowDown, ChevronDown, Filter, Search } from "lucide-react";
+import {
+  ArrowDownNarrowWide,
+  CalendarArrowDown,
+  ChevronDown,
+  Filter,
+  Search,
+} from "lucide-react";
 import { useEffect } from "react";
 
-export default function CardsSettings({searchParams}) {
-
+export default function CardsSettings({ searchParams }) {
   const submit = useSubmit();
-  const {q = "", show = "all", order = "desc", sortby = "create"} = searchParams;
+  const {
+    q = "",
+    show = "all",
+    order = "desc",
+    sortby = "create",
+  } = searchParams;
 
   function handleFormChange(e) {
-    submit(e.currentTarget)
+    submit(e.currentTarget);
   }
 
   useEffect(() => {
@@ -19,19 +29,36 @@ export default function CardsSettings({searchParams}) {
   }, [q, show, order, sortby]);
 
   return (
-    <Form onChange={handleFormChange} className="flex flex-col md:flex-row gap-2">
+    <Form
+      onChange={handleFormChange}
+      className="flex flex-col md:flex-row gap-2"
+    >
       <section className="flex-1 px-4 py-2 flex justify-between items-center gap-4 bg-white rounded-lg shadow hover:shadow-md">
-        <input type="text" name="q" id="q" defaultValue={q} placeholder="Cari kartu..." className="p-0 flex-1 border-0 focus:ring-0" />
+        <input
+          type="text"
+          name="q"
+          id="q"
+          defaultValue={q}
+          placeholder="Cari kartu..."
+          className="p-0 flex-1 border-0 focus:ring-0"
+        />
         <Search />
       </section>
       <section className="flex items-center gap-2 overflow-auto">
         <section className="p-2 flex flex-col justify-center rounded-lg relative bg-white shadow hover:shadow-md cursor-pointer">
           <div className="w-full flex justify-between items-center gap-2">
             <Filter size={18} className="shrink-0" />
-            <label htmlFor="show" className="text-xs text-nowrap line-clamp-1">Tampilkan</label>
+            <label htmlFor="show" className="text-xs text-nowrap line-clamp-1">
+              Tampilkan
+            </label>
             <ChevronDown size={18} className="shrink-0" />
           </div>
-          <select name="show" id="show" defaultValue={show} className="text-xs w-full border-0 opacity-0 absolute left-0">
+          <select
+            name="show"
+            id="show"
+            defaultValue={show}
+            className="text-xs w-full border-0 opacity-0 absolute left-0"
+          >
             <option value="all">Semua Kartu</option>
             <option value="new">Kartu Baru</option>
             <option value="review">Kartu Review</option>
@@ -39,23 +66,46 @@ export default function CardsSettings({searchParams}) {
           </select>
         </section>
         <section className="p-2 flex flex-col justify-center bg-white rounded-lg relative shadow hover:shadow-md cursor-pointer">
-          <div className={`w-full flex justify-between items-center gap-2 ${q ? 'text-neutral-400' : ''}`}>
+          <div
+            className={`w-full flex justify-between items-center gap-2 ${q ? "text-neutral-400" : ""}`}
+          >
             <ArrowDownNarrowWide size={18} className="shrink-0" />
-            <label htmlFor="order" className="text-xs text-nowrap line-clamp-1">Urutan</label>
+            <label htmlFor="order" className="text-xs text-nowrap line-clamp-1">
+              Urutan
+            </label>
             <ChevronDown size={18} className="shrink-0" />
           </div>
-          <select name="order" id="order" defaultValue={order} disabled={q ? true : false} className="w-full text-xs border-0 opacity-0 absolute left-0">
+          <select
+            name="order"
+            id="order"
+            defaultValue={order}
+            disabled={q ? true : false}
+            className="w-full text-xs border-0 opacity-0 absolute left-0"
+          >
             <option value="desc">Menurun</option>
             <option value="asc">Menaik</option>
           </select>
         </section>
         <section className="p-2 flex flex-col justify-center bg-white rounded-lg relative shadow hover:shadow-md cursor-pointer">
-          <div className={`w-full flex justify-between items-center gap-2 ${q ? 'text-neutral-400' : ''}`}>
+          <div
+            className={`w-full flex justify-between items-center gap-2 ${q ? "text-neutral-400" : ""}`}
+          >
             <CalendarArrowDown size={18} className="shrink-0" />
-            <label htmlFor="sortby" className="text-xs text-nowrap line-clamp-1">Urut berdasarkan</label>
+            <label
+              htmlFor="sortby"
+              className="text-xs text-nowrap line-clamp-1"
+            >
+              Urut berdasarkan
+            </label>
             <ChevronDown size={18} className="shrink-0" />
           </div>
-          <select name="sortby" id="sortby" defaultValue={sortby} disabled={q ? true : false} className={`w-full text-xs border-0 opacity-0 absolute left-0`}>
+          <select
+            name="sortby"
+            id="sortby"
+            defaultValue={sortby}
+            disabled={q ? true : false}
+            className={`w-full text-xs border-0 opacity-0 absolute left-0`}
+          >
             <option value="create">Tanggal dibuat</option>
             <option value="due">Review selanjutnya</option>
             <option value="review">Review terakhir</option>
@@ -63,5 +113,5 @@ export default function CardsSettings({searchParams}) {
         </section>
       </section>
     </Form>
-  )
+  );
 }

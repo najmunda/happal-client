@@ -5,10 +5,14 @@ import Toast from "../components/Toast";
 export async function action() {
   try {
     const response = await syncDB();
-    toast.custom((t) => (<Toast message="Kartu berhasil disinkronisasi." color="green" />));
+    toast.custom(() => (
+      <Toast message="Kartu berhasil disinkronisasi." color="green" />
+    ));
     return response;
-  } catch (error) {
-    toast.custom((t) => (<Toast message="Terjadi galat saat sinkronisasi. Ulangi." color="red" />));
+  } catch (_) {
+    toast.custom(() => (
+      <Toast message="Terjadi galat saat sinkronisasi. Ulangi." color="red" />
+    ));
     return null;
   }
 }
