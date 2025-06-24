@@ -3,9 +3,10 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import {
+import Root, {
   loader as rootloader /*, { action as rootAction }*/,
 } from "./routes/root/root.jsx";
+import RootError from "./routes/root/error.jsx";
 import Account, { action as accountAction } from "./routes/account.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
@@ -32,7 +33,6 @@ import CardEdit, {
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
 import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
 import { action as syncAction } from "./routes/sync.jsx";
-import RootError from "./routes/root/error.jsx";
 import About from "./routes/about.jsx";
 
 export default function App() {

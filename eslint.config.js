@@ -10,5 +10,12 @@ export default defineConfig([
   { files: ["**/*.{js,mjs,cjs,jsx}"], languageOptions: { globals: globals.browser } },
   pluginReact.configs.flat.recommended,
   pluginReact.configs.flat['jsx-runtime'],
+  {
+    "rules": {
+      "no-unused-vars": ["error", {
+        "caughtErrors": "none",
+      }]
+    }
+  },
   eslintConfigPrettier,
 ]);
