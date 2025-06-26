@@ -5,7 +5,7 @@ import { getCardDoc } from "../../db";
 import { formatDate } from "../../utils/utils";
 
 export async function loader({ params }) {
-  const card = await getCardDoc(params.cardId);
+  const { payload: card } = await getCardDoc(params.cardId);
   return card;
 }
 

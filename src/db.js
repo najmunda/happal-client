@@ -16,28 +16,34 @@ const db = new PouchDB("sorbit", {
 });
 
 export async function syncDB() {
-  const remoteDb = new PouchDB(`${location.origin}/api/db`, {
-    skip_setup: true,
-  });
+  try {
+    const remoteDb = new PouchDB(`${location.origin}/api/db`, {
+      skip_setup: true,
+    });
 
-  return new Promise((resolve, reject) => {
-    db.sync(remoteDb, {
-      style: "main_only",
-      filter: (doc) => doc._id.startsWith("card-"),
-    })
-      .on("complete", (info) => {
-        fetch("/api/user/last-sync", { method: "POST" })
-          .then(() => {
-            resolve(info);
-          })
-          .catch((error) => {
-            reject(error);
-          });
+    await new Promise((resolve, reject) => {
+      db.sync(remoteDb, {
+        style: "main_only",
+        filter: (doc) => doc._id.startsWith("card-"),
       })
-      .on("error", (error) => {
-        reject(error);
-      });
-  });
+        .on("complete", (info) => {
+          fetch("/api/user/last-sync", { method: "POST" })
+            .then(() => {
+              resolve(info);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        })
+        .on("error", (error) => {
+          reject(error);
+        });
+    });
+    return { success: true, message: "Seluruh kartu berhasil disinkronkan" };
+  } catch (error) {
+    logError(error);
+    throw new Error("Terjadi galat saat sinkronisasi", { cause: error });
+  }
 }
 
 // cardDoc = document with id card-* stored in pouchdb
@@ -47,11 +53,10 @@ export async function syncDB() {
 
 export async function getCardsTotal() {
   try {
-    const response = await db
-    .allDocs({
+    const response = await db.allDocs({
       startkey: "card-",
       endkey: "card-\ufff0",
-    })
+    });
     return response.rows.length;
   } catch (error) {
     logError(error);
@@ -79,13 +84,12 @@ export async function getCardsCustom({
   sortby = "create",
 } = {}) {
   try {
-    await db
-      .createIndex({
-        index: {
-          fields: [SortBy[sortby], "srs.card.state"],
-          ddoc: `${sortby}-index`,
-        },
-      });
+    await db.createIndex({
+      index: {
+        fields: [SortBy[sortby], "srs.card.state"],
+        ddoc: `${sortby}-index`,
+      },
+    });
     const response = await db.find({
       selector: {
         [SortBy[sortby]]: { $gt: 0 },
@@ -113,10 +117,14 @@ export async function getCardsCustom({
 export async function getCardDoc(cardId) {
   try {
     const cardDoc = await db.get(cardId);
-    return cardDoc;
+    return {
+      success: true,
+      message: "Detail kartu berhasil didapatkan",
+      payload: cardDoc,
+    };
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Detail kartu gagal didapatkan", { cause: error });
   }
 }
 
@@ -133,26 +141,53 @@ export async function addCardDocs(newCardDocs) {
         log: null,
       },
     }));
-    return await db
-      .bulkDocs(newCardDocs)
-      // .then(() => {
-      //   return setMonthlyHistory({ newCountAdd: newCardDocs.length });
-      // })
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Seluruh kartu gagal ditambahkan", { cause: error });
+  }
+  try {
+    const responses = await db.bulkDocs(newCardDocs).catch((error) => {
+      throw new Error("Seluruh kartu gagal ditambahkan", { cause: error });
+    });
+    // .then(() => {
+    //   return setMonthlyHistory({ newCountAdd: newCardDocs.length });
+    // })
+    if (
+      responses.findIndex((response) => Object.hasOwn(response, "error")) !== -1
+    ) {
+      const failResponses = responses.filter((response) =>
+        Object.hasOwn(response, "error"),
+      );
+      const failMessages = [
+        ...new Set(failResponses.map((response) => response?.message ?? "")),
+      ];
+      throw Object.assign(
+        new Error("Beberapa kartu gagal ditambahkan", { cause: failMessages }),
+        { payload: failResponses },
+      );
+    }
+    return { success: true, message: "Seluruh kartu berhasil ditambahkan" };
+  } catch (error) {
+    if (Object.hasOwn(error, "cause")) {
+      logError(error.cause);
+      throw error;
+    } else {
+      logError(error);
+    }
   }
 }
 
 export async function editCardDoc(cardId, editData) {
   try {
-    const cardDoc = await getCardDoc(cardId);
+    const { payload: cardDoc } = await getCardDoc(cardId).catch((error) => {
+      throw error.cause;
+    });
     const editedCardDoc = Object.assign(cardDoc, { ...editData });
-    const response = await db.put(editedCardDoc);
-    return response;
+    await db.put(editedCardDoc);
+    return { success: true, message: "Kartu berhasil diubah" };
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Kartu gagal diubah", { cause: error });
   }
 }
 
@@ -162,20 +197,24 @@ export async function resetCard(cardId) {
     const dateNow = new Date();
     const cardDoc = await db.get(cardId);
     const resetSRS = f.forget(cardDoc.srs.card, dateNow, false);
-    return await editCardDoc(cardId, { srs: resetSRS });
+    await editCardDoc(cardId, { srs: resetSRS }).catch((error) => {
+      throw error.cause;
+    });
+    return { success: true, message: "Kartu berhasil direset" };
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Kartu gagal direset", { cause: error });
   }
 }
 
 export async function deleteCardDoc(cardId) {
   try {
     const cardDoc = await db.get(cardId);
-    return await db.remove(cardDoc);
+    await db.remove(cardDoc);
+    return { success: true, message: "Kartu berhasil dihapus" };
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Kartu gagal dihapus", { cause: error });
   }
 }
 
@@ -231,21 +270,30 @@ export async function getTodayCards() {
 export async function updateSRS(cardId, rating) {
   try {
     const f = fsrs();
-    const cardDoc = await getCardDoc(cardId);
+    const { payload: cardDoc } = await getCardDoc(cardId).catch((error) => {
+      throw new Error("SRS kartu gagal diperbarui", { cause: error.cause });
+    });
     const schedulingCard = f.next(
       cardDoc.srs.card,
       new Date(),
       rating == 0 ? Rating.Again : Rating.Good,
     );
-    const response = await editCardDoc(cardId, { srs: schedulingCard });
+    await editCardDoc(cardId, { srs: schedulingCard }).catch((error) => {
+      throw new Error("SRS kartu gagal diperbarui", { cause: error.cause });
+    });
     // const scheduledDays = schedulingCard.card.scheduled_days;
     // if (scheduledDays > 0) {
     //   await setMonthlyHistory({reviewCountAdd: 1});
     // }
-    return response;
+    return { success: true };
   } catch (error) {
-    logError(error);
-    throw error;
+    if (Object.hasOwn(error, "cause")) {
+      logError(error.cause);
+      throw error;
+    } else {
+      logError(error);
+      throw new Error("SRS kartu gagal diperbarui", { cause: error });
+    }
   }
 }
 
