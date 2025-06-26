@@ -57,10 +57,13 @@ export async function getCardsTotal() {
       startkey: "card-",
       endkey: "card-\ufff0",
     });
-    return response.rows.length;
+    return {
+      success: true,
+      payload: response.rows.length,
+    };
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Jumlah kartu gagal didapatkan", { cause: error });
   }
 }
 
@@ -107,10 +110,13 @@ export async function getCardsCustom({
       const searchResult = fuse.search(q);
       return searchResult.map((card) => card.item);
     }
-    return response.docs;
+    return {
+      success: true,
+      payload: response.docs,
+    };
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Kartu gagal didapatkan", { cause: error });
   }
 }
 
@@ -129,6 +135,7 @@ export async function getCardDoc(cardId) {
 }
 
 export async function addCardDocs(newCardDocs) {
+  let responses;
   try {
     const dateCreate = new Date();
     const emptyCard = createEmptyCard(dateCreate);
@@ -141,17 +148,15 @@ export async function addCardDocs(newCardDocs) {
         log: null,
       },
     }));
+    responses = await db.bulkDocs(newCardDocs);
+    // .then(() => {
+    //   return setMonthlyHistory({ newCountAdd: newCardDocs.length });
+    // })
   } catch (error) {
     logError(error);
     throw new Error("Seluruh kartu gagal ditambahkan", { cause: error });
   }
   try {
-    const responses = await db.bulkDocs(newCardDocs).catch((error) => {
-      throw new Error("Seluruh kartu gagal ditambahkan", { cause: error });
-    });
-    // .then(() => {
-    //   return setMonthlyHistory({ newCountAdd: newCardDocs.length });
-    // })
     if (
       responses.findIndex((response) => Object.hasOwn(response, "error")) !== -1
     ) {
@@ -173,6 +178,7 @@ export async function addCardDocs(newCardDocs) {
       throw error;
     } else {
       logError(error);
+      throw new Error("Beberapa kartu gagal ditambahkan", { cause: error });
     }
   }
 }
@@ -253,17 +259,20 @@ export async function getTodayCards() {
       srs.card.state == 2 || srs.card.state == 0 ? srs.card.state : 1,
     );
     return {
-      topCardDoc,
-      nextReview: { good: goodNextTime, again: againNextTime },
-      cardsLeft: {
-        new: cardsLeft["0"] ?? [],
-        learn: cardsLeft["1"] ?? [],
-        review: cardsLeft["2"] ?? [],
+      success: true,
+      payload: {
+        topCardDoc,
+        nextReview: { good: goodNextTime, again: againNextTime },
+        cardsLeft: {
+          new: cardsLeft["0"] ?? [],
+          learn: cardsLeft["1"] ?? [],
+          review: cardsLeft["2"] ?? [],
+        },
       },
     };
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Kartu untuk hari ini gagal didapatkan", { cause: error });
   }
 }
 
@@ -300,9 +309,13 @@ export async function updateSRS(cardId, rating) {
 // Accounts
 export async function downloadAllCards() {
   try {
-    const cardDocs = await getCardsCustom();
-    const filteredCardDocs = cardDocs.map(
-      ({ sentence, target, def, date_created, srs, _id }) => ({
+    const response = await db.allDocs({
+      startkey: "card-",
+      endkey: "card-\ufff0",
+      include_docs: true,
+    });
+    const filteredCardDocs = response.rows.map(
+      ({ doc: { sentence, target, def, date_created, srs, _id } }) => ({
         sentence,
         target,
         def,
@@ -335,13 +348,17 @@ export async function downloadAllCards() {
       }),
     );
     link.remove();
+    return { success: true };
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Terjadi galat saat mendapatkan file cadangan", {
+      cause: error,
+    });
   }
 }
 
 export async function deleteAllCards() {
+  let responses;
   try {
     const response = await db.allDocs({
       include_docs: true,
@@ -352,20 +369,45 @@ export async function deleteAllCards() {
       ...cardDoc.doc,
       _deleted: true,
     }));
-    return await db.bulkDocs(deletedCardsDoc);
+    responses = await db.bulkDocs(deletedCardsDoc);
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Seluruh kartu gagal dihapus", { cause: error });
+  }
+  try {
+    if (
+      responses.findIndex((response) => Object.hasOwn(response, "error")) !== -1
+    ) {
+      const failResponses = responses.filter((response) =>
+        Object.hasOwn(response, "error"),
+      );
+      const failMessages = [
+        ...new Set(failResponses.map((response) => response?.message ?? "")),
+      ];
+      throw new Error("Beberapa kartu gagal dihapus", { cause: failMessages });
+    }
+    return { success: true, message: "Seluruh kartu berhasil dihapus" };
+  } catch (error) {
+    if (Object.hasOwn(error, "cause")) {
+      logError(error.cause);
+      throw error;
+    } else {
+      logError(error);
+      throw new Error("Beberapa kartu gagal dihapus", { cause: error });
+    }
   }
 }
 
 export async function importCards(importedFileObjUrl) {
+  let responses;
   try {
     const response = await fetch(importedFileObjUrl);
     const fileObj = await response.blob();
     if (fileObj.type !== "application/json") {
-      // throw new Error('File unggahan tidak bertipe ".json". Impor dibatalkan.');
-      // return non-error object
+      return {
+        success: false,
+        message: 'File unggahan tidak bertipe ".json", impor dibatalkan',
+      };
     }
     const reader = new FileReader();
     const result = await new Promise((resolve, reject) => {
@@ -378,16 +420,49 @@ export async function importCards(importedFileObjUrl) {
       reader.readAsText(fileObj);
     });
     const cardsArr = JSON.parse(result);
-    for (let index = 0; index < cardsArr.length; index++) {
-      if (!validateCardDoc(cardsArr[index])) {
-        // throw new Error("Struktur kartu tidak valid. Impor dibatalkan.");
-        // return non-error object
-      }
+    if (
+      cardsArr.findIndex((cardDoc) => validateCardDoc(cardDoc) === false) !== -1
+    ) {
+      return {
+        success: false,
+        message: "Struktur file cadangan tidak valid, impor dibatalkan",
+      };
     }
-    return await db.bulkDocs(cardsArr);
+    responses = await db.bulkDocs(cardsArr);
   } catch (error) {
     logError(error);
-    throw error;
+    throw new Error("Seluruh kartu pada file cadangan gagal diimpor", {
+      cause: error,
+    });
+  }
+  try {
+    if (
+      responses.findIndex((response) => Object.hasOwn(response, "error")) !== -1
+    ) {
+      const failResponses = responses.filter((response) =>
+        Object.hasOwn(response, "error"),
+      );
+      const failMessages = [
+        ...new Set(failResponses.map((response) => response?.message ?? "")),
+      ];
+      throw new Error("Beberapa kartu pada file cadangan gagal diimpor", {
+        cause: failMessages,
+      });
+    }
+    return {
+      success: true,
+      message: "Seluruh kartu pada file cadangan berhasil diimpor",
+    };
+  } catch (error) {
+    if (Object.hasOwn(error, "cause")) {
+      logError(error.cause);
+      throw error;
+    } else {
+      logError(error);
+      throw new Error("Beberapa kartu pada file cadangan gagal diimpor", {
+        cause: error,
+      });
+    }
   }
 }
 

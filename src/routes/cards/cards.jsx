@@ -30,8 +30,8 @@ export function revalidate({ nextUrl }) {
 export async function loader({ request }) {
   const url = new URL(request.url);
   const searchParams = Object.fromEntries(url.searchParams);
-  const cardsTotal = await getCardsTotal();
-  const cardsData = await getCardsCustom(searchParams);
+  const { payload: cardsTotal } = await getCardsTotal();
+  const { payload: cardsData } = await getCardsCustom(searchParams);
   return {
     cards: cardsData ?? [],
     cardsTotal, // All cards total (nothing excluded)

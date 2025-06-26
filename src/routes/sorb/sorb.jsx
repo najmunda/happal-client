@@ -13,8 +13,10 @@ import Loading from "../../components/Loading";
 import CardsCounter from "../../components/CardsCounter";
 
 export async function loader() {
-  const { topCardDoc, nextReview, cardsLeft } = await getTodayCards();
-  const cardsTotal = await getCardsTotal();
+  const {
+    payload: { topCardDoc, nextReview, cardsLeft },
+  } = await getTodayCards();
+  const { payload: cardsTotal } = await getCardsTotal();
   return { topCardDoc, nextReview, cardsLeft, cardsTotal };
 }
 
