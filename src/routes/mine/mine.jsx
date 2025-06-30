@@ -28,14 +28,23 @@ export async function action({ request }) {
     }
   }
 
-  if (errors.length == 0) {
-    await addCardDocs(cardsData.map((card) => card.data));
-    toast.custom(() => <Toast message="Kartu ditambahkan" color="green" />);
-    return { success: true };
-  } else {
+  if (errors.length !== 0) {
     // There empty input
     toast.custom(() => <Toast message="Terdapat kartu kosong" color="red" />);
     return { success: false, errors };
+  } else {
+    try {
+      const response = await addCardDocs(cardsData.map((card) => card.data));
+      toast.custom(() => (
+        <Toast message={response.message} color="green" />
+      ));
+      return { success: response.success };
+    } catch (error) {
+      toast.custom(() => (
+        <Toast message={error.message} color="red" />
+      ));
+      return { success: true };
+    }
   }
 }
 
@@ -92,7 +101,7 @@ export default function Mine() {
   }, [success]);
 
   // Masonry
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [, setWindowWidth] = useState(window.innerWidth);
   const root = document.querySelector(":root");
   const style = window.getComputedStyle(root);
   const column = Number.parseInt(style.getPropertyValue("--column"));
