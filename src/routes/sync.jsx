@@ -6,13 +6,12 @@ export async function action() {
   try {
     const response = await syncDB();
     toast.custom(() => (
-      <Toast message="Kartu berhasil disinkronisasi." color="green" />
+      <Toast message={response.message} color="green" />
     ));
-    return response;
-  } catch (_) {
+  } catch (error) {
     toast.custom(() => (
-      <Toast message="Terjadi galat saat sinkronisasi. Ulangi." color="red" />
+      <Toast message={error.message} color="red" />
     ));
-    return null;
   }
+  return null;
 }
