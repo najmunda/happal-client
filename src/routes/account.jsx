@@ -15,55 +15,43 @@ import Toast from "../components/Toast";
 export async function action({ request }) {
   const formData = await request.formData();
   const intent = formData.get("intent");
-  switch (intent) {
-    case "sync": {
-      try {
-        const response = await syncDB();
-        toast.custom(() => (
-          <Toast message="Kartu berhasil disinkronisasi." color="green" />
-        ));
-        return response;
-      } catch (_) {
-        toast.custom(() => (
-          <Toast
-            message="Terjadi galat saat sinkronisasi. Ulangi."
-            color="red"
-          />
-        ));
-        return null;
+  try {
+    let response;
+    switch (intent) {
+      case "sync": {
+        response = await syncDB();
+        break;
+      }
+      case "delete": {
+        response = await deleteAllCards();
+        break;
+      }
+      case "download": {
+        response = await downloadAllCards();
+        break;
+      }
+      case "import": {
+        response = await importCards(formData.get("file"));
+        break;
+      }
+      case "logout": {
+        response = await fetch("/api/user/logout", { method: "POST" });
+        if (response.ok) {
+          return redirect("/account");
+        }
+        break;
+      }
+      default: {
+        break;
       }
     }
-    case "delete": {
-      await deleteAllCards();
-      return null;
+    if (response?.message) {
+      toast.custom(() => <Toast message={response.message} color={response.success ? "green" : "red"} />);
     }
-    case "download": {
-      await downloadAllCards();
-      return null;
-    }
-    case "import": {
-      try {
-        const importedFileObjUrl = formData.get("file");
-        await importCards(importedFileObjUrl);
-        toast.custom(() => (
-          <Toast message="Kartu berhasil diimpor." color="green" />
-        ));
-        return null;
-      } catch (error) {
-        toast.custom(() => <Toast message={error.message} color="red" />);
-        return null;
-      }
-    }
-    case "logout": {
-      const response = await fetch("/api/user/logout", { method: "POST" });
-      if (response.ok) {
-        return redirect("/account");
-      }
-      return null;
-    }
-    default: {
-      return null;
-    }
+    return null;
+  } catch (error) {
+    toast.custom(() => <Toast message={error.message} color="red" />);
+    return null;
   }
 }
 

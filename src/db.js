@@ -42,7 +42,7 @@ export async function syncDB() {
     return { success: true, message: "Seluruh kartu berhasil disinkronkan" };
   } catch (error) {
     logError(error);
-    throw new Error("Terjadi galat saat sinkronisasi", { cause: error });
+    throw new Error("Terjadi eror saat sinkronisasi", { cause: error });
   }
 }
 
@@ -351,7 +351,7 @@ export async function downloadAllCards() {
     return { success: true };
   } catch (error) {
     logError(error);
-    throw new Error("Terjadi galat saat mendapatkan file cadangan", {
+    throw new Error("Terjadi eror saat mendapatkan file cadangan", {
       cause: error,
     });
   }
