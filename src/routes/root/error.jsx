@@ -1,10 +1,10 @@
 import { CircleX } from "lucide-react";
-// import { useRouteError } from "react-router-dom";
+import { useRouteError } from "react-router-dom";
 import Header from "../../components/Header";
 import Navigation from "../../components/Navigation";
 
 export default function RootError() {
-  // const error = useRouteError();
+  const error = useRouteError();
   return (
     <>
       <Header />
@@ -12,7 +12,10 @@ export default function RootError() {
         <section className="p-2 flex-1 flex flex-col gap-2 justify-center items-center text-neutral-400">
           <CircleX size={80} />
           <p className="text-center text-sm">
-            Terjadi Kesalahan. Muat ulang halaman dan coba lagi. Atau{" "}
+            Terjadi Eror. {error?.message ? `${error.message}.` : ''}
+          </p>
+          <p className="text-center text-sm">
+            Muat ulang halaman dan coba lagi. Atau{" "}
             <a href="https://x.com/najmunda" className="font-bold">
               Hubungi Pengembang
             </a>

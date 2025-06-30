@@ -8,6 +8,8 @@ import {
   useNavigation,
   useSubmit,
 } from "react-router-dom";
+import toast from "react-hot-toast";
+import Toast from "../../components/Toast";
 import { getCardsTotal, getTodayCards, updateSRS } from "../../db";
 import Loading from "../../components/Loading";
 import CardsCounter from "../../components/CardsCounter";
@@ -21,9 +23,15 @@ export async function loader() {
 }
 
 export async function action({ request }) {
-  const { id, rating } = await request.json();
-  const result = await updateSRS(id, rating);
-  return result;
+  try {
+    const { id, rating } = await request.json();
+    await updateSRS(id, rating);
+  } catch (error) {
+    toast.custom(() => (
+      <Toast message={error.message} color="red" />
+    ));
+  }
+  return null;
 }
 
 export default function Sorb() {
