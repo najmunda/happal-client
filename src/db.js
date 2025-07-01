@@ -116,7 +116,7 @@ export async function getCardsCustom({
     };
   } catch (error) {
     logError(error);
-    throw new Error("Kartu gagal didapatkan", { cause: error });
+    throw new Error("Kartu gagal disortir/diurutkan", { cause: error });
   }
 }
 
@@ -125,7 +125,6 @@ export async function getCardDoc(cardId) {
     const cardDoc = await db.get(cardId);
     return {
       success: true,
-      message: "Detail kartu berhasil didapatkan",
       payload: cardDoc,
     };
   } catch (error) {

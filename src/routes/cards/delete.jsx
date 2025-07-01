@@ -5,15 +5,25 @@ import {
   useOutletContext,
   useSubmit,
 } from "react-router-dom";
+import toast from "react-hot-toast";
+import Toast from "../../components/Toast";
 import { deleteCardDoc } from "../../db";
 import { useEffect } from "react";
 import Loading from "../../components/Loading";
 
 export async function action({ params, request }) {
+  try {
+    const response = await deleteCardDoc(params.cardId);
+    toast.custom(() => (
+      <Toast message={response.message} color="green" />
+    ));
+  } catch (error) {
+    toast.custom(() => (
+      <Toast message={error.message} color="red" />
+    ));
+  }
   const { redirect } = await request.json();
-  await deleteCardDoc(params.cardId);
   return {
-    data: { action: "delete" },
     redirect,
   };
 }

@@ -7,12 +7,22 @@ import {
 } from "react-router-dom";
 import { resetCard } from "../../db";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
+import Toast from "../../components/Toast";
 
 export async function action({ params, request }) {
+  try {
+    const response = await resetCard(params.cardId);
+    toast.custom(() => (
+      <Toast message={response.message} color="green" />
+    ));
+  } catch (error) {
+    toast.custom(() => (
+      <Toast message={error.message} color="red" />
+    ));
+  }
   const { redirect } = await request.json();
-  await resetCard(params.cardId);
   return {
-    data: { action: "reset" },
     redirect,
   };
 }
