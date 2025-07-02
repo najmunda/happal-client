@@ -1,10 +1,14 @@
 import { CircleX } from "lucide-react";
 import { useRouteError } from "react-router-dom";
+import { logError } from "../../utils/logger";
 import Header from "../../components/Header";
 import Navigation from "../../components/Navigation";
 
 export default function RootError() {
   const error = useRouteError();
+  if (Object.hasOwn(error, "cause") === false) {
+    logError(error);
+  }
   return (
     <>
       <Header />
@@ -12,7 +16,7 @@ export default function RootError() {
         <section className="p-2 flex-1 flex flex-col gap-2 justify-center items-center text-neutral-400">
           <CircleX size={80} />
           <p className="text-center text-sm">
-            Terjadi Eror. {error?.message ? `${error.message}.` : ''}
+            {error?.cause ? `Terjadi eror. ${error.message}.` : 'Terjadi eror yang tidak terduga.'}
           </p>
           <p className="text-center text-sm">
             Muat ulang halaman dan coba lagi. Atau{" "}
