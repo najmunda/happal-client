@@ -31,7 +31,7 @@ export default function About() {
           Spaced Repetition System (SRS).
         </p>
         <p className="text-sm">
-          Klik/Tap "Help" untuk mengetahui cara menggunakan aplikasi.
+          Klik/Tap &#34;Help&#34; untuk mengetahui cara menggunakan aplikasi.
         </p>
         <p className="text-sm">
           Aplikasi ini masih dalam pengembangan, dan mungkin anda akan menemukan

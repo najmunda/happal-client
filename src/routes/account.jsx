@@ -46,7 +46,12 @@ export async function action({ request }) {
       }
     }
     if (response?.message) {
-      toast.custom(() => <Toast message={response.message} color={response.success ? "green" : "red"} />);
+      toast.custom(() => (
+        <Toast
+          message={response.message}
+          color={response.success ? "green" : "red"}
+        />
+      ));
     }
     return null;
   } catch (error) {

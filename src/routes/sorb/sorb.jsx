@@ -27,9 +27,7 @@ export async function action({ request }) {
     const { id, rating } = await request.json();
     await updateSRS(id, rating);
   } catch (error) {
-    toast.custom(() => (
-      <Toast message={error.message} color="red" />
-    ));
+    toast.custom(() => <Toast message={error.message} color="red" />);
   }
   return null;
 }
@@ -190,7 +188,7 @@ export default function Sorb() {
                   </section>
                   <section className="flex items-center justify-center gap-1 text-neutral-400">
                     <p className="text-xs">
-                      Swipe Kanan / Klik tombol "Good" / Tekan{" "}
+                      Swipe Kanan / Klik tombol &#34;Good&#34; / Tekan{" "}
                       <kbd>{">"}</kbd>{" "}
                     </p>
                   </section>
@@ -222,7 +220,8 @@ export default function Sorb() {
                 <>
                   <section className="flex items-center justify-center gap-1 text-neutral-400">
                     <p className="text-xs">
-                      Swipe Kiri / Klik tombol "Again" / Tekan <kbd>{"<"}</kbd>
+                      Swipe Kiri / Klik tombol &#34;Again&#34; / Tekan{" "}
+                      <kbd>{"<"}</kbd>
                     </p>
                   </section>
                   <section className="p-2 flex items-center gap-2">
@@ -262,8 +261,8 @@ export default function Sorb() {
               <CopyX size={80} />
               <p className="text-center text-sm">
                 Tidak ada kartu tersimpan. Klik{" "}
-                <Pickaxe size={18} className="inline" /> "Mine" untuk menambah
-                kartu.
+                <Pickaxe size={18} className="inline" /> &#34;Mine&#34; untuk
+                menambah kartu.
               </p>
             </>
           )}

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import { getMonth } from "../utils/utils";
 
 export default function Calendar() {

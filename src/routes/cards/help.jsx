@@ -43,7 +43,9 @@ export default function CardHelp() {
                 <CalendarSync size={15} />
                 Reset
               </th>
-              <td>: Mereset jadwal munculnya sebuah kartu pada "Sorb".</td>
+              <td>
+                : Mereset jadwal munculnya sebuah kartu pada &#34;Sorb&#34;.
+              </td>
             </tr>
             <tr>
               <th className="flex gap-1 items-center">

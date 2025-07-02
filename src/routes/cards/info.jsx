@@ -23,7 +23,10 @@ export default function CardInfo() {
     navigate(-1);
   }
 
-  const sentence = card?.sentence.replace(card?.target, `<b>${card?.target}</b>`);
+  const sentence = card?.sentence.replace(
+    card?.target,
+    `<b>${card?.target}</b>`,
+  );
   const def = card?.def;
   const due = card?.srs.card.due;
   const lastReview = card?.srs.card.last_review;
@@ -32,7 +35,7 @@ export default function CardInfo() {
 
   return (
     <section className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
-      { card !== null && error === null ? (
+      {card !== null && error === null ? (
         <>
           <p className="pb-2 w-full text-2xl text-pretty">
             <Interweave content={sentence} />

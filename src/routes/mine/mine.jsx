@@ -35,14 +35,10 @@ export async function action({ request }) {
   } else {
     try {
       const response = await addCardDocs(cardsData.map((card) => card.data));
-      toast.custom(() => (
-        <Toast message={response.message} color="green" />
-      ));
+      toast.custom(() => <Toast message={response.message} color="green" />);
       return { success: response.success };
     } catch (error) {
-      toast.custom(() => (
-        <Toast message={error.message} color="red" />
-      ));
+      toast.custom(() => <Toast message={error.message} color="red" />);
       return { success: true };
     }
   }

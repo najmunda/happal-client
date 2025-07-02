@@ -20,13 +20,9 @@ export async function action({ request, params }) {
   delete formObject["redirect"];
   try {
     const response = await editCardDoc(params.cardId, formObject);
-    toast.custom(() => (
-      <Toast message={response.message} color="green" />
-    ));
+    toast.custom(() => <Toast message={response.message} color="green" />);
   } catch (error) {
-    toast.custom(() => (
-      <Toast message={error.message} color="red" />
-    ));
+    toast.custom(() => <Toast message={error.message} color="red" />);
   }
   return {
     redirect,
@@ -35,11 +31,11 @@ export async function action({ request, params }) {
 
 export async function loader({ params }) {
   try {
-      const { payload: card } = await getCardDoc(params.cardId);
-      return { error: null, card };
-    } catch (error) {
-      return { error, card: null };
-    }
+    const { payload: card } = await getCardDoc(params.cardId);
+    return { error: null, card };
+  } catch (error) {
+    return { error, card: null };
+  }
 }
 
 export default function CardEdit() {
@@ -73,7 +69,7 @@ export default function CardEdit() {
           </button>
         </div>
       </section>
-    )
+    );
   } else {
     const [sentence, setSentence] = useState(card.sentence);
     const [target, setTarget] = useState(card.target);

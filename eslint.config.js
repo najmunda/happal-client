@@ -14,7 +14,8 @@ export default defineConfig([
     "rules": {
       "no-unused-vars": ["error", {
         "caughtErrors": "none",
-      }]
+      }],
+      "react/prop-types": "off",
     }
   },
   eslintConfigPrettier,

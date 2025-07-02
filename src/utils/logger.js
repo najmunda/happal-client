@@ -1,3 +1,3 @@
 export function logError(error) {
-    return error;
+  return error;
 }

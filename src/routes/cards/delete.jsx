@@ -14,13 +14,9 @@ import Loading from "../../components/Loading";
 export async function action({ params, request }) {
   try {
     const response = await deleteCardDoc(params.cardId);
-    toast.custom(() => (
-      <Toast message={response.message} color="green" />
-    ));
+    toast.custom(() => <Toast message={response.message} color="green" />);
   } catch (error) {
-    toast.custom(() => (
-      <Toast message={error.message} color="red" />
-    ));
+    toast.custom(() => <Toast message={error.message} color="red" />);
   }
   const { redirect } = await request.json();
   return {

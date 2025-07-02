@@ -19,8 +19,6 @@ import { getCardsCustom, getCardsTotal } from "../../db";
 import CardsSettings from "../../components/CardsSettings";
 import Loading from "../../components/Loading";
 import { useEffect, useRef } from "react";
-import toast from "react-hot-toast";
-import Toast from "../../components/Toast";
 
 export function revalidate({ nextUrl }) {
   const isRevalidate = nextUrl.pathname === "/cards";
@@ -194,8 +192,8 @@ export default function Cards() {
           <CopyX size={80} />
           <p className="text-center text-sm">
             Belum ada kartu yang ditambahkan. Klik{" "}
-            <Pickaxe size={18} className="inline" /> "Mine" untuk menambah
-            kartu.
+            <Pickaxe size={18} className="inline" /> &#34;Mine&#34; untuk
+            menambah kartu.
           </p>
         </section>
       )}

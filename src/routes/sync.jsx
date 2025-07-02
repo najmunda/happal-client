@@ -5,13 +5,9 @@ import Toast from "../components/Toast";
 export async function action() {
   try {
     const response = await syncDB();
-    toast.custom(() => (
-      <Toast message={response.message} color="green" />
-    ));
+    toast.custom(() => <Toast message={response.message} color="green" />);
   } catch (error) {
-    toast.custom(() => (
-      <Toast message={error.message} color="red" />
-    ));
+    toast.custom(() => <Toast message={error.message} color="red" />);
   }
   return null;
 }

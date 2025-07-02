@@ -13,13 +13,9 @@ import Toast from "../../components/Toast";
 export async function action({ params, request }) {
   try {
     const response = await resetCard(params.cardId);
-    toast.custom(() => (
-      <Toast message={response.message} color="green" />
-    ));
+    toast.custom(() => <Toast message={response.message} color="green" />);
   } catch (error) {
-    toast.custom(() => (
-      <Toast message={error.message} color="red" />
-    ));
+    toast.custom(() => <Toast message={error.message} color="red" />);
   }
   const { redirect } = await request.json();
   return {
