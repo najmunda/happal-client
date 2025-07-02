@@ -41,7 +41,7 @@ export async function syncDB() {
     });
     return { success: true, message: "Seluruh kartu berhasil disinkronkan" };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Terjadi eror saat sinkronisasi", { cause: error });
   }
 }
@@ -62,7 +62,7 @@ export async function getCardsTotal() {
       payload: response.rows.length,
     };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Jumlah kartu gagal didapatkan", { cause: error });
   }
 }
@@ -115,7 +115,7 @@ export async function getCardsCustom({
       payload: response.docs,
     };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Kartu gagal disortir/diurutkan", { cause: error });
   }
 }
@@ -128,7 +128,7 @@ export async function getCardDoc(cardId) {
       payload: cardDoc,
     };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Detail kartu gagal didapatkan", { cause: error });
   }
 }
@@ -152,7 +152,7 @@ export async function addCardDocs(newCardDocs) {
     //   return setMonthlyHistory({ newCountAdd: newCardDocs.length });
     // })
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Seluruh kartu gagal ditambahkan", { cause: error });
   }
   try {
@@ -173,10 +173,10 @@ export async function addCardDocs(newCardDocs) {
     return { success: true, message: "Seluruh kartu berhasil ditambahkan" };
   } catch (error) {
     if (Object.hasOwn(error, "cause")) {
-      logError(error.cause);
+      await logError(error.cause);
       throw error;
     } else {
-      logError(error);
+      await logError(error);
       throw new Error("Beberapa kartu gagal ditambahkan", { cause: error });
     }
   }
@@ -191,7 +191,7 @@ export async function editCardDoc(cardId, editData) {
     await db.put(editedCardDoc);
     return { success: true, message: "Kartu berhasil diubah" };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Kartu gagal diubah", { cause: error });
   }
 }
@@ -207,7 +207,7 @@ export async function resetCard(cardId) {
     });
     return { success: true, message: "Kartu berhasil direset" };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Kartu gagal direset", { cause: error });
   }
 }
@@ -218,7 +218,7 @@ export async function deleteCardDoc(cardId) {
     await db.remove(cardDoc);
     return { success: true, message: "Kartu berhasil dihapus" };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Kartu gagal dihapus", { cause: error });
   }
 }
@@ -270,7 +270,7 @@ export async function getTodayCards() {
       },
     };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Kartu untuk hari ini gagal didapatkan", { cause: error });
   }
 }
@@ -296,10 +296,10 @@ export async function updateSRS(cardId, rating) {
     return { success: true };
   } catch (error) {
     if (Object.hasOwn(error, "cause")) {
-      logError(error.cause);
+      await logError(error.cause);
       throw error;
     } else {
-      logError(error);
+      await logError(error);
       throw new Error("SRS kartu gagal diperbarui", { cause: error });
     }
   }
@@ -349,7 +349,7 @@ export async function downloadAllCards() {
     link.remove();
     return { success: true };
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Terjadi eror saat mendapatkan file cadangan", {
       cause: error,
     });
@@ -370,7 +370,7 @@ export async function deleteAllCards() {
     }));
     responses = await db.bulkDocs(deletedCardsDoc);
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Seluruh kartu gagal dihapus", { cause: error });
   }
   try {
@@ -388,10 +388,10 @@ export async function deleteAllCards() {
     return { success: true, message: "Seluruh kartu berhasil dihapus" };
   } catch (error) {
     if (Object.hasOwn(error, "cause")) {
-      logError(error.cause);
+      await logError(error.cause);
       throw error;
     } else {
-      logError(error);
+      await logError(error);
       throw new Error("Beberapa kartu gagal dihapus", { cause: error });
     }
   }
@@ -429,7 +429,7 @@ export async function importCards(importedFileObjUrl) {
     }
     responses = await db.bulkDocs(cardsArr);
   } catch (error) {
-    logError(error);
+    await logError(error);
     throw new Error("Seluruh kartu pada file cadangan gagal diimpor", {
       cause: error,
     });
@@ -454,10 +454,10 @@ export async function importCards(importedFileObjUrl) {
     };
   } catch (error) {
     if (Object.hasOwn(error, "cause")) {
-      logError(error.cause);
+      await logError(error.cause);
       throw error;
     } else {
-      logError(error);
+      await logError(error);
       throw new Error("Beberapa kartu pada file cadangan gagal diimpor", {
         cause: error,
       });
@@ -523,3 +523,20 @@ export async function importCards(importedFileObjUrl) {
 //       throw error;
 //     });
 // }
+
+// LOG
+export async function appendLog(logObject) {
+  const clientLogDoc = await db.get("client-log").catch((error) => {
+    if (error.name === "not_found") {
+      return { _id: "client-log", log: "" };
+    } else {
+      throw new Error("Gagal mendapatkan log", {
+        cause: error,
+      });
+    }
+  });
+  const clientLog = clientLogDoc["log"] ?? "";
+  const appendedClientLog = clientLog + "\n" + JSON.stringify(logObject);
+  await db.put(Object.assign(clientLogDoc, { log: appendedClientLog }));
+  console.log((await db.get("client-log"))["log"]);
+}
