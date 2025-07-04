@@ -526,40 +526,53 @@ export async function importCards(importedFileObjUrl) {
 
 // LOG
 export async function appendLog(logObject) {
-  const clientLogDoc = await db.get("client-log").catch((error) => {
-    if (error.name === "not_found") {
-      return { _id: "client-log", log: [] };
-    } else {
-      throw new Error("Gagal mendapatkan log", {
-        cause: error,
-      });
-    }
-  });
-  const clientLog = clientLogDoc["log"];
-  const appendedClientLog = [...clientLog, logObject];
-  await db.put(Object.assign(clientLogDoc, { log: appendedClientLog }));
+  try {
+    const clientLogDoc = await db.get("client-log").catch((error) => {
+      if (error.name === "not_found") {
+        return { _id: "client-log", log: [] };
+      } else {
+        throw error;
+      }
+    });
+    const clientLog = clientLogDoc["log"];
+    const appendedClientLog = [...clientLog, logObject];
+    await db.put(Object.assign(clientLogDoc, { log: appendedClientLog }));
+  } catch (error) {
+    console.warn("Eror gagal dilog");
+  }
 }
 
 export async function uploadLog() {
-  const clientLogDoc = await db.get("client-log").catch((error) => {
-    if (error.name === "not_found") {
-      return { _id: "client-log", log: [] };
-    } else {
-      throw new Error("Gagal mendapatkan log", {
-        cause: error,
+  let clientLogDoc;
+  try {
+    clientLogDoc = await db.get("client-log").catch((error) => {
+      if (error.name === "not_found") {
+        return { _id: "client-log", log: [] };
+      } else {
+        throw error;
+      }
+    });
+    const clientLog = clientLogDoc["log"];
+    if (clientLog !== "") {
+      await fetch("/api/log/client", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ log: clientLog }),
+        method: "POST",
       });
     }
-  });
-  const clientLog = clientLogDoc["log"];
-  if (clientLog !== "") {
-    await fetch("/api/log/client", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ log: clientLog }),
-      method: "POST",
-    });
+  } catch (error) {
+    throw new Error("Log gagal diunggah");
+  }
+  try {
     await db.put(Object.assign(clientLogDoc, { log: [] }));
+    return {
+      success: true,
+      message: "Log berhasil diunggah",
+    };
+  } catch (error) {
+    throw new Error("Log gagal direset, tapi berhasil diunggah");
   }
 }
