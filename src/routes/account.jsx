@@ -8,7 +8,13 @@ import { LogOut, RefreshCw } from "lucide-react";
 import { ServerCrash } from "lucide-react";
 import toast from "react-hot-toast";
 import Loading from "../components/Loading";
-import { deleteAllCards, downloadAllCards, importCards, syncDB } from "../db";
+import {
+  deleteAllCards,
+  downloadAllCards,
+  importCards,
+  syncDB,
+  uploadLog,
+} from "../db";
 import AccountButtons from "../components/AccountButtons";
 import Toast from "../components/Toast";
 
@@ -32,6 +38,10 @@ export async function action({ request }) {
       }
       case "import": {
         response = await importCards(formData.get("file"));
+        break;
+      }
+      case "upload-log": {
+        response = await uploadLog();
         break;
       }
       case "logout": {

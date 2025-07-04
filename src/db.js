@@ -528,15 +528,38 @@ export async function importCards(importedFileObjUrl) {
 export async function appendLog(logObject) {
   const clientLogDoc = await db.get("client-log").catch((error) => {
     if (error.name === "not_found") {
-      return { _id: "client-log", log: "" };
+      return { _id: "client-log", log: [] };
     } else {
       throw new Error("Gagal mendapatkan log", {
         cause: error,
       });
     }
   });
-  const clientLog = clientLogDoc["log"] ?? "";
-  const appendedClientLog = clientLog + "\n" + JSON.stringify(logObject);
+  const clientLog = clientLogDoc["log"];
+  const appendedClientLog = [...clientLog, logObject];
   await db.put(Object.assign(clientLogDoc, { log: appendedClientLog }));
-  console.log((await db.get("client-log"))["log"]);
+}
+
+export async function uploadLog() {
+  const clientLogDoc = await db.get("client-log").catch((error) => {
+    if (error.name === "not_found") {
+      return { _id: "client-log", log: [] };
+    } else {
+      throw new Error("Gagal mendapatkan log", {
+        cause: error,
+      });
+    }
+  });
+  const clientLog = clientLogDoc["log"];
+  if (clientLog !== "") {
+    await fetch("/api/log/client", {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ log: clientLog }),
+      method: "POST",
+    });
+    await db.put(Object.assign(clientLogDoc, { log: [] }));
+  }
 }

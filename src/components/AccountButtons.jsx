@@ -1,4 +1,4 @@
-import { Download, FileUp, Trash2 } from "lucide-react";
+import { CloudAlert, FileDown, FileUp, Trash2 } from "lucide-react";
 import { useRef } from "react";
 import { useSubmit } from "react-router-dom";
 
@@ -37,7 +37,7 @@ export default function AccountButtons() {
         value="download"
         className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"
       >
-        <Download />
+        <FileDown />
         Unduh file cadangan
       </button>
       <button
@@ -57,6 +57,15 @@ export default function AccountButtons() {
         id="import"
         className="hidden"
       />
+      <button
+        type="submit"
+        name="intent"
+        value="upload-log"
+        className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"
+      >
+        <CloudAlert />
+        Unggah log eror
+      </button>
     </>
   );
 }
