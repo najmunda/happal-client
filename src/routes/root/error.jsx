@@ -3,16 +3,26 @@ import { useRouteError } from "react-router-dom";
 import { logError } from "../../utils/logger";
 import Header from "../../components/Header";
 import Navigation from "../../components/Navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function RootError() {
   const error = useRouteError();
+  const isErrorLoggedRef = useRef(false);
 
-  useEffect(async () => {
-    if (Object.hasOwn(error, "cause") === false) {
-      await logError(error);
+  useEffect(() => {
+    if (isErrorLoggedRef.current === false) {
+      const asyncLogError = async (error) => {
+        await logError(error);
+      };
+      if (Object.hasOwn(error, "cause") === false) {
+        asyncLogError(error);
+      } else if (Object.hasOwn(error, "cause") === true) {
+        asyncLogError(error.cause);
+      }
+      isErrorLoggedRef.current = true;
     }
   }, []);
+
   return (
     <>
       <Header />
