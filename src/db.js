@@ -278,30 +278,21 @@ export async function getTodayCards() {
 export async function updateSRS(cardId, rating) {
   try {
     const f = fsrs();
-    const { payload: cardDoc } = await getCardDoc(cardId).catch((error) => {
-      throw new Error("SRS kartu gagal diperbarui", { cause: error.cause });
-    });
+    const { payload: cardDoc } = await getCardDoc(cardId);
     const schedulingCard = f.next(
       cardDoc.srs.card,
       new Date(),
       rating == 0 ? Rating.Again : Rating.Good,
     );
-    await editCardDoc(cardId, { srs: schedulingCard }).catch((error) => {
-      throw new Error("SRS kartu gagal diperbarui", { cause: error.cause });
-    });
+    await editCardDoc(cardId, { srs: schedulingCard });
     // const scheduledDays = schedulingCard.card.scheduled_days;
     // if (scheduledDays > 0) {
     //   await setMonthlyHistory({reviewCountAdd: 1});
     // }
     return { success: true };
   } catch (error) {
-    if (Object.hasOwn(error, "cause")) {
-      await logError(error.cause);
-      throw error;
-    } else {
-      await logError(error);
-      throw new Error("SRS kartu gagal diperbarui", { cause: error });
-    }
+    await logError(error);
+    throw new Error("SRS kartu gagal diperbarui", { cause: error });
   }
 }
 
