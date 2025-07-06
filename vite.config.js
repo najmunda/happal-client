@@ -48,5 +48,8 @@ export default defineConfig({
       },
       '/check-internet': 'http://fedoraproject.org/static/hotspot.txt',
     }
-  }
+  },
+  build: {
+    sourcemap: true,
+  },
 })
