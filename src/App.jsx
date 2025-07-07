@@ -41,7 +41,7 @@ export default function App() {
       id: "root",
       path: "/",
       shouldRevalidate: () => {
-        return true;
+        return false;
       },
       loader: rootloader,
       element: <Root />,
