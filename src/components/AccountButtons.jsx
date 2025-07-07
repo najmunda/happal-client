@@ -25,20 +25,20 @@ export default function AccountButtons() {
       <button
         type="submit"
         name="intent"
-        value="delete"
-        className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"
-      >
-        <Trash2 />
-        Hapus semua kartu
-      </button>
-      <button
-        type="submit"
-        name="intent"
         value="download"
         className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"
       >
         <FileDown />
         Unduh file cadangan
+      </button>    
+      <button
+        type="submit"
+        name="intent"
+        value="delete"
+        className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"
+      >
+        <Trash2 />
+        Hapus semua kartu
       </button>
       <button
         type="button"
