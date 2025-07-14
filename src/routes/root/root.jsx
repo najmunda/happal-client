@@ -7,12 +7,13 @@ import { Toaster } from "react-hot-toast";
 
 export async function loader() {
   const serverStatusResponse = await fetch("/api/server/status");
+  console.log(serverStatusResponse);
   let authedUser = null;
   let avatarBlob = null;
   if (serverStatusResponse.ok) {
     const loggedUserResponse = await fetch("/api/user/me");
     if (loggedUserResponse.ok) {
-      authedUser = await loggedUserResponse.json();
+      ({ data: { userDetail: authedUser} } = await loggedUserResponse.json());
       const avatarResponse = await fetch(
         `https://ui-avatars.com/api/?name=${authedUser.username}`,
       );
