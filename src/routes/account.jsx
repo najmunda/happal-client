@@ -5,7 +5,6 @@ import {
   useRouteLoaderData,
 } from "react-router-dom";
 import { LogOut, RefreshCw } from "lucide-react";
-import { ServerCrash } from "lucide-react";
 import toast from "react-hot-toast";
 import Loading from "../components/Loading";
 import {
@@ -17,6 +16,9 @@ import {
 } from "../db";
 import AccountButtons from "../components/AccountButtons";
 import Toast from "../components/Toast";
+import { OnlineContext } from "../routes/root/root";
+import { useContext } from "react";
+import clsx from "clsx";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -71,7 +73,8 @@ export async function action({ request }) {
 }
 
 export default function Account() {
-  const { serverStatus, authedUser, avatarBlob } = useRouteLoaderData("root");
+  const isOnline = useContext(OnlineContext);
+  const { authedUser, avatarBlob } = useRouteLoaderData("root");
   const navigation = useNavigation();
   const isLoading =
     navigation.state === "loading" || navigation.state === "submitting";
@@ -106,7 +109,11 @@ export default function Account() {
                 type="submit"
                 name="intent"
                 value="sync"
-                className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"
+                className={clsx("p-2 flex gap-2 items-center text-left", {
+                  "text-black hover:bg-neutral-100": isOnline === true,
+                  "text-neutral-400": isOnline === false,
+                })}
+                disabled={isOnline === false}
               >
                 <RefreshCw />
                 Sinkronkan kartu
@@ -125,41 +132,21 @@ export default function Account() {
           </>
         ) : (
           <>
-            {serverStatus.match(/^5/g) ? (
-              <>
-                <ServerCrash size={80} className="self-center shrink-0" />
-                <p className="text-center text-xl">
-                  Autentikasi tidak tersedia.
-                </p>
-                <p className="text-center text-sm">
-                  Anda tidak terkoneksi internet / terjadi galat pada server.
-                  Cek koneksi internet anda, muat ulang halaman dan coba lagi.
-                  Atau{" "}
-                  <a href="https://x.com/najmunda" className="font-bold">
-                    Hubungi Pengembang
-                  </a>
-                  .
-                </p>
-              </>
-            ) : (
-              <>
-                <img src="/happal.svg" alt="" className="size-20 self-center" />
-                <p className="text-center text-xl">
-                  Sinkronkan, Gunakan dimanapun.
-                </p>
-                <p className="text-center text-sm">
-                  Buat/Login akun untuk menyimpan kartu dan menghafal dimanapun.
-                </p>
-                <div className="flex gap-2 justify-center">
-                  <a
-                    href="/api/user/login/google"
-                    className="p-2 border border-neutral-200 rounded-full hover:bg-neutral-100"
-                  >
-                    <img src="/google_g_icon.png" alt="" className="size-8" />
-                  </a>
-                </div>
-              </>
-            )}
+            <img src="/happal.svg" alt="" className="size-20 self-center" />
+            <p className="text-center text-xl">
+              Sinkronkan, Gunakan dimanapun.
+            </p>
+            <p className="text-center text-sm">
+              Buat/Login akun untuk menyimpan kartu dan menghafal dimanapun.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <a
+                href="/api/user/login/google"
+                className="p-2 border border-neutral-200 rounded-full hover:bg-neutral-100"
+              >
+                <img src="/google_g_icon.png" alt="" className="size-8" />
+              </a>
+            </div>
             <Form method="post" className="flex flex-col border-t-2 divide-y-2">
               <AccountButtons />
             </Form>

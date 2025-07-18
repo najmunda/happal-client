@@ -1,10 +1,14 @@
+import clsx from "clsx";
 import { CloudAlert, FileDown, FileUp, Trash2 } from "lucide-react";
 import { useRef } from "react";
 import { useSubmit } from "react-router-dom";
+import { OnlineContext } from "../routes/root/root";
+import { useContext } from "react";
 
 export default function AccountButtons() {
   const importBtnRef = useRef();
   const submit = useSubmit();
+  const isOnline = useContext(OnlineContext);
 
   function handleImportButton(e) {
     importBtnRef.current.click();
@@ -30,7 +34,7 @@ export default function AccountButtons() {
       >
         <FileDown />
         Unduh file cadangan
-      </button>    
+      </button>
       <button
         type="submit"
         name="intent"
@@ -61,7 +65,10 @@ export default function AccountButtons() {
         type="submit"
         name="intent"
         value="upload-log"
-        className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"
+        className={clsx("p-2 flex gap-2 items-center text-left", {
+          "text-black hover:bg-neutral-100 cursor-pointer": isOnline === true,
+          "text-neutral-400 cursor-default": isOnline === false,
+        })}
       >
         <CloudAlert />
         Unggah log eror

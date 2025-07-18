@@ -4,16 +4,21 @@ import Navigation from "../../components/Navigation";
 import Loading from "../../components/Loading";
 import { getFirstPath } from "../../utils/utils";
 import { Toaster } from "react-hot-toast";
+import { useEffect, useState } from "react";
+import { createContext } from "react";
+
+export const OnlineContext = createContext(navigator.onLine);
 
 export async function loader() {
   const serverStatusResponse = await fetch("/api/server/status");
-  console.log(serverStatusResponse);
   let authedUser = null;
   let avatarBlob = null;
   if (serverStatusResponse.ok) {
     const loggedUserResponse = await fetch("/api/user/me");
     if (loggedUserResponse.ok) {
-      ({ data: { userDetail: authedUser} } = await loggedUserResponse.json());
+      ({
+        data: { userDetail: authedUser },
+      } = await loggedUserResponse.json());
       const avatarResponse = await fetch(
         `https://ui-avatars.com/api/?name=${authedUser.username}`,
       );
@@ -30,14 +35,27 @@ export async function loader() {
 export default function Root() {
   const navigation = useNavigation();
   const location = useLocation();
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const isPageChange =
     getFirstPath(location.pathname) !=
       getFirstPath(navigation.location?.pathname) &&
     navigation.state === "loading";
 
+  useEffect(() => {
+    const checkLineHandler = () => {
+      setIsOnline(navigator.onLine);
+    };
+    addEventListener("online", checkLineHandler);
+    addEventListener("offline", checkLineHandler);
+    return () => {
+      removeEventListener("online", checkLineHandler);
+      removeEventListener("offline", checkLineHandler);
+    };
+  });
+
   return (
-    <>
+    <OnlineContext.Provider value={isOnline}>
       <Header />
       {isPageChange ? (
         <Loading className="flex-1 flex flex-col justify-center items-center" />
@@ -52,6 +70,6 @@ export default function Root() {
       <div>
         <Toaster position="bottom-center" reverseOrder={false} />
       </div>
-    </>
+    </OnlineContext.Provider>
   );
 }
