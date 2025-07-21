@@ -35,8 +35,7 @@ import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
 import { action as syncAction } from "./routes/sync.jsx";
 import About from "./routes/about.jsx";
 
-export default function App() {
-  const router = createBrowserRouter([
+const router = createBrowserRouter([
     {
       id: "root",
       path: "/",
@@ -124,8 +123,7 @@ export default function App() {
     },
   ]);
 
-  // authedUser
-
+export default function App() {
   return (
     <RouterProvider
       router={router}
