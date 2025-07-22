@@ -39,8 +39,10 @@ const router = createBrowserRouter([
     {
       id: "root",
       path: "/",
-      shouldRevalidate: () => {
-        return false;
+      shouldRevalidate: (args) => {
+        const formData = args?.formData;
+        const intent = formData?.get('intent');
+        return intent === 'logout' ? true : false;
       },
       loader: rootloader,
       element: <Root />,
