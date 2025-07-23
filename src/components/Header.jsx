@@ -16,7 +16,7 @@ export default function Header() {
           <Navigation />
         </nav>
         <div className="flex items-center justify-end gap-2">
-          {authedUser && <SyncButton />}
+          {Object.hasOwn(authedUser, 'id') && <SyncButton />}
           <NavLink
             to={"/account"}
             className={({ isActive }) =>
