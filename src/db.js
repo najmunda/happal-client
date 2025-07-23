@@ -46,6 +46,52 @@ export async function syncDB() {
   }
 }
 
+// Root
+export async function getAuthedUserDoc() {
+  // { _id: "authed-user", id: "", username: "", last_sync: "", avatar_blob: "", pending_logout: false }
+  try {
+    const authedUserDoc = await db.get("authed-user").catch((error) => {
+      if (error.name === "not_found") {
+        return { _id: "authed-user" };
+      } else {
+        throw error;
+      }
+    });
+    return {
+      success: true,
+      payload: authedUserDoc,
+    };
+  } catch (error) {
+    await logError(error);
+    throw new Error("Detail user gagal didapatkan", { cause: error });
+  }
+}
+
+export async function updateAuthedUserDoc(newAuthedUserData) {
+  // oldAuthedUserData replaced by newAuthedUserData except _id and _rev
+  try {
+    const { _id, _rev } = await db.get("authed-user").catch((error) => {
+      if (error.name === "not_found") {
+        return { _id: "authed-user" };
+      } else {
+        throw error;
+      }
+    });
+    await db.put(
+      Object.assign(
+        _rev !== undefined ? { _id, _rev } : { _id },
+        newAuthedUserData,
+      ),
+    );
+    return {
+      success: true,
+    };
+  } catch (error) {
+    await logError(error);
+    throw new Error("Detail user gagal diperbarui", { cause: error });
+  }
+}
+
 // cardDoc = document with id card-* stored in pouchdb
 // card = object inside CardDoc (cardDoc.srs.card)
 // response = response from pouchdb api (db.put, db.remove, etc.)

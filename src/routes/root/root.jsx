@@ -1,4 +1,9 @@
-import { Outlet, useLocation, useNavigation } from "react-router-dom";
+import {
+  Outlet,
+  useFetcher,
+  useLocation,
+  useNavigation,
+} from "react-router-dom";
 import Header from "../../components/Header";
 import Navigation from "../../components/Navigation";
 import Loading from "../../components/Loading";
@@ -6,27 +11,46 @@ import { getFirstPath } from "../../utils/utils";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { createContext } from "react";
+import { getAuthedUserDoc, updateAuthedUserDoc } from "../../db";
 
 export const OnlineContext = createContext(navigator.onLine);
 
 export async function loader() {
-  const serverStatusResponse = await fetch("/api/server/status");
-  let authedUser = null;
-  let avatarBlob = null;
-  if (serverStatusResponse.ok) {
-    const loggedUserResponse = await fetch("/api/user/me");
-    if (loggedUserResponse.ok) {
-      ({
-        data: { userDetail: authedUser },
-      } = await loggedUserResponse.json());
-      const avatarResponse = await fetch(
-        `https://ui-avatars.com/api/?name=${authedUser.username}`,
-      );
-      avatarBlob = await avatarResponse.blob();
+  let { payload: authedUser } = await getAuthedUserDoc();
+  let avatarBlob = authedUser["avatar_blob"];
+  if (navigator.onLine) {
+    const serverStatusResponse = await fetch("/api/server/status");
+    if (serverStatusResponse.ok) {
+      if (Object.hasOwn(authedUser, "pending_logout")) {
+        const logoutResponse = await fetch("/api/user/logout", {
+          method: "POST",
+        });
+        if (logoutResponse.ok) {
+          await updateAuthedUserDoc({ _deleted: true });
+          authedUser = { _id: "authed-user" };
+          avatarBlob = undefined;
+        }
+      } else {
+        const loggedUserResponse = await fetch("/api/user/me");
+        if (loggedUserResponse.ok) {
+          ({
+            data: { userDetail: authedUser },
+          } = await loggedUserResponse.json());
+          const avatarResponse = await fetch(
+            `https://ui-avatars.com/api/?name=${authedUser.username}`,
+          );
+          avatarBlob = await avatarResponse.blob();
+          await updateAuthedUserDoc({ ...authedUser, avatar_blob: avatarBlob });
+        } else if (Object.hasOwn(authedUser, "id")) {
+          await updateAuthedUserDoc({ _deleted: true });
+          authedUser = { _id: "authed-user" };
+          avatarBlob = undefined;
+        }
+      }
     }
   }
   return {
-    serverStatus: serverStatusResponse.status.toString(),
+    // serverStatus: serverStatusResponse.status.toString(),
     authedUser,
     avatarBlob,
   };
@@ -36,6 +60,7 @@ export default function Root() {
   const navigation = useNavigation();
   const location = useLocation();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const fetcher = useFetcher();
 
   const isPageChange =
     getFirstPath(location.pathname) !=
@@ -45,6 +70,7 @@ export default function Root() {
   useEffect(() => {
     const checkLineHandler = () => {
       setIsOnline(navigator.onLine);
+      fetcher.load("/");
     };
     addEventListener("online", checkLineHandler);
     addEventListener("offline", checkLineHandler);
@@ -52,7 +78,7 @@ export default function Root() {
       removeEventListener("online", checkLineHandler);
       removeEventListener("offline", checkLineHandler);
     };
-  });
+  }, []);
 
   return (
     <OnlineContext.Provider value={isOnline}>
