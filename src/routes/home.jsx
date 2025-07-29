@@ -1,15 +1,15 @@
 import { useLoaderData } from "react-router-dom";
-import { getCardsTotal, getMonthlyHistory, getTodayCards } from "../db";
+import { getCardDocTotal, getMonthlyHistory, getSorbData } from "../db";
 import { getStartTodayUTC, greetTime } from "../utils/utils";
 
 export async function loader() {
   const today = getStartTodayUTC();
   const monthlyHistory = await getMonthlyHistory();
   const newCards = monthlyHistory[today.getDate()]?.newCount ?? 0;
-  const { cardsLeft } = await getTodayCards();
+  const { cardsLeft } = await getSorbData();
   const cardsToday =
     cardsLeft.new.length + cardsLeft.learn.length + cardsLeft.review.length;
-  const cardsTotal = await getCardsTotal();
+  const cardsTotal = await getCardDocTotal();
   return { newCards, cardsToday, cardsTotal };
 }
 

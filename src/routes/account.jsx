@@ -8,11 +8,11 @@ import { LogOut, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
 import Loading from "../components/Loading";
 import {
-  deleteAllCards,
-  downloadAllCards,
-  importCards,
+  deleteAllCardDoc,
+  downloadAllCardDoc,
+  importCardDocs,
   syncDB,
-  updateAuthedUserDoc,
+  setAuthedUserDoc,
   uploadLog,
 } from "../db";
 import AccountButtons from "../components/AccountButtons";
@@ -32,15 +32,15 @@ export async function action({ request }) {
         break;
       }
       case "delete": {
-        response = await deleteAllCards();
+        response = await deleteAllCardDoc();
         break;
       }
       case "download": {
-        response = await downloadAllCards();
+        response = await downloadAllCardDoc();
         break;
       }
       case "import": {
-        response = await importCards(formData.get("file"));
+        response = await importCardDocs(formData.get("file"));
         break;
       }
       case "upload-log": {
@@ -51,10 +51,10 @@ export async function action({ request }) {
         if (navigator.onLine) {
           response = await fetch("/api/user/logout", { method: "POST" });
           if (response.ok) {
-            await updateAuthedUserDoc({ _deleted: true });
+            await setAuthedUserDoc({ _deleted: true });
           }
         } else {
-          await updateAuthedUserDoc({ pending_logout: true });
+          await setAuthedUserDoc({ pending_logout: true });
         }
         return redirect("/account");
       }
@@ -79,7 +79,7 @@ export async function action({ request }) {
 
 export default function Account() {
   const isOnline = useContext(OnlineContext);
-  const { authedUser, avatarBlob } = useRouteLoaderData("root");
+  const { authedUserDoc, avatarBlob } = useRouteLoaderData("root");
   const navigation = useNavigation();
   const isLoading =
     navigation.state === "loading" || navigation.state === "submitting";
@@ -90,7 +90,7 @@ export default function Account() {
       <div className="w-full max-w-sm flex-[1_1_auto] [@media(min-height:600px)]:flex-[0_1_auto] h-[100px] [@media(min-height:600px)]:h-fit md:max-h-[35rem] p-6 flex flex-col items-stretch gap-3 bg-white text-center rounded-lg shadow overflow-y-auto">
         {isLoading ? (
           <Loading className="flex-1 flex flex-col justify-center items-center" />
-        ) : Object.hasOwn(authedUser, "id") ? (
+        ) : Object.hasOwn(authedUserDoc, "id") ? (
           <>
             <div className="flex flex-col sm:flex-row items-stretch gap-2">
               <img
@@ -100,11 +100,11 @@ export default function Account() {
               />
               <div className="flex flex-col gap-2 justify-center overflow-hidden">
                 <p className="text-2xl text-center sm:text-left truncate">
-                  {authedUser.username}
+                  {authedUserDoc.username}
                 </p>
                 <p className="text-xs text-center sm:text-left text-wrap">
-                  {authedUser["last_sync"]
-                    ? `Sinkron Terakhir: ${new Date(authedUser["last_sync"]).toLocaleString()}`
+                  {authedUserDoc["last_sync"]
+                    ? `Sinkron Terakhir: ${new Date(authedUserDoc["last_sync"]).toLocaleString()}`
                     : "Kartu anda belum disinkronkan."}
                 </p>
               </div>

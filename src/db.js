@@ -10,6 +10,14 @@ import { validateCardDoc } from "./utils/validator";
 PouchDB.plugin(findPlugin);
 PouchDB.plugin(upsertPlugin);
 
+// Doc = object of pouchdb document
+// cardDoc = object of pouchdb document with id "card-*" inside
+// card = object inside cardDoc (cardDoc.srs.card)
+// response = response from pouchdb api (db.put, db.remove, etc.)
+// Every function return { success: true , message?, payload? } on success process
+// Logged error should an original error
+// Custom Error with message handled & showed on UI
+
 const db = new PouchDB("sorbit", {
   auto_compaction: true,
   revs_limit: 500,
@@ -67,7 +75,7 @@ export async function getAuthedUserDoc() {
   }
 }
 
-export async function updateAuthedUserDoc(newAuthedUserData) {
+export async function setAuthedUserDoc(newAuthedUserData) {
   // oldAuthedUserData replaced by newAuthedUserData except _id and _rev
   try {
     const { _id, _rev } = await db.get("authed-user").catch((error) => {
@@ -92,12 +100,7 @@ export async function updateAuthedUserDoc(newAuthedUserData) {
   }
 }
 
-// cardDoc = document with id card-* stored in pouchdb
-// card = object inside CardDoc (cardDoc.srs.card)
-// response = response from pouchdb api (db.put, db.remove, etc.)
-// Error handled on UI
-
-export async function getCardsTotal() {
+export async function getCardDocTotal() {
   try {
     const response = await db.allDocs({
       startkey: "card-",
@@ -147,6 +150,7 @@ export async function getCardsCustom({
       sort: [{ [SortBy[sortby]]: order }],
       use_index: `${sortby}-index`,
     });
+    let payload = response.docs;
     if (response.docs && q != "") {
       const options = {
         keys: ["target", "sentence", "def"],
@@ -154,11 +158,11 @@ export async function getCardsCustom({
       };
       const fuse = new Fuse(response.docs, options);
       const searchResult = fuse.search(q);
-      return searchResult.map((card) => card.item);
+      payload = searchResult.map((card) => card.item);
     }
     return {
       success: true,
-      payload: response.docs,
+      payload,
     };
   } catch (error) {
     await logError(error);
@@ -179,12 +183,12 @@ export async function getCardDoc(cardId) {
   }
 }
 
-export async function addCardDocs(newCardDocs) {
+export async function addCardDocs(newCardsData) {
   let responses;
   try {
     const dateCreate = new Date();
     const emptyCard = createEmptyCard(dateCreate);
-    newCardDocs = newCardDocs.map((cardDoc) => ({
+    const newCardDocs = newCardsData.map((cardDoc) => ({
       _id: `card-${crypto.randomUUID()}`,
       ...cardDoc,
       date_created: dateCreate.toISOString(),
@@ -233,7 +237,7 @@ export async function editCardDoc(cardId, editData) {
     const { payload: cardDoc } = await getCardDoc(cardId).catch((error) => {
       throw error.cause;
     });
-    const editedCardDoc = Object.assign(cardDoc, { ...editData });
+    const editedCardDoc = { ...cardDoc, ...editData };
     await db.put(editedCardDoc);
     return { success: true, message: "Kartu berhasil diubah" };
   } catch (error) {
@@ -270,7 +274,7 @@ export async function deleteCardDoc(cardId) {
 }
 
 // SORB
-export async function getTodayCards() {
+export async function getSorbData() {
   try {
     const endToday = getEndTodayUTC();
     await db.createIndex({
@@ -300,7 +304,7 @@ export async function getTodayCards() {
     const againNextTime =
       topCardDoc && msToDHM(againCard.card.due - againCard.card.last_review);
     // Get cards left
-    const cardsLeft = Object.groupBy(response.docs, ({ srs }) =>
+    const todayCardsLeft = Object.groupBy(response.docs, ({ srs }) =>
       srs.card.state == 2 || srs.card.state == 0 ? srs.card.state : 1,
     );
     return {
@@ -308,10 +312,10 @@ export async function getTodayCards() {
       payload: {
         topCardDoc,
         nextReview: { good: goodNextTime, again: againNextTime },
-        cardsLeft: {
-          new: cardsLeft["0"] ?? [],
-          learn: cardsLeft["1"] ?? [],
-          review: cardsLeft["2"] ?? [],
+        todayCardsLeft: {
+          new: todayCardsLeft["0"] ?? [],
+          learn: todayCardsLeft["1"] ?? [],
+          review: todayCardsLeft["2"] ?? [],
         },
       },
     };
@@ -325,13 +329,13 @@ export async function updateSRS(cardId, rating) {
   try {
     const f = fsrs();
     const { payload: cardDoc } = await getCardDoc(cardId);
-    const schedulingCard = f.next(
+    const updatedSrs = f.next(
       cardDoc.srs.card,
       new Date(),
       rating == 0 ? Rating.Again : Rating.Good,
     );
-    await editCardDoc(cardId, { srs: schedulingCard });
-    // const scheduledDays = schedulingCard.card.scheduled_days;
+    await editCardDoc(cardId, { srs: updatedSrs });
+    // const scheduledDays = updatedSrs.card.scheduled_days;
     // if (scheduledDays > 0) {
     //   await setMonthlyHistory({reviewCountAdd: 1});
     // }
@@ -343,14 +347,14 @@ export async function updateSRS(cardId, rating) {
 }
 
 // Accounts
-export async function downloadAllCards() {
+export async function downloadAllCardDoc() {
   try {
     const response = await db.allDocs({
       startkey: "card-",
       endkey: "card-\ufff0",
       include_docs: true,
     });
-    const filteredCardDocs = response.rows.map(
+    const allCardDocs = response.rows.map(
       ({ doc: { sentence, target, def, date_created, srs, _id } }) => ({
         sentence,
         target,
@@ -367,7 +371,7 @@ export async function downloadAllCards() {
         ? `0${date.getMonth() + 1}`
         : date.getMonth() + 1;
     const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-    const blob = new Blob([JSON.stringify(filteredCardDocs)], {
+    const blob = new Blob([JSON.stringify(allCardDocs)], {
       type: "text/json",
     });
     const link = document.createElement("a");
@@ -393,7 +397,7 @@ export async function downloadAllCards() {
   }
 }
 
-export async function deleteAllCards() {
+export async function deleteAllCardDoc() {
   let responses;
   try {
     const response = await db.allDocs({
@@ -434,7 +438,7 @@ export async function deleteAllCards() {
   }
 }
 
-export async function importCards(importedFileObjUrl) {
+export async function importCardDocs(importedFileObjUrl) {
   let responses;
   try {
     const response = await fetch(importedFileObjUrl);
@@ -455,16 +459,16 @@ export async function importCards(importedFileObjUrl) {
       };
       reader.readAsText(fileObj);
     });
-    const cardsArr = JSON.parse(result);
+    const cardDocs = JSON.parse(result);
     if (
-      cardsArr.findIndex((cardDoc) => validateCardDoc(cardDoc) === false) !== -1
+      cardDocs.findIndex((cardDoc) => validateCardDoc(cardDoc) === false) !== -1
     ) {
       return {
         success: false,
         message: "Struktur file cadangan tidak valid, impor dibatalkan",
       };
     }
-    responses = await db.bulkDocs(cardsArr);
+    responses = await db.bulkDocs(cardDocs);
   } catch (error) {
     await logError(error);
     throw new Error("Seluruh kartu pada file cadangan gagal diimpor", {
@@ -573,7 +577,7 @@ export async function appendLog(logObject) {
     });
     const clientLog = clientLogDoc["log"];
     const appendedClientLog = [...clientLog, logObject];
-    await db.put(Object.assign(clientLogDoc, { log: appendedClientLog }));
+    await db.put({ ...clientLogDoc, log: appendedClientLog });
   } catch (error) {
     console.warn("Eror gagal dilog");
   }
@@ -604,7 +608,7 @@ export async function uploadLog() {
     throw new Error("Log gagal diunggah");
   }
   try {
-    await db.put(Object.assign(clientLogDoc, { log: [] }));
+    await db.put({ ...clientLogDoc, log: [] });
     return {
       success: true,
       message: "Log berhasil diunggah",

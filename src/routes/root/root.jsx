@@ -11,39 +11,39 @@ import { getFirstPath } from "../../utils/utils";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { createContext } from "react";
-import { getAuthedUserDoc, updateAuthedUserDoc } from "../../db";
+import { getAuthedUserDoc, setAuthedUserDoc } from "../../db";
 
 export const OnlineContext = createContext(navigator.onLine);
 
 export async function loader() {
-  let { payload: authedUser } = await getAuthedUserDoc();
-  let avatarBlob = authedUser["avatar_blob"];
+  let { payload: authedUserDoc } = await getAuthedUserDoc();
+  let avatarBlob = authedUserDoc["avatar_blob"];
   if (navigator.onLine) {
     const serverStatusResponse = await fetch("/api/server/status");
     if (serverStatusResponse.ok) {
-      if (Object.hasOwn(authedUser, "pending_logout")) {
+      if (Object.hasOwn(authedUserDoc, "pending_logout")) {
         const logoutResponse = await fetch("/api/user/logout", {
           method: "POST",
         });
         if (logoutResponse.ok) {
-          await updateAuthedUserDoc({ _deleted: true });
-          authedUser = { _id: "authed-user" };
+          await setAuthedUserDoc({ _deleted: true });
+          authedUserDoc = { _id: "authed-user" };
           avatarBlob = undefined;
         }
       } else {
         const loggedUserResponse = await fetch("/api/user/me");
         if (loggedUserResponse.ok) {
           ({
-            data: { userDetail: authedUser },
+            data: { userDetail: authedUserDoc },
           } = await loggedUserResponse.json());
           const avatarResponse = await fetch(
-            `https://ui-avatars.com/api/?name=${authedUser.username}`,
+            `https://ui-avatars.com/api/?name=${authedUserDoc.username}`,
           );
           avatarBlob = await avatarResponse.blob();
-          await updateAuthedUserDoc({ ...authedUser, avatar_blob: avatarBlob });
-        } else if (Object.hasOwn(authedUser, "id")) {
-          await updateAuthedUserDoc({ _deleted: true });
-          authedUser = { _id: "authed-user" };
+          await setAuthedUserDoc({ ...authedUserDoc, avatar_blob: avatarBlob });
+        } else if (Object.hasOwn(authedUserDoc, "id")) {
+          await setAuthedUserDoc({ _deleted: true });
+          authedUserDoc = { _id: "authed-user" };
           avatarBlob = undefined;
         }
       }
@@ -51,7 +51,7 @@ export async function loader() {
   }
   return {
     // serverStatus: serverStatusResponse.status.toString(),
-    authedUser,
+    authedUserDoc,
     avatarBlob,
   };
 }

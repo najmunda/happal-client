@@ -10,22 +10,22 @@ import {
 } from "react-router-dom";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
-import { getCardsTotal, getTodayCards, updateSRS } from "../../db";
+import { getCardDocTotal, getSorbData, updateSRS } from "../../db";
 import Loading from "../../components/Loading";
 import CardsCounter from "../../components/CardsCounter";
 
 export async function loader() {
   const {
-    payload: { topCardDoc, nextReview, cardsLeft },
-  } = await getTodayCards();
-  const { payload: cardsTotal } = await getCardsTotal();
-  return { topCardDoc, nextReview, cardsLeft, cardsTotal };
+    payload: { topCardDoc, nextReview, todayCardsLeft },
+  } = await getSorbData();
+  const { payload: cardsTotal } = await getCardDocTotal();
+  return { topCardDoc, nextReview, todayCardsLeft, cardsTotal };
 }
 
 export async function action({ request }) {
   try {
-    const { id, rating } = await request.json();
-    await updateSRS(id, rating);
+    const { cardId, rating } = await request.json();
+    await updateSRS(cardId, rating);
   } catch (error) {
     toast.custom(() => <Toast message={error.message} color="red" />);
   }
@@ -33,7 +33,8 @@ export async function action({ request }) {
 }
 
 export default function Sorb() {
-  const { topCardDoc, nextReview, cardsLeft, cardsTotal } = useLoaderData();
+  const { topCardDoc, nextReview, todayCardsLeft, cardsTotal } =
+    useLoaderData();
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const currentCardRef = useRef();
@@ -73,7 +74,7 @@ export default function Sorb() {
   function handleCardRight() {
     if (isOpen) {
       submit(
-        { id: topCardDoc._id, rating: 1 },
+        { cardId: topCardDoc._id, rating: 1 },
         { method: "post", encType: "application/json" },
       );
       setTimeout(() => setIsOpen(false), 100);
@@ -83,7 +84,7 @@ export default function Sorb() {
   function handleCardLeft() {
     if (isOpen) {
       submit(
-        { id: topCardDoc._id, rating: 0 },
+        { cardId: topCardDoc._id, rating: 0 },
         { method: "post", encType: "application/json" },
       );
       setTimeout(() => setIsOpen(false), 100);
@@ -159,9 +160,9 @@ export default function Sorb() {
     <main
       className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}
     >
-      {cardsLeft.learn.length != 0 ||
-      cardsLeft.new.length != 0 ||
-      cardsLeft.review.length != 0 ? (
+      {todayCardsLeft.learn.length != 0 ||
+      todayCardsLeft.new.length != 0 ||
+      todayCardsLeft.review.length != 0 ? (
         <>
           {isLoading ? (
             <Loading className="flex-1 flex flex-col justify-center items-stretch" />
@@ -241,9 +242,9 @@ export default function Sorb() {
             </div>
           )}
           <CardsCounter
-            newTotal={cardsLeft.new.length}
-            learnTotal={cardsLeft.learn.length}
-            reviewTotal={cardsLeft.review.length}
+            newTotal={todayCardsLeft.new.length}
+            learnTotal={todayCardsLeft.learn.length}
+            reviewTotal={todayCardsLeft.review.length}
             handleDialogOpen={handleDialogOpen}
           />
         </>

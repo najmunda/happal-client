@@ -6,15 +6,15 @@ import { formatDate } from "../../utils/utils";
 
 export async function loader({ params }) {
   try {
-    const { payload: card } = await getCardDoc(params.cardId);
-    return { error: null, card };
+    const { payload: cardDoc } = await getCardDoc(params.cardId);
+    return { error: null, cardDoc };
   } catch (error) {
-    return { error, card: null };
+    return { error, cardDoc: null };
   }
 }
 
 export default function CardInfo() {
-  const { error, card } = useLoaderData();
+  const { error, cardDoc } = useLoaderData();
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
 
@@ -23,19 +23,19 @@ export default function CardInfo() {
     navigate(-1);
   }
 
-  const sentence = card?.sentence.replace(
-    card?.target,
-    `<b>${card?.target}</b>`,
+  const sentence = cardDoc?.sentence.replace(
+    cardDoc?.target,
+    `<b>${cardDoc?.target}</b>`,
   );
-  const def = card?.def;
-  const due = card?.srs.card.due;
-  const lastReview = card?.srs.card.last_review;
-  const reps = card?.srs.card.reps;
-  const dateCreated = card?.date_created;
+  const def = cardDoc?.def;
+  const due = cardDoc?.srs.card.due;
+  const lastReview = cardDoc?.srs.card.last_review;
+  const reps = cardDoc?.srs.card.reps;
+  const dateCreated = cardDoc?.date_created;
 
   return (
     <section className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
-      {card !== null && error === null ? (
+      {cardDoc !== null && error === null ? (
         <>
           <p className="pb-2 w-full text-2xl text-pretty">
             <Interweave content={sentence} />

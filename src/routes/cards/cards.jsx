@@ -15,7 +15,7 @@ import {
   SquarePen,
   Trash2,
 } from "lucide-react";
-import { getCardsCustom, getCardsTotal } from "../../db";
+import { getCardsCustom, getCardDocTotal } from "../../db";
 import CardsSettings from "../../components/CardsSettings";
 import Loading from "../../components/Loading";
 import { useEffect, useRef } from "react";
@@ -28,17 +28,17 @@ export function revalidate({ nextUrl }) {
 export async function loader({ request }) {
   const url = new URL(request.url);
   const searchParams = Object.fromEntries(url.searchParams);
-  const { payload: cardsTotal } = await getCardsTotal();
-  const { payload: cardsData } = await getCardsCustom(searchParams);
+  const { payload: cardDocsTotal } = await getCardDocTotal();
+  const { payload: cardDocs } = await getCardsCustom(searchParams);
   return {
-    cards: cardsData ?? [],
-    cardsTotal, // All cards total (nothing excluded)
+    cardDocs: cardDocs ?? [],
+    cardDocsTotal, // All cards total (nothing excluded)
     searchParams,
   };
 }
 
 export default function Cards() {
-  const { cards, cardsTotal, searchParams } = useLoaderData();
+  const { cardDocs, cardDocsTotal, searchParams } = useLoaderData();
   const location = useLocation();
   const navigation = useNavigation();
   const isLoading =
@@ -104,15 +104,19 @@ export default function Cards() {
 
   return (
     <main className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2">
-      {cardsTotal != 0 ? <CardsSettings searchParams={searchParams} /> : <></>}
+      {cardDocsTotal != 0 ? (
+        <CardsSettings searchParams={searchParams} />
+      ) : (
+        <></>
+      )}
       {isLoading ? (
         <Loading className="flex-1 flex flex-col justify-center items-center" />
-      ) : cards.length != 0 ? (
+      ) : cardDocs.length != 0 ? (
         <section
           onClick={handleDialogOpen}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2"
         >
-          {cards.map((card) => (
+          {cardDocs.map((card) => (
             <div
               key={card._id}
               data-key={card._id}
@@ -179,7 +183,7 @@ export default function Cards() {
             </div>
           </div>
         </section>
-      ) : cardsTotal != 0 ? (
+      ) : cardDocsTotal != 0 ? (
         <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-neutral-500">
           <SearchX size={80} />
           <p className="text-center text-sm">

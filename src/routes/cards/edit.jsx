@@ -31,15 +31,15 @@ export async function action({ request, params }) {
 
 export async function loader({ params }) {
   try {
-    const { payload: card } = await getCardDoc(params.cardId);
-    return { error: null, card };
+    const { payload: cardDoc } = await getCardDoc(params.cardId);
+    return { error: null, cardDoc };
   } catch (error) {
-    return { error, card: null };
+    return { error, cardDoc: null };
   }
 }
 
 export default function CardEdit() {
-  const { error, card } = useLoaderData();
+  const { error, cardDoc } = useLoaderData();
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
   const actionData = useActionData();
@@ -51,7 +51,7 @@ export default function CardEdit() {
     navigate(prevPathNQuery);
   }
 
-  if (error !== null && card === null) {
+  if (error !== null && cardDoc === null) {
     return (
       <section
         method="post"
@@ -71,9 +71,9 @@ export default function CardEdit() {
       </section>
     );
   } else {
-    const [sentence, setSentence] = useState(card.sentence);
-    const [target, setTarget] = useState(card.target);
-    const [def, setDef] = useState(card.def);
+    const [sentence, setSentence] = useState(cardDoc.sentence);
+    const [target, setTarget] = useState(cardDoc.target);
+    const [def, setDef] = useState(cardDoc.def);
 
     function handleSentenceChange(e) {
       setSentence(e.currentTarget.value);

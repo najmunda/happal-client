@@ -36,94 +36,94 @@ import { action as syncAction } from "./routes/sync.jsx";
 import About from "./routes/about.jsx";
 
 const router = createBrowserRouter([
-    {
-      id: "root",
-      path: "/",
-      shouldRevalidate: (args) => {
-        const formData = args?.formData;
-        const intent = formData?.get('intent');
-        return intent === 'logout' ? true : false;
-      },
-      loader: rootloader,
-      element: <Root />,
-      errorElement: <RootError />,
-      children: [
-        {
-          index: true,
-          element: <About />,
-        },
-        {
-          path: "/mine",
-          element: <Mine />,
-          action: mineAction,
-          children: [
-            {
-              path: "help",
-              element: <MineHelp />,
-            },
-          ],
-        },
-        {
-          path: "/sorb",
-          element: <Sorb />,
-          loader: sorbLoader,
-          action: sorbAction,
-          children: [
-            {
-              path: "help",
-              element: <SorbHelp />,
-            },
-          ],
-        },
-        {
-          path: "/cards",
-          element: <Cards />,
-          shouldRevalidate: cardsRevalidate,
-          loader: cardsLoader,
-          children: [
-            {
-              path: "help",
-              element: <CardHelp />,
-            },
-            {
-              path: ":cardId",
-              element: <CardInfo />,
-              loader: infoLoader,
-            },
-            {
-              path: ":cardId/edit",
-              element: <CardEdit />,
-              loader: editLoader,
-              action: editAction,
-            },
-            {
-              path: ":cardId/delete",
-              action: deleteAction,
-              element: <CardDelete />,
-            },
-            {
-              path: ":cardId/reset",
-              action: resetAction,
-              element: <CardReset />,
-            },
-          ],
-        },
-        {
-          path: "/account",
-          action: accountAction,
-          element: <Account />,
-        },
-        {
-          path: "/sync",
-          action: syncAction,
-        },
-        {
-          path: "*",
-          element: <Navigate to={"/"} />,
-        },
-      ],
+  {
+    id: "root",
+    path: "/",
+    shouldRevalidate: (args) => {
+      const formData = args?.formData;
+      const intent = formData?.get("intent");
+      return intent === "logout" ? true : false;
     },
-  ]);
+    loader: rootloader,
+    element: <Root />,
+    errorElement: <RootError />,
+    children: [
+      {
+        index: true,
+        element: <About />,
+      },
+      {
+        path: "/mine",
+        element: <Mine />,
+        action: mineAction,
+        children: [
+          {
+            path: "help",
+            element: <MineHelp />,
+          },
+        ],
+      },
+      {
+        path: "/sorb",
+        element: <Sorb />,
+        loader: sorbLoader,
+        action: sorbAction,
+        children: [
+          {
+            path: "help",
+            element: <SorbHelp />,
+          },
+        ],
+      },
+      {
+        path: "/cards",
+        element: <Cards />,
+        shouldRevalidate: cardsRevalidate,
+        loader: cardsLoader,
+        children: [
+          {
+            path: "help",
+            element: <CardHelp />,
+          },
+          {
+            path: ":cardId",
+            element: <CardInfo />,
+            loader: infoLoader,
+          },
+          {
+            path: ":cardId/edit",
+            element: <CardEdit />,
+            loader: editLoader,
+            action: editAction,
+          },
+          {
+            path: ":cardId/delete",
+            action: deleteAction,
+            element: <CardDelete />,
+          },
+          {
+            path: ":cardId/reset",
+            action: resetAction,
+            element: <CardReset />,
+          },
+        ],
+      },
+      {
+        path: "/account",
+        action: accountAction,
+        element: <Account />,
+      },
+      {
+        path: "/sync",
+        action: syncAction,
+      },
+      {
+        path: "*",
+        element: <Navigate to={"/"} />,
+      },
+    ],
+  },
+]);
 
 export default function App() {
   return (

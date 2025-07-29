@@ -4,7 +4,7 @@ import Navigation from "./Navigation";
 import SyncButton from "./SyncButton";
 
 export default function Header() {
-  const { authedUser, avatarBlob } = useRouteLoaderData("root") ?? {};
+  const { authedUserDoc, avatarBlob } = useRouteLoaderData("root") ?? {};
   return (
     <header className="h-14 sticky top-0 w-full bg-white flex justify-center z-10 rounded-lg shadow">
       <div className="h-full container w-dvw md:w-full sticky top-0 px-4 py-2 flex items-center justify-between">
@@ -16,7 +16,7 @@ export default function Header() {
           <Navigation />
         </nav>
         <div className="flex items-center justify-end gap-2">
-          {Object.hasOwn(authedUser, 'id') && <SyncButton />}
+          {Object.hasOwn(authedUserDoc, "id") && <SyncButton />}
           <NavLink
             to={"/account"}
             className={({ isActive }) =>
