@@ -222,13 +222,10 @@ export async function addCardDocs(newCardsData) {
     }
     return { success: true, message: "Seluruh kartu berhasil ditambahkan" };
   } catch (error) {
-    if (Object.hasOwn(error, "cause")) {
-      await logError(error.cause);
-      throw error;
-    } else {
-      await logError(error);
-      throw new Error("Beberapa kartu gagal ditambahkan", { cause: error });
-    }
+    await logError(error);
+    throw Object.hasOwn(error, "cause")
+      ? error
+      : new Error("Beberapa kartu gagal ditambahkan", { cause: error });
   }
 }
 
@@ -428,13 +425,10 @@ export async function deleteAllCardDoc() {
     }
     return { success: true, message: "Seluruh kartu berhasil dihapus" };
   } catch (error) {
-    if (Object.hasOwn(error, "cause")) {
-      await logError(error.cause);
-      throw error;
-    } else {
-      await logError(error);
-      throw new Error("Beberapa kartu gagal dihapus", { cause: error });
-    }
+    await logError(error);
+    throw Object.hasOwn(error, "cause")
+      ? error
+      : new Error("Beberapa kartu gagal dihapus", { cause: error });
   }
 }
 
@@ -494,15 +488,12 @@ export async function importCardDocs(importedFileObjUrl) {
       message: "Seluruh kartu pada file cadangan berhasil diimpor",
     };
   } catch (error) {
-    if (Object.hasOwn(error, "cause")) {
-      await logError(error.cause);
-      throw error;
-    } else {
-      await logError(error);
-      throw new Error("Beberapa kartu pada file cadangan gagal diimpor", {
-        cause: error,
-      });
-    }
+    await logError(error);
+    throw Object.hasOwn(error, "cause")
+      ? error
+      : new Error("Beberapa kartu pada file cadangan gagal diimpor", {
+          cause: error,
+        });
   }
 }
 
@@ -575,6 +566,7 @@ export async function appendLog(logObject) {
         throw error;
       }
     });
+    console.log(clientLogDoc);
     const clientLog = clientLogDoc["log"];
     const appendedClientLog = [...clientLog, logObject];
     await db.put({ ...clientLogDoc, log: appendedClientLog });
