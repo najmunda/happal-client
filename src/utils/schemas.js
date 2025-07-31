@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const cardSchema = Joi.object({
+export const cardDocsSchema = Joi.array().items(Joi.object({
   sentence: Joi.string().trim().required(),
   target: Joi.string().trim().required(),
   def: Joi.string().trim().required(),
@@ -34,9 +34,4 @@ const cardSchema = Joi.object({
   _id: Joi.string()
     .pattern(/^card-[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/)
     .required(),
-});
-
-export function validateCardDoc(card) {
-  const { error } = cardSchema.validate(card);
-  return error ? false : true;
-}
+}));

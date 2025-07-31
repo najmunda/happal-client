@@ -5,7 +5,7 @@ import { createEmptyCard, fsrs, Rating } from "ts-fsrs";
 import Fuse from "fuse.js";
 import { logError } from "./utils/logger";
 import { getEndTodayUTC, msToDHM } from "./utils/utils";
-import { validateCardDoc } from "./utils/validator";
+import { cardDocsSchema } from "./utils/schemas";
 
 PouchDB.plugin(findPlugin);
 PouchDB.plugin(upsertPlugin);
@@ -454,9 +454,10 @@ export async function importCardDocs(importedFileObjUrl) {
       reader.readAsText(fileObj);
     });
     const cardDocs = JSON.parse(result);
-    if (
-      cardDocs.findIndex((cardDoc) => validateCardDoc(cardDoc) === false) !== -1
-    ) {
+    const { error } = cardDocsSchema.validate(cardDocs, {
+      abortEarly: true
+    })
+    if (error) {
       return {
         success: false,
         message: "Struktur file cadangan tidak valid, impor dibatalkan",
