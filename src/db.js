@@ -7,6 +7,12 @@ import { logError } from "./utils/logger";
 import { getEndTodayUTC, msToDHM } from "./utils/utils";
 import { cardDocsSchema } from "./utils/schemas";
 
+async function handleError(error, message) {
+  error.message = error?.message ?? message;
+  const loggedError = await logError(error);
+  throw new Error(message, { cause: loggedError });
+}
+
 PouchDB.plugin(findPlugin);
 PouchDB.plugin(upsertPlugin);
 
@@ -28,7 +34,6 @@ export async function syncDB() {
     const remoteDb = new PouchDB(`${location.origin}/api/db`, {
       skip_setup: true,
     });
-
     await new Promise((resolve, reject) => {
       db.sync(remoteDb, {
         style: "main_only",
@@ -49,8 +54,7 @@ export async function syncDB() {
     });
     return { success: true, message: "Seluruh kartu berhasil disinkronkan" };
   } catch (error) {
-    await logError(error);
-    throw new Error("Terjadi eror saat sinkronisasi", { cause: error });
+    await handleError(error, "Terjadi eror saat sinkronisasi");
   }
 }
 
@@ -70,8 +74,7 @@ export async function getAuthedUserDoc() {
       payload: authedUserDoc,
     };
   } catch (error) {
-    await logError(error);
-    throw new Error("Detail user gagal didapatkan", { cause: error });
+    await handleError(error, "Detail user gagal didapatkan");
   }
 }
 
@@ -95,8 +98,7 @@ export async function setAuthedUserDoc(newAuthedUserData) {
       success: true,
     };
   } catch (error) {
-    await logError(error);
-    throw new Error("Detail user gagal diperbarui", { cause: error });
+    await handleError(error, "Detail user gagal diperbarui");
   }
 }
 
@@ -111,8 +113,7 @@ export async function getCardDocTotal() {
       payload: response.rows.length,
     };
   } catch (error) {
-    await logError(error);
-    throw new Error("Jumlah kartu gagal didapatkan", { cause: error });
+    await handleError(error, "Jumlah kartu gagal didapatkan");
   }
 }
 
@@ -165,8 +166,7 @@ export async function getCardsCustom({
       payload,
     };
   } catch (error) {
-    await logError(error);
-    throw new Error("Kartu gagal disortir/diurutkan", { cause: error });
+    await handleError(error, "Kartu gagal disortir/diurutkan");
   }
 }
 
@@ -178,8 +178,7 @@ export async function getCardDoc(cardId) {
       payload: cardDoc,
     };
   } catch (error) {
-    await logError(error);
-    throw new Error("Detail kartu gagal didapatkan", { cause: error });
+    await handleError(error, "Detail kartu gagal didapatkan");
   }
 }
 
@@ -202,8 +201,7 @@ export async function addCardDocs(newCardsData) {
     //   return setMonthlyHistory({ newCountAdd: newCardDocs.length });
     // })
   } catch (error) {
-    await logError(error);
-    throw new Error("Seluruh kartu gagal ditambahkan", { cause: error });
+    await handleError(error, "Seluruh kartu gagal ditambahkan");
   }
   try {
     if (
@@ -215,31 +213,24 @@ export async function addCardDocs(newCardsData) {
       const failMessages = [
         ...new Set(failResponses.map((response) => response?.message ?? "")),
       ];
-      throw Object.assign(
-        new Error("Beberapa kartu gagal ditambahkan", { cause: failMessages }),
-        { payload: failResponses },
-      );
+      throw Object.assign(new Error(null, { cause: failMessages }), {
+        payload: failResponses,
+      });
     }
     return { success: true, message: "Seluruh kartu berhasil ditambahkan" };
   } catch (error) {
-    await logError(error);
-    throw Object.hasOwn(error, "cause")
-      ? error
-      : new Error("Beberapa kartu gagal ditambahkan", { cause: error });
+    await handleError(error, "Beberapa kartu gagal ditambahkan");
   }
 }
 
 export async function editCardDoc(cardId, editData) {
   try {
-    const { payload: cardDoc } = await getCardDoc(cardId).catch((error) => {
-      throw error.cause;
-    });
+    const { payload: cardDoc } = await getCardDoc(cardId);
     const editedCardDoc = { ...cardDoc, ...editData };
     await db.put(editedCardDoc);
     return { success: true, message: "Kartu berhasil diubah" };
   } catch (error) {
-    await logError(error);
-    throw new Error("Kartu gagal diubah", { cause: error });
+    await handleError(error, "Kartu gagal diubah");
   }
 }
 
@@ -249,13 +240,10 @@ export async function resetCard(cardId) {
     const dateNow = new Date();
     const cardDoc = await db.get(cardId);
     const resetSRS = f.forget(cardDoc.srs.card, dateNow, false);
-    await editCardDoc(cardId, { srs: resetSRS }).catch((error) => {
-      throw error.cause;
-    });
+    await editCardDoc(cardId, { srs: resetSRS });
     return { success: true, message: "Kartu berhasil direset" };
   } catch (error) {
-    await logError(error);
-    throw new Error("Kartu gagal direset", { cause: error });
+    await handleError(error, "Kartu gagal direset");
   }
 }
 
@@ -265,8 +253,7 @@ export async function deleteCardDoc(cardId) {
     await db.remove(cardDoc);
     return { success: true, message: "Kartu berhasil dihapus" };
   } catch (error) {
-    await logError(error);
-    throw new Error("Kartu gagal dihapus", { cause: error });
+    await handleError(error, "Kartu gagal dihapus");
   }
 }
 
@@ -317,8 +304,7 @@ export async function getSorbData() {
       },
     };
   } catch (error) {
-    await logError(error);
-    throw new Error("Kartu untuk hari ini gagal didapatkan", { cause: error });
+    await handleError(error, "Kartu untuk hari ini gagal didapatkan");
   }
 }
 
@@ -338,8 +324,7 @@ export async function updateSRS(cardId, rating) {
     // }
     return { success: true };
   } catch (error) {
-    await logError(error);
-    throw new Error("SRS kartu gagal diperbarui", { cause: error });
+    await handleError(error, "SRS kartu gagal diperbarui");
   }
 }
 
@@ -387,10 +372,7 @@ export async function downloadAllCardDoc() {
     link.remove();
     return { success: true };
   } catch (error) {
-    await logError(error);
-    throw new Error("Terjadi eror saat mendapatkan file cadangan", {
-      cause: error,
-    });
+    await handleError(error, "Terjadi eror saat mendapatkan file cadangan");
   }
 }
 
@@ -408,8 +390,7 @@ export async function deleteAllCardDoc() {
     }));
     responses = await db.bulkDocs(deletedCardsDoc);
   } catch (error) {
-    await logError(error);
-    throw new Error("Seluruh kartu gagal dihapus", { cause: error });
+    await handleError(error, "Seluruh kartu gagal dihapus");
   }
   try {
     if (
@@ -421,14 +402,11 @@ export async function deleteAllCardDoc() {
       const failMessages = [
         ...new Set(failResponses.map((response) => response?.message ?? "")),
       ];
-      throw new Error("Beberapa kartu gagal dihapus", { cause: failMessages });
+      throw new Error(null, { cause: failMessages });
     }
     return { success: true, message: "Seluruh kartu berhasil dihapus" };
   } catch (error) {
-    await logError(error);
-    throw Object.hasOwn(error, "cause")
-      ? error
-      : new Error("Beberapa kartu gagal dihapus", { cause: error });
+    await handleError(error, "Beberapa kartu gagal dihapus");
   }
 }
 
@@ -455,8 +433,8 @@ export async function importCardDocs(importedFileObjUrl) {
     });
     const cardDocs = JSON.parse(result);
     const { error } = cardDocsSchema.validate(cardDocs, {
-      abortEarly: true
-    })
+      abortEarly: true,
+    });
     if (error) {
       return {
         success: false,
@@ -465,10 +443,7 @@ export async function importCardDocs(importedFileObjUrl) {
     }
     responses = await db.bulkDocs(cardDocs);
   } catch (error) {
-    await logError(error);
-    throw new Error("Seluruh kartu pada file cadangan gagal diimpor", {
-      cause: error,
-    });
+    await handleError(error, "Seluruh kartu pada file cadangan gagal diimpor");
   }
   try {
     if (
@@ -480,7 +455,7 @@ export async function importCardDocs(importedFileObjUrl) {
       const failMessages = [
         ...new Set(failResponses.map((response) => response?.message ?? "")),
       ];
-      throw new Error("Beberapa kartu pada file cadangan gagal diimpor", {
+      throw new Error(null, {
         cause: failMessages,
       });
     }
@@ -489,12 +464,7 @@ export async function importCardDocs(importedFileObjUrl) {
       message: "Seluruh kartu pada file cadangan berhasil diimpor",
     };
   } catch (error) {
-    await logError(error);
-    throw Object.hasOwn(error, "cause")
-      ? error
-      : new Error("Beberapa kartu pada file cadangan gagal diimpor", {
-          cause: error,
-        });
+    await handleError(error, "Beberapa kartu pada file cadangan gagal diimpor");
   }
 }
 
@@ -567,7 +537,6 @@ export async function appendLog(logObject) {
         throw error;
       }
     });
-    console.log(clientLogDoc);
     const clientLog = clientLogDoc["log"];
     const appendedClientLog = [...clientLog, logObject];
     await db.put({ ...clientLogDoc, log: appendedClientLog });

@@ -14,11 +14,7 @@ export default function RootError() {
       const asyncLogError = async (error) => {
         await logError(error);
       };
-      if (Object.hasOwn(error, "cause") === false) {
-        asyncLogError(error);
-      } else if (Object.hasOwn(error, "cause") === true) {
-        asyncLogError(error.cause);
-      }
+      asyncLogError(error);
       isErrorLoggedRef.current = true;
     }
   }, []);
