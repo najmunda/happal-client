@@ -1,10 +1,11 @@
 import {
   Form,
   redirect,
+  useLoaderData,
   useNavigation,
   useRouteLoaderData,
 } from "react-router-dom";
-import { LogOut, RefreshCw } from "lucide-react";
+import { CloudAlert, LogOut, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
 import Loading from "../components/Loading";
 import {
@@ -14,12 +15,20 @@ import {
   syncDB,
   setAuthedUserDoc,
   uploadLog,
+  getCardDocTotal,
 } from "../db";
 import AccountButtons from "../components/AccountButtons";
 import Toast from "../components/Toast";
 import { OnlineContext } from "../routes/root/root";
 import { useContext } from "react";
 import clsx from "clsx";
+
+export async function loader() {
+  const { payload: cardDocsTotal } = await getCardDocTotal();
+  return {
+    cardDocsTotal, // All cards total (nothing excluded)
+  };
+}
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -78,6 +87,7 @@ export async function action({ request }) {
 }
 
 export default function Account() {
+  const { cardDocsTotal } = useLoaderData();
   const isOnline = useContext(OnlineContext);
   const { authedUserDoc, avatarBlob } = useRouteLoaderData("root");
   const navigation = useNavigation();
@@ -110,6 +120,9 @@ export default function Account() {
               </div>
             </div>
             <Form method="post" className="flex flex-col divide-y-2">
+              <p className="p-2 text-left text-neutral-400 text-sm">
+                Sinkronisasi Awan
+              </p>
               <button
                 type="submit"
                 name="intent"
@@ -123,7 +136,21 @@ export default function Account() {
                 <RefreshCw />
                 Sinkronkan kartu
               </button>
-              <AccountButtons />
+              <AccountButtons cardDocsTotal={cardDocsTotal} />
+              <p className="p-2 text-left text-neutral-400 text-sm">Akun</p>
+              <button
+                type="submit"
+                name="intent"
+                value="upload-log"
+                className={clsx("p-2 flex gap-2 items-center text-left", {
+                  "text-black hover:bg-neutral-100 cursor-pointer":
+                    isOnline === true,
+                  "text-neutral-400 cursor-default": isOnline === false,
+                })}
+              >
+                <CloudAlert />
+                Unggah log eror
+              </button>
               <button
                 type="submit"
                 name="intent"
@@ -153,7 +180,7 @@ export default function Account() {
               </a>
             </div>
             <Form method="post" className="flex flex-col border-t-2 divide-y-2">
-              <AccountButtons />
+              <AccountButtons cardDocsTotal={cardDocsTotal} />
             </Form>
           </>
         )}

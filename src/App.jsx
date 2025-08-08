@@ -7,7 +7,10 @@ import Root, {
   loader as rootloader /*, { action as rootAction }*/,
 } from "./routes/root/root.jsx";
 import RootError from "./routes/root/error.jsx";
-import Account, { action as accountAction } from "./routes/account.jsx";
+import Account, {
+  loader as accountLoader,
+  action as accountAction,
+} from "./routes/account.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
 // Mine
@@ -110,6 +113,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/account",
+        loader: accountLoader,
         action: accountAction,
         element: <Account />,
       },
