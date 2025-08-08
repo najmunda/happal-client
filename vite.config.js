@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 import { visualizer } from "rollup-plugin-visualizer"
 
 // https://vite.dev/config/
@@ -36,6 +37,7 @@ export default defineConfig({
         ],
       },
     }),
+    basicSsl(),
     visualizer({open: true, filename:'bundle-visualization.html'}),
   ],
   define: { global: "window" },
