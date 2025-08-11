@@ -7,7 +7,7 @@ import {
 import Header from "../../components/Header";
 import Navigation from "../../components/Navigation";
 import Loading from "../../components/Loading";
-import { getFirstPath } from "../../utils/utils";
+import { getFirstPath, safeFetch } from "../../utils/utils";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { createContext } from "react";
@@ -19,10 +19,12 @@ export async function loader() {
   let { payload: authedUserDoc } = await getAuthedUserDoc();
   let avatarBlob = authedUserDoc["avatar_blob"];
   if (navigator.onLine) {
-    const serverStatusResponse = await fetch("/api/server/status");
+    const serverStatusResponse = await safeFetch(
+      "http://localhost:3000/server/status",
+    );
     if (serverStatusResponse.ok) {
       if (Object.hasOwn(authedUserDoc, "pending_logout")) {
-        const logoutResponse = await fetch("/api/user/logout", {
+        const logoutResponse = await safeFetch("/api/user/logout", {
           method: "POST",
         });
         if (logoutResponse.ok) {
@@ -31,12 +33,12 @@ export async function loader() {
           avatarBlob = undefined;
         }
       } else {
-        const loggedUserResponse = await fetch("/api/user/me");
+        const loggedUserResponse = await safeFetch("/api/user/me");
         if (loggedUserResponse.ok) {
           ({
             data: { userDetail: authedUserDoc },
           } = await loggedUserResponse.json());
-          const avatarResponse = await fetch(
+          const avatarResponse = await safeFetch(
             `https://ui-avatars.com/api/?name=${authedUserDoc.username}`,
           );
           avatarBlob = await avatarResponse.blob();

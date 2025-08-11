@@ -22,6 +22,7 @@ import Toast from "../components/Toast";
 import { OnlineContext } from "../routes/root/root";
 import { useContext } from "react";
 import clsx from "clsx";
+import { safeFetch } from "../utils/utils";
 
 export async function loader() {
   const { payload: cardDocsTotal } = await getCardDocTotal();
@@ -59,7 +60,7 @@ export async function action({ request }) {
       case "logout": {
         let deleted = false;
         if (navigator.onLine) {
-          response = await fetch("/api/user/logout", { method: "POST" });
+          response = await safeFetch("/api/user/logout", { method: "POST" });
           if (response.ok) {
             await setAuthedUserDoc({ _deleted: true });
             deleted = true;

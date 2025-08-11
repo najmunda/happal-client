@@ -4,7 +4,7 @@ import upsertPlugin from "pouchdb-upsert";
 import { createEmptyCard, fsrs, Rating } from "ts-fsrs";
 import Fuse from "fuse.js";
 import { logError } from "./utils/logger";
-import { getEndTodayUTC, msToDHM } from "./utils/utils";
+import { getEndTodayUTC, msToDHM, safeFetch } from "./utils/utils";
 import { cardDocsSchema } from "./utils/schemas";
 
 async function handleError(error, message) {
@@ -40,7 +40,7 @@ export async function syncDB() {
         filter: (doc) => doc._id.startsWith("card-"),
       })
         .on("complete", (info) => {
-          fetch("/api/user/last-sync", { method: "POST" })
+          safeFetch("/api/user/last-sync", { method: "POST" })
             .then(() => {
               resolve(info);
             })
@@ -557,7 +557,7 @@ export async function uploadLog() {
     });
     const clientLog = clientLogDoc["log"];
     if (clientLog !== "") {
-      await fetch("/api/log/client", {
+      await safeFetch("/api/log/client", {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

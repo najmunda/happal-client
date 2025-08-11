@@ -1,7 +1,7 @@
 import { appendLog } from "../db";
 
 export async function logError(error) {
-  if (!error?.logged && !error?.cause?.logged) {
+  if (!error?.isFetchError && !error?.logged && !error?.cause?.logged) {
     const now = new Date().toISOString();
     const loggedError = Object.hasOwn(error, "cause") ? error.cause : error;
     const log = {
