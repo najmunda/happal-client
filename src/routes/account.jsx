@@ -57,12 +57,15 @@ export async function action({ request }) {
         break;
       }
       case "logout": {
+        let deleted = false;
         if (navigator.onLine) {
           response = await fetch("/api/user/logout", { method: "POST" });
           if (response.ok) {
             await setAuthedUserDoc({ _deleted: true });
+            deleted = true;
           }
-        } else {
+        }
+        if (deleted === false) {
           await setAuthedUserDoc({ pending_logout: true });
         }
         return redirect("/account");
