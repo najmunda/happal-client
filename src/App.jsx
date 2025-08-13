@@ -45,7 +45,7 @@ const router = createBrowserRouter([
     shouldRevalidate: (args) => {
       const formData = args?.formData;
       const intent = formData?.get("intent");
-      return intent === "logout" ? true : false;
+      return intent === "sync" || intent === "logout" ? true : false;
     },
     loader: rootloader,
     element: <Root />,

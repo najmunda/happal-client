@@ -11,6 +11,8 @@ export default function SyncButton() {
   return (
     <fetcher.Form method="post" action="/sync">
       <button
+        name="intent"
+        value="sync"
         disabled={isOnline === false}
         className={clsx(
           "p-2 rounded-full",
