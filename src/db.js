@@ -31,7 +31,11 @@ const db = new PouchDB("sorbit", {
 
 export async function syncDB() {
   try {
-    const remoteDb = new PouchDB(`${location.origin}/api/db`, {
+    const remoteDb = new PouchDB(`${import.meta.env.VITE_SERVER_URL}/db`, {
+      fetch: function (url, opts) {
+        opts.credentials = "include";
+        return PouchDB.fetch(url, opts);
+      },
       skip_setup: true,
     });
     await new Promise((resolve, reject) => {
@@ -40,7 +44,10 @@ export async function syncDB() {
         filter: (doc) => doc._id.startsWith("card-"),
       })
         .on("complete", (info) => {
-          safeFetch("/api/user/last-sync", { method: "POST" })
+          safeFetch(`${import.meta.env.VITE_SERVER_URL}/user/last-sync`, {
+            method: "POST",
+            credentials: "include",
+          })
             .then(() => {
               resolve(info);
             })
@@ -557,7 +564,7 @@ export async function uploadLog() {
     });
     const clientLog = clientLogDoc["log"];
     if (clientLog !== "") {
-      await safeFetch("/api/log/client", {
+      await safeFetch(`${import.meta.env.VITE_SERVER_URL}/log/client`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

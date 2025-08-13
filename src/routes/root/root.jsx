@@ -20,20 +20,27 @@ export async function loader() {
   let avatarBlob = authedUserDoc["avatar_blob"];
   if (navigator.onLine) {
     const serverStatusResponse = await safeFetch(
-      "http://localhost:3000/server/status",
+      `${import.meta.env.VITE_SERVER_URL}/server/status`,
     );
     if (serverStatusResponse.ok) {
       if (Object.hasOwn(authedUserDoc, "pending_logout")) {
-        const logoutResponse = await safeFetch("/api/user/logout", {
-          method: "POST",
-        });
+        const logoutResponse = await safeFetch(
+          `${import.meta.env.VITE_SERVER_URL}/user/logout`,
+          {
+            method: "POST",
+            credentials: "include",
+          },
+        );
         if (logoutResponse.ok) {
           await setAuthedUserDoc({ _deleted: true });
           authedUserDoc = { _id: "authed-user" };
           avatarBlob = undefined;
         }
       } else {
-        const loggedUserResponse = await safeFetch("/api/user/me");
+        const loggedUserResponse = await safeFetch(
+          `${import.meta.env.VITE_SERVER_URL}/user/me`,
+          { credentials: "include" },
+        );
         if (loggedUserResponse.ok) {
           ({
             data: { userDetail: authedUserDoc },

@@ -41,16 +41,6 @@ export default defineConfig({
     visualizer({open: true, filename:'bundle-visualization.html'}),
   ],
   define: { global: "window" },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-      '/check-internet': 'http://fedoraproject.org/static/hotspot.txt',
-    }
-  },
   build: {
     sourcemap: true,
   },

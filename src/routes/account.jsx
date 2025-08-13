@@ -60,7 +60,10 @@ export async function action({ request }) {
       case "logout": {
         let deleted = false;
         if (navigator.onLine) {
-          response = await safeFetch("/api/user/logout", { method: "POST" });
+          response = await safeFetch(
+            `${import.meta.env.VITE_SERVER_URL}/user/logout`,
+            { method: "POST", credentials: "include" },
+          );
           if (response.ok) {
             await setAuthedUserDoc({ _deleted: true });
             deleted = true;
@@ -177,7 +180,7 @@ export default function Account() {
             </p>
             <div className="flex gap-2 justify-center">
               <a
-                href="/api/user/login/google"
+                href={`${import.meta.env.VITE_SERVER_URL}/user/login/google`}
                 className="p-2 border border-neutral-200 rounded-full hover:bg-neutral-100"
               >
                 <img src="/google_g_icon.png" alt="" className="size-8" />
