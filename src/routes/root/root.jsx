@@ -56,7 +56,10 @@ export async function loader() {
               ...authedUserDoc,
               avatar_blob: avatarBlob,
             });
-          } else if (Object.hasOwn(authedUserDoc, "id")) {
+          } else if (
+            loggedUserResponse.status === 401 &&
+            Object.hasOwn(authedUserDoc, "id")
+          ) {
             await setAuthedUserDoc({ _deleted: true });
             authedUserDoc = { _id: "authed-user" };
             avatarBlob = undefined;
