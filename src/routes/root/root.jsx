@@ -12,56 +12,68 @@ import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { createContext } from "react";
 import { getAuthedUserDoc, setAuthedUserDoc } from "../../db";
+import { logError } from "../../utils/logger";
 
 export const OnlineContext = createContext(navigator.onLine);
 
 export async function loader() {
-  let { payload: authedUserDoc } = await getAuthedUserDoc();
-  let avatarBlob = authedUserDoc["avatar_blob"];
-  if (navigator.onLine) {
-    const serverStatusResponse = await safeFetch(
-      `${import.meta.env.VITE_SERVER_URL}/server/status`,
-    );
-    if (serverStatusResponse.ok) {
-      if (Object.hasOwn(authedUserDoc, "pending_logout")) {
-        const logoutResponse = await safeFetch(
-          `${import.meta.env.VITE_SERVER_URL}/user/logout`,
-          {
-            method: "POST",
-            credentials: "include",
-          },
-        );
-        if (logoutResponse.ok) {
-          await setAuthedUserDoc({ _deleted: true });
-          authedUserDoc = { _id: "authed-user" };
-          avatarBlob = undefined;
-        }
-      } else {
-        const loggedUserResponse = await safeFetch(
-          `${import.meta.env.VITE_SERVER_URL}/user/me`,
-          { credentials: "include" },
-        );
-        if (loggedUserResponse.ok) {
-          ({
-            data: { userDetail: authedUserDoc },
-          } = await loggedUserResponse.json());
-          const avatarResponse = await safeFetch(
-            `https://ui-avatars.com/api/?name=${authedUserDoc.username}`,
+  let authedUserDoc, avatarBlob;
+  try {
+    ({ payload: authedUserDoc } = await getAuthedUserDoc());
+    avatarBlob = authedUserDoc["avatar_blob"];
+    if (navigator.onLine) {
+      const serverStatusResponse = await safeFetch(
+        `${import.meta.env.VITE_SERVER_URL}/server/status`,
+      );
+      if (serverStatusResponse.ok) {
+        if (Object.hasOwn(authedUserDoc, "pending_logout")) {
+          const logoutResponse = await safeFetch(
+            `${import.meta.env.VITE_SERVER_URL}/user/logout`,
+            {
+              method: "POST",
+              credentials: "include",
+            },
           );
-          avatarBlob = await avatarResponse.blob();
-          await setAuthedUserDoc({ ...authedUserDoc, avatar_blob: avatarBlob });
-        } else if (Object.hasOwn(authedUserDoc, "id")) {
-          await setAuthedUserDoc({ _deleted: true });
-          authedUserDoc = { _id: "authed-user" };
-          avatarBlob = undefined;
+          if (logoutResponse.ok) {
+            await setAuthedUserDoc({ _deleted: true });
+            authedUserDoc = { _id: "authed-user" };
+            avatarBlob = undefined;
+          }
+        } else {
+          const loggedUserResponse = await safeFetch(
+            `${import.meta.env.VITE_SERVER_URL}/user/me`,
+            { credentials: "include" },
+          );
+          if (loggedUserResponse.ok) {
+            ({
+              data: { userDetail: authedUserDoc },
+            } = await loggedUserResponse.json());
+            const avatarResponse = await safeFetch(
+              `https://ui-avatars.com/api/?name=${authedUserDoc.username}`,
+            );
+            avatarBlob = await avatarResponse.blob();
+            await setAuthedUserDoc({
+              ...authedUserDoc,
+              avatar_blob: avatarBlob,
+            });
+          } else if (Object.hasOwn(authedUserDoc, "id")) {
+            await setAuthedUserDoc({ _deleted: true });
+            authedUserDoc = { _id: "authed-user" };
+            avatarBlob = undefined;
+          }
         }
       }
+    }
+  } catch (error) {
+    // catch & log unexpected error
+    if (!error?.isFetchError) {
+      await logError(error);
     }
   }
   return {
     // serverStatus: serverStatusResponse.status.toString(),
-    authedUserDoc,
-    avatarBlob,
+    authedUserDoc: authedUserDoc ?? {},
+    avatarBlob: avatarBlob ?? null,
   };
 }
 

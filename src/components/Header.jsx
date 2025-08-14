@@ -1,18 +1,10 @@
-import {
-  Link,
-  NavLink,
-  useRouteError,
-  useRouteLoaderData,
-} from "react-router-dom";
+import { Link, NavLink, useRouteLoaderData } from "react-router-dom";
 import { CircleUser } from "lucide-react";
 import Navigation from "./Navigation";
 import SyncButton from "./SyncButton";
 
 export default function Header() {
-  const error = useRouteError();
-  const { authedUserDoc = {}, avatarBlob } = !error
-    ? useRouteLoaderData("root")
-    : {};
+  const { authedUserDoc, avatarBlob } = useRouteLoaderData("root");
   return (
     <header className="h-14 sticky top-0 w-full bg-white flex justify-center z-10 rounded-lg shadow">
       <div className="h-full container w-dvw md:w-full sticky top-0 px-4 py-2 flex items-center justify-between">
