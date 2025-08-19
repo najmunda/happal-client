@@ -23,18 +23,26 @@ import { OnlineContext } from "../routes/root/root";
 import { useContext } from "react";
 import clsx from "clsx";
 import { safeFetch } from "../utils/utils";
+import { logError } from "../utils/logger";
 
 export async function loader() {
-  const { payload: cardDocsTotal } = await getCardDocTotal();
-  return {
-    cardDocsTotal, // All cards total (nothing excluded)
-  };
+  try {
+    const { payload: cardDocsTotal } = await getCardDocTotal();
+    return {
+      cardDocsTotal, // All cards total (nothing excluded)
+    };
+  } catch (error) {
+    await logError(error);
+    return {
+      cardDocsTotal: -1, // All cards total (nothing excluded)
+    };
+  }
 }
 
 export async function action({ request }) {
-  const formData = await request.formData();
-  const intent = formData.get("intent");
   try {
+    const formData = await request.formData();
+    const intent = formData.get("intent");
     let response;
     switch (intent) {
       case "sync": {
@@ -88,6 +96,10 @@ export async function action({ request }) {
     }
     return null;
   } catch (error) {
+    await logError(error);
+    error.message = Object.hasOwn(error, "cause")
+      ? error.message
+      : "Terjadi eror, aksi dibatalkan";
     toast.custom(() => <Toast message={error.message} color="red" />);
     return null;
   }

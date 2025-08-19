@@ -9,15 +9,21 @@ import { resetCard } from "../../db";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
+import { logError } from "../../utils/logger";
 
 export async function action({ params, request }) {
+  let redirect;
   try {
+    ({ redirect } = await request.json());
     const response = await resetCard(params.cardId);
     toast.custom(() => <Toast message={response.message} color="green" />);
   } catch (error) {
+    await logError(error);
+    error.message = Object.hasOwn(error, "cause")
+      ? error.message
+      : "Kartu gagal direset";
     toast.custom(() => <Toast message={error.message} color="red" />);
   }
-  const { redirect } = await request.json();
   return {
     redirect,
   };

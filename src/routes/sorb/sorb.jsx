@@ -13,6 +13,7 @@ import Toast from "../../components/Toast";
 import { getCardDocTotal, getSorbData, updateSRS } from "../../db";
 import Loading from "../../components/Loading";
 import CardsCounter from "../../components/CardsCounter";
+import { logError } from "../../utils/logger";
 
 export async function loader() {
   const {
@@ -27,6 +28,10 @@ export async function action({ request }) {
     const { cardId, rating } = await request.json();
     await updateSRS(cardId, rating);
   } catch (error) {
+    await logError(error);
+    error.message = Object.hasOwn(error, "cause")
+      ? error.message
+      : "SRS kartu gagal diperbarui";
     toast.custom(() => <Toast message={error.message} color="red" />);
   }
   return null;

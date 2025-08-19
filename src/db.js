@@ -173,7 +173,7 @@ export async function getCardsCustom({
       payload,
     };
   } catch (error) {
-    await handleError(error, "Kartu gagal disortir/diurutkan");
+    await handleError(error, "Kartu gagal didapatkan");
   }
 }
 
@@ -311,7 +311,7 @@ export async function getSorbData() {
       },
     };
   } catch (error) {
-    await handleError(error, "Kartu untuk hari ini gagal didapatkan");
+    await handleError(error, "Kartu untuk direview gagal didapatkan");
   }
 }
 

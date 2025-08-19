@@ -10,15 +10,21 @@ import Toast from "../../components/Toast";
 import { deleteCardDoc } from "../../db";
 import { useEffect } from "react";
 import Loading from "../../components/Loading";
+import { logError } from "../../utils/logger";
 
 export async function action({ params, request }) {
+  let redirect;
   try {
+    ({ redirect } = await request.json());
     const response = await deleteCardDoc(params.cardId);
     toast.custom(() => <Toast message={response.message} color="green" />);
   } catch (error) {
+    await logError(error);
+    error.message = Object.hasOwn(error, "cause")
+      ? error.message
+      : "Kartu gagal dihapus";
     toast.custom(() => <Toast message={error.message} color="red" />);
   }
-  const { redirect } = await request.json();
   return {
     redirect,
   };

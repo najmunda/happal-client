@@ -31,7 +31,11 @@ export default function AccountButtons({ cardDocsTotal }) {
         type="submit"
         name="intent"
         value="download"
-        className="p-2 flex gap-2 items-center text-left hover:bg-neutral-100"
+        className={clsx("p-2 flex gap-2 items-center text-left", {
+          "text-black hover:bg-neutral-100": cardDocsTotal > 0,
+          "text-neutral-400": cardDocsTotal === 0 || cardDocsTotal === -1,
+        })}
+        disabled={cardDocsTotal === 0 || cardDocsTotal === -1}
       >
         <FileDown />
         <p className="flex-1">Unduh file cadangan</p>
@@ -42,9 +46,9 @@ export default function AccountButtons({ cardDocsTotal }) {
           onClick={() => setShowDeleteConfirm(true)}
           className={clsx("p-2 flex gap-2 items-center text-left", {
             "text-black hover:bg-neutral-100": cardDocsTotal > 0,
-            "text-neutral-400": cardDocsTotal === 0,
+            "text-neutral-400": cardDocsTotal === 0 || cardDocsTotal === -1,
           })}
-          disabled={cardDocsTotal === 0}
+          disabled={cardDocsTotal === 0 || cardDocsTotal === -1}
         >
           <Trash2 />
           <p className="flex-1">Hapus semua kartu</p>
@@ -79,9 +83,9 @@ export default function AccountButtons({ cardDocsTotal }) {
         onClick={handleImportButton}
         className={clsx("p-2 flex gap-2 items-center text-left", {
           "text-black hover:bg-neutral-100": cardDocsTotal === 0,
-          "text-neutral-400": cardDocsTotal > 0,
+          "text-neutral-400": cardDocsTotal > 0 || cardDocsTotal === -1,
         })}
-        disabled={cardDocsTotal > 0}
+        disabled={cardDocsTotal > 0 || cardDocsTotal === -1}
       >
         <FileUp />
         <p className="flex-1">Import file cadangan</p>

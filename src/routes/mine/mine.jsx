@@ -15,32 +15,37 @@ import Loading from "../../components/Loading";
 import { createEmptyForm } from "../../utils/utils";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
+import { logError } from "../../utils/logger";
 
 export async function action({ request }) {
-  const requestJson = await request.json();
-  const cardsData = requestJson.data;
+  try {
+    const requestJson = await request.json();
+    const cardsData = requestJson.data;
 
-  // Client Validation
-  const errors = [];
-  for (const cardData of cardsData) {
-    if (Object.values(cardData.data).includes("")) {
-      errors.push(cardData.name);
+    // Client Validation
+    const errors = [];
+    for (const cardData of cardsData) {
+      if (Object.values(cardData.data).includes("")) {
+        errors.push(cardData.name);
+      }
     }
-  }
 
-  if (errors.length !== 0) {
-    // There empty input
-    toast.custom(() => <Toast message="Terdapat kartu kosong" color="red" />);
-    return { success: false, errors };
-  } else {
-    try {
+    if (errors.length !== 0) {
+      // There empty input
+      toast.custom(() => <Toast message="Terdapat kartu kosong" color="red" />);
+      return { success: false, errors };
+    } else {
       const response = await addCardDocs(cardsData.map((card) => card.data));
       toast.custom(() => <Toast message={response.message} color="green" />);
       return { success: response.success };
-    } catch (error) {
-      toast.custom(() => <Toast message={error.message} color="red" />);
-      return { success: true };
     }
+  } catch (error) {
+    await logError(error);
+    error.message = Object.hasOwn(error, "cause")
+      ? error.message
+      : "Seluruh kartu gagal ditambahkan";
+    toast.custom(() => <Toast message={error.message} color="red" />);
+    return { success: false };
   }
 }
 

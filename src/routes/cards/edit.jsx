@@ -12,16 +12,22 @@ import Toast from "../../components/Toast";
 import { editCardDoc, getCardDoc } from "../../db";
 import TextArea from "../../components/TextArea";
 import { CircleAlert } from "lucide-react";
+import { logError } from "../../utils/logger";
 
 export async function action({ request, params }) {
-  const formData = await request.formData();
-  const formObject = Object.fromEntries(formData);
-  const { redirect } = formObject;
-  delete formObject["redirect"];
+  let redirect;
   try {
+    const formData = await request.formData();
+    const formObject = Object.fromEntries(formData);
+    ({ redirect } = formObject);
+    delete formObject["redirect"];
     const response = await editCardDoc(params.cardId, formObject);
     toast.custom(() => <Toast message={response.message} color="green" />);
   } catch (error) {
+    await logError(error);
+    error.message = Object.hasOwn(error, "cause")
+      ? error.message
+      : "Kartu gagal diubah";
     toast.custom(() => <Toast message={error.message} color="red" />);
   }
   return {
@@ -34,6 +40,10 @@ export async function loader({ params }) {
     const { payload: cardDoc } = await getCardDoc(params.cardId);
     return { error: null, cardDoc };
   } catch (error) {
+    await logError(error);
+    error.message = Object.hasOwn(error, "cause")
+      ? error.message
+      : "Detail kartu gagal didapatkan";
     return { error, cardDoc: null };
   }
 }
