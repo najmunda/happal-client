@@ -16,13 +16,13 @@ export async function action({ params, request }) {
   try {
     ({ redirect } = await request.json());
     const response = await resetCard(params.cardId);
-    toast.custom(() => <Toast message={response.message} color="green" />);
+    toast.custom(() => <Toast message={response.message} type="success" />);
   } catch (error) {
     await logError(error);
     error.message = Object.hasOwn(error, "cause")
       ? error.message
       : "Kartu gagal direset";
-    toast.custom(() => <Toast message={error.message} color="red" />);
+    toast.custom(() => <Toast message={error.message} type="error" />);
   }
   return {
     redirect,

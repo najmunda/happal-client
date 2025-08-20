@@ -22,13 +22,13 @@ export async function action({ request, params }) {
     ({ redirect } = formObject);
     delete formObject["redirect"];
     const response = await editCardDoc(params.cardId, formObject);
-    toast.custom(() => <Toast message={response.message} color="green" />);
+    toast.custom(() => <Toast message={response.message} type="success" />);
   } catch (error) {
     await logError(error);
     error.message = Object.hasOwn(error, "cause")
       ? error.message
       : "Kartu gagal diubah";
-    toast.custom(() => <Toast message={error.message} color="red" />);
+    toast.custom(() => <Toast message={error.message} type="error" />);
   }
   return {
     redirect,

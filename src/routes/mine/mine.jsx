@@ -32,11 +32,13 @@ export async function action({ request }) {
 
     if (errors.length !== 0) {
       // There empty input
-      toast.custom(() => <Toast message="Terdapat kartu kosong" color="red" />);
+      toast.custom(() => (
+        <Toast message="Terdapat kartu kosong" type="error" />
+      ));
       return { success: false, errors };
     } else {
       const response = await addCardDocs(cardsData.map((card) => card.data));
-      toast.custom(() => <Toast message={response.message} color="green" />);
+      toast.custom(() => <Toast message={response.message} type="success" />);
       return { success: response.success };
     }
   } catch (error) {
@@ -44,7 +46,7 @@ export async function action({ request }) {
     error.message = Object.hasOwn(error, "cause")
       ? error.message
       : "Seluruh kartu gagal ditambahkan";
-    toast.custom(() => <Toast message={error.message} color="red" />);
+    toast.custom(() => <Toast message={error.message} type="error" />);
     return { success: false };
   }
 }

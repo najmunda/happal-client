@@ -90,7 +90,7 @@ export async function action({ request }) {
       toast.custom(() => (
         <Toast
           message={response.message}
-          color={response.success ? "green" : "red"}
+          type={response.success ? "success" : "error"}
         />
       ));
     }
@@ -100,7 +100,7 @@ export async function action({ request }) {
     error.message = Object.hasOwn(error, "cause")
       ? error.message
       : "Terjadi eror, aksi dibatalkan";
-    toast.custom(() => <Toast message={error.message} color="red" />);
+    toast.custom(() => <Toast message={error.message} type="error" />);
     return null;
   }
 }

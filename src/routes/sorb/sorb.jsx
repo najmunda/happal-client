@@ -32,7 +32,7 @@ export async function action({ request }) {
     error.message = Object.hasOwn(error, "cause")
       ? error.message
       : "SRS kartu gagal diperbarui";
-    toast.custom(() => <Toast message={error.message} color="red" />);
+    toast.custom(() => <Toast message={error.message} type="error" />);
   }
   return null;
 }
