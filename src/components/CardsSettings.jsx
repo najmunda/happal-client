@@ -6,7 +6,6 @@ import {
   Filter,
   Search,
 } from "lucide-react";
-import { useEffect } from "react";
 
 export default function CardsSettings({ searchParams }) {
   const submit = useSubmit();
@@ -18,15 +17,9 @@ export default function CardsSettings({ searchParams }) {
   } = searchParams;
 
   function handleFormChange(e) {
-    submit(e.currentTarget);
+    const isFirstSearch = q == "" || q == null
+    submit(e.currentTarget, { replace: !isFirstSearch });
   }
-
-  useEffect(() => {
-    document.getElementById("q").value = q;
-    document.getElementById("show").value = show;
-    document.getElementById("order").value = order;
-    document.getElementById("sortby").value = sortby;
-  }, [q, show, order, sortby]);
 
   return (
     <Form
