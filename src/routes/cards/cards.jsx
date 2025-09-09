@@ -19,6 +19,7 @@ import { getCardsCustom, getCardDocTotal } from "../../db";
 import CardsSettings from "../../components/CardsSettings";
 import Loading from "../../components/Loading";
 import { useEffect, useRef } from "react";
+import CardsPagination from "../../components/CardsPagination";
 
 export function revalidate({ nextUrl }) {
   const isRevalidate = nextUrl.pathname === "/cards";
@@ -26,19 +27,26 @@ export function revalidate({ nextUrl }) {
 }
 
 export async function loader({ request }) {
-  const url = new URL(request.url);
-  const searchParams = Object.fromEntries(url.searchParams);
   const { payload: cardDocsTotal } = await getCardDocTotal();
-  const { payload: cardDocs } = await getCardsCustom(searchParams);
+  const url = new URL(request.url);
+  const showParams = url.searchParams.getAll("show");
+  let searchParams = Object.fromEntries(url.searchParams);
+  if (showParams.length) {
+    searchParams = { ...searchParams, show: showParams };
+  }
+  const {
+    payload: { cardDocs, isLastPage },
+  } = await getCardsCustom(searchParams, cardDocsTotal);
   return {
     cardDocs: cardDocs ?? [],
     cardDocsTotal, // All cards total (nothing excluded)
     searchParams,
+    isLastPage,
   };
 }
 
 export default function Cards() {
-  const { cardDocs, cardDocsTotal, searchParams } = useLoaderData();
+  const { cardDocs, cardDocsTotal, searchParams, isLastPage } = useLoaderData();
   const location = useLocation();
   const navigation = useNavigation();
   const isLoading =
@@ -103,7 +111,7 @@ export default function Cards() {
   }, [location]);
 
   return (
-    <main className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2">
+    <main className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2 overflow-y-auto relative">
       {cardDocsTotal != 0 ? (
         <CardsSettings searchParams={searchParams} />
       ) : (
@@ -114,7 +122,7 @@ export default function Cards() {
       ) : cardDocs.length != 0 ? (
         <section
           onClick={handleDialogOpen}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2"
+          className="pb-5 flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 content-start"
         >
           {cardDocs.map((card) => (
             <div
@@ -165,23 +173,6 @@ export default function Cards() {
               </div>
             </div>
           ))}
-          <div className="group px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white rounded-lg shadow hover:shadow-md">
-            <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">
-              Cards?
-            </p>
-            <p className="text-xs font-light text-nowrap truncate col-span-2">
-              Halaman ini untuk mengatur kartu-kartu kamu.
-            </p>
-            <div className="col-span-2 flex justify-evenly text-xs">
-              <Link
-                className="px-2 py-1 flex gap-1 rounded-lg hover:bg-green-100 hover:text-green-500"
-                to="help"
-              >
-                <Info size={15} />
-                Lebih lanjut
-              </Link>
-            </div>
-          </div>
         </section>
       ) : cardDocsTotal != 0 ? (
         <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-neutral-500">
@@ -201,6 +192,7 @@ export default function Cards() {
           </p>
         </section>
       )}
+      <CardsPagination searchParams={searchParams} isLastPage={isLastPage} />
       <dialog
         ref={dialogRef}
         onClick={handleBackdropClick}

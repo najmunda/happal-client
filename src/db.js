@@ -137,36 +137,63 @@ const Show = Object.freeze({
   review: [2],
 });
 
-export async function getCardsCustom({
-  q = "",
-  show = "all",
-  order = "desc",
-  sortby = "create",
-} = {}) {
+export async function getCardsCustom(
+  { q = "", show = [], order = "desc", sortby = "create", page = "1" } = {},
+  cardDocsTotal,
+) {
   try {
+    page = Number.parseInt(page);
+    const maxCardShowed = 24;
+
+    // Create index
     await db.createIndex({
       index: {
         fields: [SortBy[sortby], "srs.card.state"],
         ddoc: `${sortby}-index`,
       },
     });
-    const response = await db.find({
+    // Set object parameter for db.find
+    const findObjParam = {
       selector: {
         [SortBy[sortby]]: { $gt: 0 },
-        "srs.card.state": { $in: Show[show] },
       },
-      sort: [{ [SortBy[sortby]]: order }],
       use_index: `${sortby}-index`,
-    });
-    let payload = response.docs;
-    if (response.docs && q != "") {
+      limit: cardDocsTotal,
+    };
+    if (show?.length) {
+      show = show.reduce((result, item) => [...result, ...Show[item]], []);
+      findObjParam.selector["srs.card.state"] = { $in: show };
+    }
+    if (q === "") {
+      findObjParam["sort"] = [{ [SortBy[sortby]]: order }];
+      findObjParam["limit"] = maxCardShowed + 1;
+      if (page > 1) {
+        findObjParam["skip"] = maxCardShowed * (page - 1);
+      }
+    }
+
+    const response = await db.find(findObjParam);
+    let payload = { cardDocs: [], isLastPage: true };
+    if (response.docs.length && q === "") {
+      payload = {
+        cardDocs: response.docs.toSpliced(maxCardShowed, 1),
+        isLastPage: response.docs.length <= maxCardShowed,
+      };
+    } else if (response.docs.length && q !== "") {
       const options = {
         keys: ["target", "sentence", "def"],
         includeScore: true,
       };
       const fuse = new Fuse(response.docs, options);
       const searchResult = fuse.search(q);
-      payload = searchResult.map((card) => card.item);
+      const startIndex = maxCardShowed * (page - 1);
+      const cardDocs = searchResult
+        .slice(startIndex, startIndex + maxCardShowed + 1)
+        .map((card) => card.item);
+      payload = {
+        cardDocs: cardDocs.toSpliced(maxCardShowed, 1),
+        isLastPage: cardDocs.length <= maxCardShowed,
+      };
     }
     return {
       success: true,
