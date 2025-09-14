@@ -14,7 +14,11 @@ import Account, {
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
 // Mine
-import Mine, { action as mineAction } from "./routes/mine/mine.jsx";
+import Mine, {
+  revalidate as mineRevalidate,
+  loader as mineLoader,
+  action as mineAction,
+} from "./routes/mine/mine.jsx";
 import MineHelp from "./routes/mine/help";
 // Sorb
 import Sorb, {
@@ -58,6 +62,8 @@ const router = createBrowserRouter([
       {
         path: "/mine",
         element: <Mine />,
+        shouldRevalidate: mineRevalidate,
+        loader: mineLoader,
         action: mineAction,
         children: [
           {

@@ -38,6 +38,15 @@ export default function CardForm({
     }
   }
 
+  function handleTargetChange(e) {
+    handleFormChange({
+      index: formIndex,
+      sentence,
+      target: e.currentTarget.value,
+      def,
+    });
+  }
+
   function handleDefChange(e) {
     handleFormChange({
       index: formIndex,
@@ -74,9 +83,9 @@ export default function CardForm({
         name={`target`}
         id={`target_${formIndex}`}
         value={target}
+        onChange={handleTargetChange}
         className="w-full text-center border border-neutral-200 rounded p-2"
-        placeholder="Highlight kata/frasa pada kalimat..."
-        readOnly
+        placeholder="Ketik/sorot target kata/frasa pada kalimat..."
         required
       />
       <TextArea
