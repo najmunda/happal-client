@@ -137,7 +137,7 @@ export default function CardsSettings({ searchParams }) {
             <label
               key={id}
               htmlFor={id}
-              className="relative shrink-0 p-2 text-xs rounded-lg border border-neutral-200 has-[:checked]:bg-green-300"
+              className="relative shrink-0 p-2 text-xs rounded-lg border border-neutral-200 has-[:checked]:bg-green-300 hover:bg-green-100 has-[:checked]:hover:bg-green-100 cursor-pointer"
             >
               <input
                 type="checkbox"

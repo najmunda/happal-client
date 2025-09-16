@@ -20,6 +20,7 @@ import CardsSettings from "../../components/CardsSettings";
 import Loading from "../../components/Loading";
 import { useEffect, useRef } from "react";
 import CardsPagination from "../../components/CardsPagination";
+import clsx from "clsx";
 
 export function revalidate({ nextUrl }) {
   const isRevalidate = nextUrl.pathname === "/cards";
@@ -122,7 +123,12 @@ export default function Cards() {
       ) : cardDocs.length != 0 ? (
         <section
           onClick={handleDialogOpen}
-          className="pb-5 flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 content-start"
+          className={clsx(
+            "flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 content-start",
+            {
+              "pb-5": isLastPage === false,
+            },
+          )}
         >
           {cardDocs.map((card) => (
             <div
