@@ -15,11 +15,11 @@ import CardsCounter from "../../components/CardsCounter";
 import { logError } from "../../utils/logger";
 
 export async function loader() {
+  const { payload: cardDocsTotal } = await getCardDocTotal();
   const {
     payload: { topCardDoc, nextReview, todayCardsLeft },
-  } = await getSorbData();
-  const { payload: cardsTotal } = await getCardDocTotal();
-  return { topCardDoc, nextReview, todayCardsLeft, cardsTotal };
+  } = await getSorbData(cardDocsTotal);
+  return { topCardDoc, nextReview, todayCardsLeft, cardDocsTotal };
 }
 
 export async function action({ request }) {
@@ -37,7 +37,7 @@ export async function action({ request }) {
 }
 
 export default function Sorb() {
-  const { topCardDoc, nextReview, todayCardsLeft, cardsTotal } =
+  const { topCardDoc, nextReview, todayCardsLeft, cardDocsTotal } =
     useLoaderData();
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
@@ -89,10 +89,16 @@ export default function Sorb() {
 
     const endTouch = e.changedTouches[0];
 
-    if (endTouch.clientX > rightZoneThreshold) {
+    if (
+      firstTouchX < rightZoneThreshold &&
+      endTouch.clientX > rightZoneThreshold
+    ) {
       swiped = true;
       handleCardRight();
-    } else if (endTouch.clientX < leftZoneThreshold) {
+    } else if (
+      firstTouchX > leftZoneThreshold &&
+      endTouch.clientX < leftZoneThreshold
+    ) {
       swiped = true;
       handleCardLeft();
     } else {
@@ -370,7 +376,7 @@ export default function Sorb() {
         </>
       ) : (
         <div className="w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-500 rounded-lg border-2 border-neutral-300 border-dashed">
-          {cardsTotal != 0 ? (
+          {cardDocsTotal != 0 ? (
             <>
               <Smile size={80} />
               <p className="text-center text-sm">

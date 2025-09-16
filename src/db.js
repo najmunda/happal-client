@@ -292,7 +292,7 @@ export async function deleteCardDoc(cardId) {
 }
 
 // SORB
-export async function getSorbData() {
+export async function getSorbData(cardDocsTotal) {
   try {
     const endToday = getEndTodayUTC();
     await db.createIndex({
@@ -307,6 +307,7 @@ export async function getSorbData() {
       },
       sort: [{ "srs.card.due": "asc" }],
       use_index: "srs-card-today-index",
+      limit: cardDocsTotal,
     });
     const f = fsrs();
     const now = new Date();
