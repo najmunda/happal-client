@@ -119,7 +119,7 @@ export default function Account() {
       <div className="w-full max-w-sm flex-[1_1_auto] [@media(min-height:600px)]:flex-[0_1_auto] h-[100px] [@media(min-height:600px)]:h-fit md:max-h-[35rem] p-6 flex flex-col items-stretch gap-3 bg-white text-center rounded-lg shadow overflow-y-auto">
         {isLoading ? (
           <Loading className="flex-1 flex flex-col justify-center items-center" />
-        ) : Object.hasOwn(authedUserDoc, "id") ? (
+        ) : Object.hasOwn(authedUserDoc, "username") ? (
           <>
             <div className="flex flex-col sm:flex-row items-stretch gap-2">
               <img

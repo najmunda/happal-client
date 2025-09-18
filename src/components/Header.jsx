@@ -28,7 +28,7 @@ export default function Header() {
           >
             <HelpCircle />
           </Link>
-          {Object.hasOwn(authedUserDoc, "id") && <SyncButton />}
+          {Object.hasOwn(authedUserDoc, "username") && <SyncButton />}
           <NavLink
             to={"/account"}
             className={({ isActive }) =>

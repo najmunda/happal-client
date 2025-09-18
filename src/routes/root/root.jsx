@@ -58,7 +58,7 @@ export async function loader() {
             });
           } else if (
             loggedUserResponse.status === 401 &&
-            Object.hasOwn(authedUserDoc, "id")
+            Object.hasOwn(authedUserDoc, "username")
           ) {
             await setAuthedUserDoc({ _deleted: true });
             authedUserDoc = { _id: "authed-user" };
