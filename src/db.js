@@ -41,7 +41,9 @@ export async function syncDB() {
     await new Promise((resolve, reject) => {
       db.sync(remoteDb, {
         style: "main_only",
-        filter: (doc) => doc._id.startsWith("card-"),
+        push: {
+          filter: (doc) => doc._id.startsWith("card-"),
+        },
       })
         .on("complete", (info) => {
           safeFetch(`${import.meta.env.VITE_SERVER_URL}/user/last-sync`, {
