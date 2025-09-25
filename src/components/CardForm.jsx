@@ -60,7 +60,7 @@ export default function CardForm({
     <form
       name={`card_${formIndex}`}
       data-formindex={formIndex}
-      className={`h-fit p-2 flex flex-col items-center gap-2 bg-white shadow ${isError ? "border-2 border-red-100" : ""} rounded-lg hover:shadow-md relative`}
+      className={`h-fit p-2 flex flex-col items-stretch gap-2 bg-white shadow ${isError ? "border-2 border-red-100" : ""} rounded-lg hover:shadow-md relative`}
     >
       {isError ? (
         <div className="bg-red-400 size-4 -top-1 -right-2 absolute rounded-full"></div>
@@ -98,6 +98,18 @@ export default function CardForm({
         placeholder="Tambah definisi dari kamus..."
         required
       ></TextArea>
+      {target && (
+        <ul className="flex gap-1 pb-1 overflow-x-auto">
+          <a
+            href={`https://www.merriam-webster.com/dictionary/${target}`}
+            className="text-nowrap bg-white px-2 py-1 text-xs border rounded-lg"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Merriam-Webster
+          </a>
+        </ul>
+      )}
       {cardCount != 1 ? (
         <div className="flex justify-evenly text-xs">
           {cardCount != 1 ? (
