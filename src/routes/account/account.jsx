@@ -7,36 +7,27 @@ import {
 } from "react-router-dom";
 import { CloudAlert, LogOut, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
-import Loading from "../components/Loading";
+import Loading from "../../components/Loading";
+import { syncDB, setAuthedUserDoc, getCardDocTotal } from "../../db";
+import AccountButtons from "../../components/AccountButtons";
+import Toast from "../../components/Toast";
+import { OnlineContext } from "../root/root";
+import { useContext } from "react";
+import clsx from "clsx";
+import { safeFetch } from "../../utils/utils";
+import { logError } from "../../utils/logger";
 import {
   deleteAllCardDoc,
   downloadAllCardDoc,
   importCardDocs,
-  syncDB,
-  setAuthedUserDoc,
   uploadLog,
-  getCardDocTotal,
-} from "../db";
-import AccountButtons from "../components/AccountButtons";
-import Toast from "../components/Toast";
-import { OnlineContext } from "../routes/root/root";
-import { useContext } from "react";
-import clsx from "clsx";
-import { safeFetch } from "../utils/utils";
-import { logError } from "../utils/logger";
+} from "./db";
 
 export async function loader() {
-  try {
-    const { payload: cardDocsTotal } = await getCardDocTotal();
-    return {
-      cardDocsTotal, // All cards total (nothing excluded)
-    };
-  } catch (error) {
-    await logError(error);
-    return {
-      cardDocsTotal: -1, // All cards total (nothing excluded)
-    };
-  }
+  const { payload: cardDocsTotal } = await getCardDocTotal();
+  return {
+    cardDocsTotal, // All cards total (nothing excluded)
+  };
 }
 
 export async function action({ request }) {
@@ -105,7 +96,7 @@ export async function action({ request }) {
   }
 }
 
-export default function Account() {
+export function Component() {
   const { cardDocsTotal } = useLoaderData();
   const isOnline = useContext(OnlineContext);
   const { authedUserDoc, avatarBlob } = useRouteLoaderData("root");
@@ -207,3 +198,5 @@ export default function Account() {
     </main>
   );
 }
+
+Component.displayName = "AccountRoute";

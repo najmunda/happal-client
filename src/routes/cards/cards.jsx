@@ -15,14 +15,15 @@ import {
   SquarePen,
   Trash2,
 } from "lucide-react";
-import { getCardsCustom, getCardDocTotal } from "../../db";
+import { getCardDocTotal } from "../../db";
 import CardsSettings from "../../components/CardsSettings";
 import Loading from "../../components/Loading";
 import { useEffect, useRef } from "react";
 import CardsPagination from "../../components/CardsPagination";
 import clsx from "clsx";
+import { getCardsCustom } from "./db";
 
-export function revalidate({ nextUrl }) {
+export function shouldRevalidate({ nextUrl }) {
   const isRevalidate = nextUrl.pathname === "/cards";
   return isRevalidate;
 }
@@ -46,7 +47,7 @@ export async function loader({ request }) {
   };
 }
 
-export default function Cards() {
+export function Component() {
   const { cardDocs, cardDocsTotal, searchParams, isLastPage } = useLoaderData();
   const location = useLocation();
   const navigation = useNavigation();
@@ -214,3 +215,5 @@ export default function Cards() {
     </main>
   );
 }
+
+Component.displayName = "CardsRoute";

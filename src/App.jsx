@@ -7,31 +7,9 @@ import Root, {
   loader as rootloader /*, { action as rootAction }*/,
 } from "./routes/root/root.jsx";
 import RootError from "./routes/root/error.jsx";
-import Account, {
-  loader as accountLoader,
-  action as accountAction,
-} from "./routes/account.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
-// Mine
-import Mine, {
-  revalidate as mineRevalidate,
-  loader as mineLoader,
-  action as mineAction,
-} from "./routes/mine/mine.jsx";
-import MineHelp from "./routes/mine/help";
-// Sorb
-import Sorb, {
-  loader as sorbLoader,
-  action as sorbAction,
-} from "./routes/sorb/sorb.jsx";
-import SorbHelp from "./routes/sorb/help";
 // Cards
-import Cards, {
-  revalidate as cardsRevalidate,
-  loader as cardsLoader,
-} from "./routes/cards/cards.jsx";
-import CardHelp from "./routes/cards/help";
 import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
 import CardEdit, {
   loader as editLoader,
@@ -40,7 +18,6 @@ import CardEdit, {
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
 import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
 import { action as syncAction } from "./routes/sync.jsx";
-import About from "./routes/about.jsx";
 
 const router = createBrowserRouter([
   {
@@ -57,42 +34,35 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <About />,
+        lazy: () => import("./routes/about.jsx"),
       },
       {
         path: "/mine",
-        element: <Mine />,
-        shouldRevalidate: mineRevalidate,
-        loader: mineLoader,
-        action: mineAction,
+        lazy: () => import("./routes/mine/mine.jsx"),
         children: [
           {
             path: "help",
-            element: <MineHelp />,
+            lazy: () => import("./routes/mine/help"),
           },
         ],
       },
       {
         path: "/sorb",
-        element: <Sorb />,
-        loader: sorbLoader,
-        action: sorbAction,
+        lazy: () => import("./routes/sorb/sorb.jsx"),
         children: [
           {
             path: "help",
-            element: <SorbHelp />,
+            lazy: () => import("./routes/sorb/help"),
           },
         ],
       },
       {
         path: "/cards",
-        element: <Cards />,
-        shouldRevalidate: cardsRevalidate,
-        loader: cardsLoader,
+        lazy: () => import("./routes/cards/cards.jsx"),
         children: [
           {
             path: "help",
-            element: <CardHelp />,
+            lazy: () => import("./routes/cards/help"),
           },
           {
             path: ":cardId",
@@ -119,9 +89,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/account",
-        loader: accountLoader,
-        action: accountAction,
-        element: <Account />,
+        lazy: () => import("./routes/account/account.jsx"),
       },
       {
         path: "/sync",

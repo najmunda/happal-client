@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { SquarePlus, Trash2 } from "lucide-react";
 
-export default function MineHelp() {
+export function Component() {
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
 
@@ -80,3 +80,5 @@ export default function MineHelp() {
     </section>
   );
 }
+
+Component.displayName = "MineHelpRoute";

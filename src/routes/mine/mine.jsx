@@ -11,14 +11,14 @@ import {
 } from "react-router-dom";
 import { SaveAll, SquarePlus } from "lucide-react";
 import CardForm from "../../components/CardForm";
-import { addCardDocs } from "../../db";
 import Loading from "../../components/Loading";
 import { createEmptyForm } from "../../utils/utils";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
 import { logError } from "../../utils/logger";
+import { addCardDocs } from "./db";
 
-export function revalidate() {
+export function shouldRevalidate() {
   return false;
 }
 
@@ -78,7 +78,7 @@ export async function action({ request }) {
   }
 }
 
-export default function Mine() {
+export function Component() {
   const formContainerRef = useRef();
   const { draftCardsData } = useLoaderData();
   const [randomNum, setRandomNum] = useState(Math.floor(Math.random() * 10));
@@ -267,3 +267,5 @@ export default function Mine() {
     </main>
   );
 }
+
+Component.displayName = "MineRoute";

@@ -10,9 +10,10 @@ import {
 } from "react-router-dom";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
-import { getCardDocTotal, getSorbData, updateSRS } from "../../db";
+import { getCardDocTotal } from "../../db";
 import CardsCounter from "../../components/CardsCounter";
 import { logError } from "../../utils/logger";
+import { getSorbData, updateSRS } from "./db";
 
 export async function loader() {
   const { payload: cardDocsTotal } = await getCardDocTotal();
@@ -36,7 +37,7 @@ export async function action({ request }) {
   return null;
 }
 
-export default function Sorb() {
+export function Component() {
   const { topCardDoc, nextReview, todayCardsLeft, cardDocsTotal } =
     useLoaderData();
   const [isOpen, setIsOpen] = useState(false);
@@ -406,3 +407,5 @@ export default function Sorb() {
     </main>
   );
 }
+
+Component.displayName = "SorbRoute";

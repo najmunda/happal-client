@@ -1,13 +1,10 @@
 import PouchDB from "pouchdb-browser";
 import findPlugin from "pouchdb-find";
 import upsertPlugin from "pouchdb-upsert";
-import { createEmptyCard, fsrs, Rating } from "ts-fsrs";
-import Fuse from "fuse.js";
 import { logError } from "./utils/logger";
-import { getEndTodayUTC, msToDHM, safeFetch } from "./utils/utils";
-import { cardDocsSchema } from "./utils/schemas";
+import { safeFetch } from "./utils/utils";
 
-async function handleError(error, message) {
+export async function handleError(error, message) {
   error.message = error?.message ?? message;
   const loggedError = await logError(error);
   throw new Error(message, { cause: loggedError });
@@ -28,6 +25,8 @@ const db = new PouchDB("sorbit", {
   auto_compaction: true,
   revs_limit: 500,
 });
+
+export default db;
 
 export async function syncDB() {
   try {
@@ -126,86 +125,6 @@ export async function getCardDocTotal() {
   }
 }
 
-const SortBy = Object.freeze({
-  create: "date_created",
-  due: "srs.card.due",
-  review: "srs.card.last_review",
-});
-
-const Show = Object.freeze({
-  all: [0, 1, 2, 3],
-  new: [0],
-  learn: [1, 3],
-  review: [2],
-});
-
-export async function getCardsCustom(
-  { q = "", show = [], order = "desc", sortby = "create", page = "1" } = {},
-  cardDocsTotal,
-) {
-  try {
-    page = Number.parseInt(page);
-    const maxCardShowed = 24;
-
-    // Create index
-    await db.createIndex({
-      index: {
-        fields: [SortBy[sortby], "srs.card.state"],
-        ddoc: `${sortby}-index`,
-      },
-    });
-    // Set object parameter for db.find
-    const findObjParam = {
-      selector: {
-        [SortBy[sortby]]: { $gt: 0 },
-      },
-      use_index: `${sortby}-index`,
-      limit: cardDocsTotal,
-    };
-    if (show?.length) {
-      show = show.reduce((result, item) => [...result, ...Show[item]], []);
-      findObjParam.selector["srs.card.state"] = { $in: show };
-    }
-    if (q === "") {
-      findObjParam["sort"] = [{ [SortBy[sortby]]: order }];
-      findObjParam["limit"] = maxCardShowed + 1;
-      if (page > 1) {
-        findObjParam["skip"] = maxCardShowed * (page - 1);
-      }
-    }
-
-    const response = await db.find(findObjParam);
-    let payload = { cardDocs: [], isLastPage: true };
-    if (response.docs.length && q === "") {
-      payload = {
-        cardDocs: response.docs.toSpliced(maxCardShowed, 1),
-        isLastPage: response.docs.length <= maxCardShowed,
-      };
-    } else if (response.docs.length && q !== "") {
-      const options = {
-        keys: ["target", "sentence", "def"],
-        includeScore: true,
-      };
-      const fuse = new Fuse(response.docs, options);
-      const searchResult = fuse.search(q);
-      const startIndex = maxCardShowed * (page - 1);
-      const cardDocs = searchResult
-        .slice(startIndex, startIndex + maxCardShowed + 1)
-        .map((card) => card.item);
-      payload = {
-        cardDocs: cardDocs.toSpliced(maxCardShowed, 1),
-        isLastPage: cardDocs.length <= maxCardShowed,
-      };
-    }
-    return {
-      success: true,
-      payload,
-    };
-  } catch (error) {
-    await handleError(error, "Kartu gagal didapatkan");
-  }
-}
-
 export async function getCardDoc(cardId) {
   try {
     const cardDoc = await db.get(cardId);
@@ -218,47 +137,6 @@ export async function getCardDoc(cardId) {
   }
 }
 
-export async function addCardDocs(newCardsData) {
-  let responses;
-  try {
-    const dateCreate = new Date();
-    const emptyCard = createEmptyCard(dateCreate);
-    const newCardDocs = newCardsData.map((cardDoc) => ({
-      _id: `card-${crypto.randomUUID()}`,
-      ...cardDoc,
-      date_created: dateCreate.toISOString(),
-      srs: {
-        card: emptyCard,
-        log: null,
-      },
-    }));
-    responses = await db.bulkDocs(newCardDocs);
-    // .then(() => {
-    //   return setMonthlyHistory({ newCountAdd: newCardDocs.length });
-    // })
-  } catch (error) {
-    await handleError(error, "Seluruh kartu gagal ditambahkan");
-  }
-  try {
-    if (
-      responses.findIndex((response) => Object.hasOwn(response, "error")) !== -1
-    ) {
-      const failResponses = responses.filter((response) =>
-        Object.hasOwn(response, "error"),
-      );
-      const failMessages = [
-        ...new Set(failResponses.map((response) => response?.message ?? "")),
-      ];
-      throw Object.assign(new Error(null, { cause: failMessages }), {
-        payload: failResponses,
-      });
-    }
-    return { success: true, message: "Seluruh kartu berhasil ditambahkan" };
-  } catch (error) {
-    await handleError(error, "Beberapa kartu gagal ditambahkan");
-  }
-}
-
 export async function editCardDoc(cardId, editData) {
   try {
     const { payload: cardDoc } = await getCardDoc(cardId);
@@ -267,241 +145,6 @@ export async function editCardDoc(cardId, editData) {
     return { success: true, message: "Kartu berhasil diubah" };
   } catch (error) {
     await handleError(error, "Kartu gagal diubah");
-  }
-}
-
-export async function resetCard(cardId) {
-  try {
-    const f = fsrs();
-    const dateNow = new Date();
-    const cardDoc = await db.get(cardId);
-    const resetSRS = f.forget(cardDoc.srs.card, dateNow, false);
-    await editCardDoc(cardId, { srs: resetSRS });
-    return { success: true, message: "Kartu berhasil direset" };
-  } catch (error) {
-    await handleError(error, "Kartu gagal direset");
-  }
-}
-
-export async function deleteCardDoc(cardId) {
-  try {
-    const cardDoc = await db.get(cardId);
-    await db.remove(cardDoc);
-    return { success: true, message: "Kartu berhasil dihapus" };
-  } catch (error) {
-    await handleError(error, "Kartu gagal dihapus");
-  }
-}
-
-// SORB
-export async function getSorbData(cardDocsTotal) {
-  try {
-    const endToday = getEndTodayUTC();
-    await db.createIndex({
-      index: {
-        fields: ["srs.card.due"],
-        ddoc: "srs-card-today-index",
-      },
-    });
-    const response = await db.find({
-      selector: {
-        "srs.card.due": { $lt: endToday.toISOString() },
-      },
-      sort: [{ "srs.card.due": "asc" }],
-      use_index: "srs-card-today-index",
-      limit: cardDocsTotal,
-    });
-    const f = fsrs();
-    const now = new Date();
-    // Get Top Card
-    const topCardDoc = response.docs.at(0);
-    // Get next review time
-    const goodCard =
-      topCardDoc && f.next(topCardDoc.srs.card, now, Rating.Good);
-    const goodNextTime =
-      topCardDoc && msToDHM(goodCard.card.due - goodCard.card.last_review);
-    const againCard =
-      topCardDoc && f.next(topCardDoc.srs.card, now, Rating.Again);
-    const againNextTime =
-      topCardDoc && msToDHM(againCard.card.due - againCard.card.last_review);
-    // Get cards left
-    const todayCardsLeft = Object.groupBy(response.docs, ({ srs }) =>
-      srs.card.state == 2 || srs.card.state == 0 ? srs.card.state : 1,
-    );
-    return {
-      success: true,
-      payload: {
-        topCardDoc,
-        nextReview: { good: goodNextTime, again: againNextTime },
-        todayCardsLeft: {
-          new: todayCardsLeft["0"] ?? [],
-          learn: todayCardsLeft["1"] ?? [],
-          review: todayCardsLeft["2"] ?? [],
-        },
-      },
-    };
-  } catch (error) {
-    await handleError(error, "Kartu untuk direview gagal didapatkan");
-  }
-}
-
-export async function updateSRS(cardId, rating) {
-  try {
-    const f = fsrs();
-    const { payload: cardDoc } = await getCardDoc(cardId);
-    const updatedSrs = f.next(
-      cardDoc.srs.card,
-      new Date(),
-      rating == 0 ? Rating.Again : Rating.Good,
-    );
-    await editCardDoc(cardId, { srs: updatedSrs });
-    // const scheduledDays = updatedSrs.card.scheduled_days;
-    // if (scheduledDays > 0) {
-    //   await setMonthlyHistory({reviewCountAdd: 1});
-    // }
-    return { success: true };
-  } catch (error) {
-    await handleError(error, "SRS kartu gagal diperbarui");
-  }
-}
-
-// Accounts
-export async function downloadAllCardDoc() {
-  try {
-    const response = await db.allDocs({
-      startkey: "card-",
-      endkey: "card-\ufff0",
-      include_docs: true,
-    });
-    const allCardDocs = response.rows.map(
-      ({ doc: { sentence, target, def, date_created, srs, _id } }) => ({
-        sentence,
-        target,
-        def,
-        date_created,
-        srs,
-        _id,
-      }),
-    );
-    const date = new Date();
-    const year = date.getFullYear();
-    const month =
-      date.getMonth() + 1 < 10
-        ? `0${date.getMonth() + 1}`
-        : date.getMonth() + 1;
-    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-    const blob = new Blob([JSON.stringify(allCardDocs)], {
-      type: "text/json",
-    });
-    const link = document.createElement("a");
-    link.download = `${year}${month}${day}-happal.json`;
-    link.href = window.URL.createObjectURL(blob);
-    link.dataset.downloadurl = ["text/json", link.download, link.href].join(
-      ":",
-    );
-    link.dispatchEvent(
-      new MouseEvent("click", {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-    link.remove();
-    return { success: true };
-  } catch (error) {
-    await handleError(error, "Terjadi eror saat mendapatkan file cadangan");
-  }
-}
-
-export async function deleteAllCardDoc() {
-  let responses;
-  try {
-    const response = await db.allDocs({
-      include_docs: true,
-      startkey: "card-",
-      endkey: "card-\ufff0",
-    });
-    const deletedCardsDoc = response.rows.map((cardDoc) => ({
-      ...cardDoc.doc,
-      _deleted: true,
-    }));
-    responses = await db.bulkDocs(deletedCardsDoc);
-  } catch (error) {
-    await handleError(error, "Seluruh kartu gagal dihapus");
-  }
-  try {
-    if (
-      responses.findIndex((response) => Object.hasOwn(response, "error")) !== -1
-    ) {
-      const failResponses = responses.filter((response) =>
-        Object.hasOwn(response, "error"),
-      );
-      const failMessages = [
-        ...new Set(failResponses.map((response) => response?.message ?? "")),
-      ];
-      throw new Error(null, { cause: failMessages });
-    }
-    return { success: true, message: "Seluruh kartu berhasil dihapus" };
-  } catch (error) {
-    await handleError(error, "Beberapa kartu gagal dihapus");
-  }
-}
-
-export async function importCardDocs(importedFileObjUrl) {
-  let responses;
-  try {
-    const response = await fetch(importedFileObjUrl);
-    const fileObj = await response.blob();
-    if (fileObj.type !== "application/json") {
-      return {
-        success: false,
-        message: 'File unggahan tidak bertipe ".json", impor dibatalkan',
-      };
-    }
-    const reader = new FileReader();
-    const result = await new Promise((resolve, reject) => {
-      reader.onload = (event) => {
-        resolve(event.target.result);
-      };
-      reader.onerror = (event) => {
-        reject(event.target.result);
-      };
-      reader.readAsText(fileObj);
-    });
-    const cardDocs = JSON.parse(result);
-    const { error } = cardDocsSchema.validate(cardDocs, {
-      abortEarly: true,
-    });
-    if (error) {
-      return {
-        success: false,
-        message: "Struktur file cadangan tidak valid, impor dibatalkan",
-      };
-    }
-    responses = await db.bulkDocs(cardDocs);
-  } catch (error) {
-    await handleError(error, "Seluruh kartu pada file cadangan gagal diimpor");
-  }
-  try {
-    if (
-      responses.findIndex((response) => Object.hasOwn(response, "error")) !== -1
-    ) {
-      const failResponses = responses.filter((response) =>
-        Object.hasOwn(response, "error"),
-      );
-      const failMessages = [
-        ...new Set(failResponses.map((response) => response?.message ?? "")),
-      ];
-      throw new Error(null, {
-        cause: failMessages,
-      });
-    }
-    return {
-      success: true,
-      message: "Seluruh kartu pada file cadangan berhasil diimpor",
-    };
-  } catch (error) {
-    await handleError(error, "Beberapa kartu pada file cadangan gagal diimpor");
   }
 }
 
@@ -579,40 +222,5 @@ export async function appendLog(logObject) {
     await db.put({ ...clientLogDoc, log: appendedClientLog });
   } catch (error) {
     console.warn("Eror gagal dilog");
-  }
-}
-
-export async function uploadLog() {
-  let clientLogDoc;
-  try {
-    clientLogDoc = await db.get("client-log").catch((error) => {
-      if (error.name === "not_found") {
-        return { _id: "client-log", log: [] };
-      } else {
-        throw error;
-      }
-    });
-    const clientLog = clientLogDoc["log"];
-    if (clientLog !== "") {
-      await safeFetch(`${import.meta.env.VITE_SERVER_URL}/log/client`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ log: clientLog }),
-        method: "POST",
-      });
-    }
-  } catch (error) {
-    throw new Error("Log gagal diunggah");
-  }
-  try {
-    await db.put({ ...clientLogDoc, log: [] });
-    return {
-      success: true,
-      message: "Log berhasil diunggah",
-    };
-  } catch (error) {
-    throw new Error("Log gagal direset, tapi berhasil diunggah");
   }
 }

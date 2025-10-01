@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { CalendarSync, Info, SquarePen, Trash2 } from "lucide-react";
 
-export default function CardHelp() {
+export function Component() {
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
 
@@ -69,3 +69,5 @@ export default function CardHelp() {
     </section>
   );
 }
+
+Component.displayName = "CardsHelpRoute";

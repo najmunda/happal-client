@@ -5,11 +5,11 @@ import {
   useOutletContext,
   useSubmit,
 } from "react-router-dom";
-import { resetCard } from "../../db";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
 import { logError } from "../../utils/logger";
+import { resetCard } from "./db";
 
 export async function action({ params, request }) {
   let redirect;

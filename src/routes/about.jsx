@@ -1,6 +1,6 @@
 import { SiGithub, SiX } from "@icons-pack/react-simple-icons";
 
-export default function About() {
+export function Component() {
   return (
     <main
       className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}
@@ -148,3 +148,5 @@ export default function About() {
     </main>
   );
 }
+
+Component.displayName = "AboutRoute";

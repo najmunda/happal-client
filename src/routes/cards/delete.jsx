@@ -7,10 +7,10 @@ import {
 } from "react-router-dom";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
-import { deleteCardDoc } from "../../db";
 import { useEffect } from "react";
 import Loading from "../../components/Loading";
 import { logError } from "../../utils/logger";
+import { deleteCardDoc } from "./db";
 
 export async function action({ params, request }) {
   let redirect;

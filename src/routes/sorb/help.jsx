@@ -1,6 +1,6 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 
-export default function SorbHelp() {
+export function Component() {
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
 
@@ -67,3 +67,5 @@ export default function SorbHelp() {
     </section>
   );
 }
+
+Component.displayName = "SorbHelpRoute";
