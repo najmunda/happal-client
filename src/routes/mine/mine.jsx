@@ -189,16 +189,9 @@ export function Component() {
 
   const fetcher = useFetcher();
 
-  function handleFormBlur() {
-    const cardForms = formContainerRef.current.querySelectorAll("form");
-    const cardsData = Array.from(cardForms, (form, index) => {
-      return {
-        index: index + 1,
-        ...Object.fromEntries(new FormData(form)),
-      };
-    });
+  function handleFormMousLeave() {
     fetcher.submit(
-      { data: cardsData, intent: "draft" },
+      { data: forms, intent: "draft" },
       { method: "post", encType: "application/json" },
     );
   }
@@ -211,7 +204,7 @@ export function Component() {
   ) : (
     <main
       ref={formContainerRef}
-      onBlur={handleFormBlur}
+      onMouseLeave={handleFormMousLeave}
       className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2 overflow-y-auto relative"
     >
       {navigation.state === "submitting" || navigation.state === "loading" ? (
