@@ -1,230 +1,143 @@
 import PouchDB from "pouchdb-browser";
 import findPlugin from "pouchdb-find";
 import upsertPlugin from "pouchdb-upsert";
-import { createEmptyCard, fsrs, Rating } from "ts-fsrs";
-import { getEndTodayUTC, getStartTodayUTC, msToDHM } from "./utils";
-import Fuse from "fuse.js";
+import { logError } from "./utils/logger";
+
+export async function handleError(error, message) {
+  error.message = error?.message ?? message;
+  const loggedError = await logError(error);
+  throw new Error(message, { cause: loggedError });
+}
 
 PouchDB.plugin(findPlugin);
 PouchDB.plugin(upsertPlugin);
 
-const db = new PouchDB('sorbit', {revs_limit: 30, purged_infos_limit: 10,});
-//const remoteCouch = false;
-
-// cardDoc = document with id card-* stored in pouchdb
-// card = object inside CardDoc (cardDoc.srs.card)
+// Doc = object of pouchdb document
+// cardDoc = object of pouchdb document with id "card-*" inside
+// card = object inside cardDoc (cardDoc.srs.card)
 // response = response from pouchdb api (db.put, db.remove, etc.)
+// Every function return { success: true , message?, payload? } on success process
+// Logged error should an original error
+// Custom Error with message handled & showed on UI
 
-export async function getCardsTotal() {
-  return db.allDocs({
-    startkey: "card-",
-    endkey: 'card-\ufff0',
-  }).then((response) => {
-    return response.rows.length;
-  }).catch((error) => {
-    throw error;
-  });
-}
-
-const SortBy = Object.freeze({
-  create: 'date_created',
-  due: 'srs.card.due',
-  review: 'srs.card.last_review',
+const db = new PouchDB("sorbit", {
+  auto_compaction: true,
+  revs_limit: 500,
 });
 
-const Show = Object.freeze({
-  all: [0, 1, 2, 3],
-  new: [0],
-  learn: [1, 3],
-  review: [2],
-});
+export default db;
 
-export async function getCardsCustom({q = "", show = "all", order = "desc", sortby = "create"}) {
-  return db.createIndex({
-    index: {
-      fields: [SortBy[sortby], "srs.card.state"],
-      ddoc: `${sortby}-index`,
-    }
-  }).then(() => {
-    return db.find({
-      selector: {
-        [SortBy[sortby]]: { $gt: 0 },
-        "srs.card.state": { $in: Show[show] },
-      },
-      sort: [{ [SortBy[sortby]]: order }],
-      use_index: `${sortby}-index`,
+export async function getCardDocTotal() {
+  try {
+    const response = await db.allDocs({
+      startkey: "card-",
+      endkey: "card-\ufff0",
     });
-  }).then((response) => {
-    if (response.docs && q != "") {
-      const options = {
-        keys: ['target', 'sentence',  'def'],
-        includeScore: true,
-      }
-      const fuse = new Fuse(response.docs, options);
-      const searchResult = fuse.search(q);
-      return searchResult.map(card => card.item);
-    }
-    return response.docs;
-  }).catch((error) => {
-    throw error;
-  })
+    return {
+      success: true,
+      payload: response.rows.length,
+    };
+  } catch (error) {
+    await handleError(error, "Jumlah kartu gagal didapatkan");
+  }
 }
 
 export async function getCardDoc(cardId) {
-  return db.get(cardId).then((cardDoc) => {
-    return cardDoc;
-  }).catch((error) => {
-    throw error;
-  })
-}
-
-export async function addCardDocs(newCardDocs) {
-  const dateCreate = new Date()
-  const emptyCard = createEmptyCard(dateCreate);
-  newCardDocs = newCardDocs.map(cardDoc => ({
-    _id: `card-${crypto.randomUUID()}`,
-    ...cardDoc,
-    date_created: dateCreate.toISOString(),
-    srs: {
-      card: emptyCard,
-      log: null,
-    },
-  }));
-  return db.bulkDocs(newCardDocs).then(() => {
-    return setMonthlyHistory({newCountAdd: newCardDocs.length})
-  }).catch((error) => {
-    throw error;
-  });
+  try {
+    const cardDoc = await db.get(cardId);
+    return {
+      success: true,
+      payload: cardDoc,
+    };
+  } catch (error) {
+    await handleError(error, "Detail kartu gagal didapatkan");
+  }
 }
 
 export async function editCardDoc(cardId, editData) {
-  return getCardDoc(cardId).then((cardDoc) => {
-    return Object.assign(cardDoc, { ...editData });
-  }).then((editedCardDoc) => {
-    return db.put(editedCardDoc);
-  }).catch((error) => {
-    throw error;
-  });
-}
-
-export async function resetCard(cardId) {
-  const f = fsrs();
-  const dateNow = new Date()
-  return db.get(cardId).then((cardDoc) => {
-    return f.forget(cardDoc.srs.card, dateNow, false);
-  }).then((resetSRS) => {
-    return editCardDoc(cardId, { srs: resetSRS });
-  }).catch((error) => {
-    throw error;
-  });
-}
-
-export async function deleteCardDoc(cardId) {
-  return db.get(cardId).then(cardDoc => {
-    return db.remove(cardDoc);
-  }).catch((error) => {
-    throw error;
-  });
-}
-
-// SORB
-export async function getTodayCards() {
-  const endToday = getEndTodayUTC();
-  return db.createIndex({
-    index: {
-      fields: ['srs.card.due'],
-      ddoc: "srs-card-today-index",
-    }
-  }).then(() => {
-    return db.find({
-      selector: {
-        "srs.card.due": { $lt: endToday.toISOString() }
-      },
-      sort: [{ "srs.card.due": "asc" }],
-      use_index: "srs-card-today-index",
-    });
-  }).then((response) => {
-    const f = fsrs();
-    const now = new Date();
-    // Get Top Card
-    const topCardDoc = response.docs.at(0);
-    // Get next review time
-    const goodCard = topCardDoc && f.next(topCardDoc.srs.card, now, Rating.Good);
-    const goodNextTime = topCardDoc && msToDHM(goodCard.card.due - goodCard.card.last_review);
-    const againCard = topCardDoc && f.next(topCardDoc.srs.card, now, Rating.Again);
-    const againNextTime = topCardDoc && msToDHM(againCard.card.due - againCard.card.last_review);
-    // Get cards left
-    const cardsLeft = Object.groupBy(response.docs, ({srs}) => srs.card.state == 2 || srs.card.state == 0 ? srs.card.state : 1 );
-    return { 
-      topCardDoc, 
-      nextReview: { good: goodNextTime, again: againNextTime },
-      cardsLeft: {new: cardsLeft['0'] ?? [], learn: cardsLeft['1'] ?? [], review: cardsLeft['2'] ?? []}
-    };
-  }).catch((error) => {
-    throw error;
-  })
-}
-
-export async function updateSRS(cardId, rating) {
-  const f = fsrs()
-  return getCardDoc(cardId).then((cardDoc) => {
-    return f.next(cardDoc.srs.card, new Date(), rating == 0 ? Rating.Again : Rating.Good);
-  }).then(async (schedulingCard) => {
-    return editCardDoc(cardId, { srs: schedulingCard }).then(async response => {
-      const scheduledDays = schedulingCard.card.scheduled_days;
-      if (scheduledDays > 0) {
-        await setMonthlyHistory({reviewCountAdd: 1});
-      }
-      return response;
-    }).catch(error => {
-      throw error;
-    });
-  }).catch((error) => {
-    throw error;
-  });
+  try {
+    const { payload: cardDoc } = await getCardDoc(cardId);
+    const editedCardDoc = { ...cardDoc, ...editData };
+    await db.put(editedCardDoc);
+    return { success: true, message: "Kartu berhasil diubah" };
+  } catch (error) {
+    await handleError(error, "Kartu gagal diubah");
+  }
 }
 
 // Home
 
-export async function getMonthlyHistory() {
-  const startToday = getStartTodayUTC();
-  const defaultHistoryDoc = {
-    _id: 'monthly-history',
-    month: startToday.getMonth(),
-  };
-  return db.get('monthly-history').then(historyDoc => {
-    return {historyDoc, init: false};
-  }).catch(async (error) => {
-    if (error.name === 'not_found') {
-      return {historyDoc: defaultHistoryDoc, init: true};
-    } else {
-      throw error;
-    }
-  }).then(async ({historyDoc, init}) => {
-    // Reset when month change
-    if (init) {
-      await db.put(defaultHistoryDoc);
-    } else if (historyDoc.month != startToday.getMonth()) {
-      await db.remove(historyDoc);
-      await db.put(defaultHistoryDoc);
-    }
-    return db.get('monthly-history');
-  }).catch((error) => {
-    throw error;
-  });
-}
+// export async function getMonthlyHistory() {
+//   const startToday = getStartTodayUTC();
+//   const defaultHistoryDoc = {
+//     _id: "monthly-history",
+//     month: startToday.getMonth(),
+//   };
+//   return db
+//     .get("monthly-history")
+//     .then((historyDoc) => {
+//       return { historyDoc, init: false };
+//     })
+//     .catch(async (error) => {
+//       if (error.name === "not_found") {
+//         return { historyDoc: defaultHistoryDoc, init: true };
+//       } else {
+//         throw error;
+//       }
+//     })
+//     .then(async ({ historyDoc, init }) => {
+//       // Reset when month change
+//       if (init) {
+//         await db.put(defaultHistoryDoc);
+//       } else if (historyDoc.month != startToday.getMonth()) {
+//         await db.remove(historyDoc);
+//         await db.put(defaultHistoryDoc);
+//       }
+//       return db.get("monthly-history");
+//     })
+//     .catch((error) => {
+//       throw error;
+//     });
+// }
 
-async function setMonthlyHistory({newCountAdd = 0, reviewCountAdd = 0}) {
-  const todayDate = getStartTodayUTC().getDate().toString();
-  return getMonthlyHistory().then(async (historyDoc) => {
-    const todayHistory = historyDoc[todayDate];
-    if (todayHistory) {
-      historyDoc[todayDate] = {...historyDoc[todayDate], newCount: todayHistory.newCount + newCountAdd, reviewCount: todayHistory.reviewCount + reviewCountAdd};
-    } else {
-      historyDoc[todayDate] = {newCount: newCountAdd, reviewedCount: reviewCountAdd};
-    }
-    return db.put(historyDoc);
-  }).catch((error) => {
-    throw error;
-  });
+// async function setMonthlyHistory({ newCountAdd = 0, reviewCountAdd = 0 }) {
+//   const todayDate = getStartTodayUTC().getDate().toString();
+//   return getMonthlyHistory()
+//     .then(async (historyDoc) => {
+//       const todayHistory = historyDoc[todayDate];
+//       if (todayHistory) {
+//         historyDoc[todayDate] = {
+//           ...historyDoc[todayDate],
+//           newCount: todayHistory.newCount + newCountAdd,
+//           reviewCount: todayHistory.reviewCount + reviewCountAdd,
+//         };
+//       } else {
+//         historyDoc[todayDate] = {
+//           newCount: newCountAdd,
+//           reviewedCount: reviewCountAdd,
+//         };
+//       }
+//       return db.put(historyDoc);
+//     })
+//     .catch((error) => {
+//       throw error;
+//     });
+// }
+
+// LOG
+export async function appendLog(logObject) {
+  try {
+    const clientLogDoc = await db.get("client-log").catch((error) => {
+      if (error.name === "not_found") {
+        return { _id: "client-log", log: [] };
+      } else {
+        throw error;
+      }
+    });
+    const clientLog = clientLogDoc["log"];
+    const appendedClientLog = [...clientLog, logObject];
+    await db.put({ ...clientLogDoc, log: appendedClientLog });
+  } catch (error) {
+    console.warn("Eror gagal dilog");
+  }
 }

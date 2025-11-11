@@ -1,4 +1,4 @@
-export default function Loading({className}) {
+export default function Loading({ className }) {
   return (
     <article className={className}>
       <svg

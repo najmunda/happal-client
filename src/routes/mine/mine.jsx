@@ -1,69 +1,126 @@
-import { useEffect, useRef, useState } from "react"
-import { Link, Navigate, Outlet, useActionData, useNavigate, useNavigation, useSubmit } from "react-router-dom"
-import { HelpCircle, SaveAll, SquarePlus } from "lucide-react";
-import CardForm from "../../components/CardForm"
-import { addCardDocs } from "../../db";
+import { useEffect, useRef, useState } from "react";
+import {
+  Navigate,
+  Outlet,
+  useActionData,
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+  useSubmit,
+} from "react-router-dom";
+import { SaveAll, SquarePlus } from "lucide-react";
+import CardForm from "../../components/CardForm";
 import Loading from "../../components/Loading";
-import { createEmptyForm } from "../../utils";
+import { createEmptyForm } from "../../utils/utils";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
+import { logError } from "../../utils/logger";
+import { addCardDocs } from "./db";
+
+export function shouldRevalidate() {
+  return false;
+}
+
+export async function loader() {
+  const draftCardsData = JSON.parse(localStorage.getItem("happal-mine-draft"));
+  return {
+    draftCardsData,
+  };
+}
 
 export async function action({ request }) {
-  const requestJson = await request.json();
-  const cardsData = requestJson.data;
+  try {
+    const requestJson = await request.json();
+    const intent = requestJson.intent;
+    const cardsData = requestJson.data;
+    switch (intent) {
+      case "add": {
+        // Client Validation
+        const errors = [];
+        for (const cardData of cardsData) {
+          if (Object.values(cardData.data).includes("")) {
+            errors.push(cardData.name);
+          }
+        }
 
-  // Client Validation
-  const errors = []
-  for (const cardData of cardsData) {
-    if (Object.values(cardData.data).includes("")) {
-      errors.push(cardData.name);
+        if (errors.length !== 0) {
+          // There empty input
+          toast.custom(() => (
+            <Toast message="Terdapat kartu kosong" type="error" />
+          ));
+          return { success: false, errors };
+        } else {
+          const response = await addCardDocs(
+            cardsData.map((card) => card.data),
+          );
+          localStorage.removeItem("happal-mine-draft");
+          toast.custom(() => (
+            <Toast message={response.message} type="success" />
+          ));
+          return { success: response.success };
+        }
+      }
+      case "draft": {
+        localStorage.setItem("happal-mine-draft", JSON.stringify(cardsData));
+        return null;
+      }
+      default:
+        return null;
     }
-  }
-
-  if (errors.length == 0) {
-    const result = await addCardDocs(cardsData.map(card => card.data));
-    toast.custom((t) => (<Toast message="Kartu ditambahkan" color="green" />));
-    return { success: true };
-  } else { // There empty input
-    toast.custom((t) => (<Toast message="Terdapat kartu kosong" color="red" />));
-    return { success: false, errors };
+  } catch (error) {
+    await logError(error);
+    error.message = Object.hasOwn(error, "cause")
+      ? error.message
+      : "Seluruh kartu gagal ditambahkan";
+    toast.custom(() => <Toast message={error.message} type="error" />);
+    return { success: false };
   }
 }
 
-export default function Mine() {
-
-  const formContainerRef = useRef()
+export function Component() {
+  const formContainerRef = useRef();
+  const { draftCardsData } = useLoaderData();
   const [randomNum, setRandomNum] = useState(Math.floor(Math.random() * 10));
-  const [forms, setForms] = useState([createEmptyForm(1)]);
+  const [forms, setForms] = useState(draftCardsData ?? [createEmptyForm(1)]);
   const { success, errors } = useActionData() || {};
   const submit = useSubmit();
   const navigation = useNavigation();
 
   function handleFormChange(changedForm) {
-    setForms(prevForms => {
-      return prevForms.map(prevForm => {
-        return prevForm.index == changedForm.index ? changedForm  : prevForm
-      })
+    setForms((prevForms) => {
+      return prevForms.map((prevForm) => {
+        return prevForm.index == changedForm.index ? changedForm : prevForm;
+      });
     });
   }
 
   function handleAddButton() {
-    setForms(prevFormIndexes => {
-      const {index} = prevFormIndexes.at(-1)
-      return [...prevFormIndexes, createEmptyForm(index + 1)]
+    setForms((prevFormIndexes) => {
+      const { index } = prevFormIndexes.at(-1);
+      return [...prevFormIndexes, createEmptyForm(index + 1)];
     });
   }
 
   function handleSubmitButton() {
-    const cardForms = formContainerRef.current.querySelectorAll('form');
-    const cardsData = Array.from(cardForms, form => ({ data: Object.fromEntries(new FormData(form)), name: form.name }));
-    submit({ data: cardsData }, { method: "post", encType: "application/json" });
+    const cardForms = formContainerRef.current.querySelectorAll("form");
+    const cardsData = Array.from(cardForms, (form) => ({
+      data: Object.fromEntries(new FormData(form)),
+      name: form.name,
+    }));
+    submit(
+      { data: cardsData, intent: "add" },
+      { method: "post", encType: "application/json" },
+    );
   }
 
   function handleCardsButtons(e) {
     if (e.target.tagName == "BUTTON") {
-      const deletedFormIndex = e.target.parentElement.parentElement.dataset.formindex;
-      setForms(prevFormIndexes => prevFormIndexes.filter(({index}) => index != deletedFormIndex));
+      const deletedFormIndex =
+        e.target.parentElement.parentElement.dataset.formindex;
+      setForms((prevFormIndexes) =>
+        prevFormIndexes.filter(({ index }) => index != deletedFormIndex),
+      );
     }
   }
 
@@ -75,37 +132,32 @@ export default function Mine() {
   }, [success]);
 
   // Masonry
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const root = document.querySelector(':root');
+  const [, setWindowWidth] = useState(window.innerWidth);
+  const root = document.querySelector(":root");
   const style = window.getComputedStyle(root);
-  const column = Number.parseInt(style.getPropertyValue('--column'));
+  const column = Number.parseInt(style.getPropertyValue("--column"));
 
   function resizeWindowHandler() {
     setWindowWidth(window.innerWidth);
   }
 
   useEffect(() => {
-    window.addEventListener('resize', resizeWindowHandler);
+    window.addEventListener("resize", resizeWindowHandler);
     return () => {
-      window.removeEventListener('resize', resizeWindowHandler);
+      window.removeEventListener("resize", resizeWindowHandler);
     };
-  }, [])
+  }, []);
 
-  const formsMasonry = forms
-    .reduce((array, form, index) => {
-      index = index < column ? index : index % column;
-      array[index] = [...array[index], form];
-      return array
-    }, (new Array(column)).fill([]))
+  const formsMasonry = forms.reduce((array, form, index) => {
+    index = index < column ? index : index % column;
+    array[index] = [...array[index], form];
+    return array;
+  }, new Array(column).fill([]));
 
   // Dialog
 
   const dialogRef = useRef();
   const navigate = useNavigate();
-
-  function handleDialogOpen() {
-    dialogRef.current.showModal();
-  }
 
   function handleDialogClose() {
     dialogRef.current.close();
@@ -114,15 +166,15 @@ export default function Mine() {
   function handleBackdropClick(e) {
     if (e.target == dialogRef.current) {
       dialogRef.current.close();
-      navigate('/mine');
-    };
+      navigate("/mine");
+    }
   }
 
   function handleEscDown(e) {
     if (e.key == "Escape") {
       dialogRef.current.close();
-      navigate('/mine');
-    };
+      navigate("/mine");
+    }
   }
 
   useEffect(() => {
@@ -133,42 +185,80 @@ export default function Mine() {
     }
   }, [location.pathname]);
 
+  // Auto draft cards form
+
+  const fetcher = useFetcher();
+
+  function handleFormMousLeave() {
+    fetcher.submit(
+      { data: forms, intent: "draft" },
+      { method: "post", encType: "application/json" },
+    );
+  }
+
   return success ? (
     <main className="container w-dvw md:w-full flex-1 p-2 flex flex-col gap-2">
-      <Loading className='flex-1 flex flex-col justify-center items-center' />
+      <Loading className="flex-1 flex flex-col justify-center items-center" />
       <Navigate to={"/mine"} />
     </main>
   ) : (
-    <main ref={formContainerRef} className="container w-dvw md:w-full flex-1 pb-2 px-2 flex flex-col bg-inherit">
+    <main
+      ref={formContainerRef}
+      onMouseLeave={handleFormMousLeave}
+      className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2 overflow-y-auto relative"
+    >
       {navigation.state === "submitting" || navigation.state === "loading" ? (
-        <Loading className='flex-1 flex flex-col justify-center items-center' />
+        <Loading className="flex-1 flex flex-col justify-center items-center" />
       ) : (
         <>
-          <section className="py-2 flex gap-2 sticky top-14 bg-inherit z-10 overflow-y-auto">
-            <Link onClick={handleDialogOpen} className="p-2 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md" to="help"><HelpCircle size={20} />Bantuan</Link>
-            <button onClick={handleAddButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md"><SquarePlus size={20} />Tambah Kartu</button>
-            <button onClick={handleSubmitButton} className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md"><SaveAll size={20} />Simpan Kartu</button>
+          <section className="sticky top-0 flex gap-2 bg-inherit z-50">
+            <button
+              onClick={handleAddButton}
+              className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md"
+            >
+              <SquarePlus size={20} />
+              Tambah Kartu
+            </button>
+            <button
+              onClick={handleSubmitButton}
+              className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md"
+            >
+              <SaveAll size={20} />
+              Simpan Kartu
+            </button>
           </section>
-          <section onClick={handleCardsButtons} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+          <section
+            onClick={handleCardsButtons}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2"
+          >
             {formsMasonry.map((column, index) => (
               <div key={index} className="flex flex-col gap-2 relative">
-                {column.map(form =>
+                {column.map((form) => (
                   <CardForm
                     key={`${randomNum}${form.index}`}
                     form={form}
                     cardCount={forms.length}
-                    isError={errors ? errors.includes(`card_${form.index}`) : false}
+                    isError={
+                      errors ? errors.includes(`card_${form.index}`) : false
+                    }
                     handleFormChange={handleFormChange}
                   />
-                )}
+                ))}
               </div>
             ))}
           </section>
         </>
       )}
-      <dialog ref={dialogRef} onClick={handleBackdropClick} onKeyDown={handleEscDown} className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg">
+      <dialog
+        ref={dialogRef}
+        onClick={handleBackdropClick}
+        onKeyDown={handleEscDown}
+        className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg"
+      >
         <Outlet context={[handleDialogClose]} />
       </dialog>
     </main>
-  )
+  );
 }
+
+Component.displayName = "MineRoute";

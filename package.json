@@ -6,15 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
+    "prettier": "npx prettier src --write",
+    "lint": "eslint src --fix",
     "preview": "vite preview"
   },
   "dependencies": {
     "@icons-pack/react-simple-icons": "^12.3.0",
+    "clsx": "^2.1.1",
     "events": "^3.3.0",
     "fuse.js": "^7.1.0",
     "interweave": "^13.1.0",
+    "joi": "^17.13.3",
     "lucide-react": "^0.468.0",
+    "pouchdb": "^9.0.0",
     "pouchdb-browser": "^9.0.0",
     "pouchdb-find": "^9.0.0",
     "pouchdb-upsert": "^2.2.0",
@@ -25,22 +29,25 @@
     "ts-fsrs": "^4.6.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.15.0",
+    "@eslint/js": "^9.29.0",
     "@tailwindcss/forms": "^0.5.10",
     "@types/pouchdb-browser": "^6.1.5",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-basic-ssl": "^2.1.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.15.0",
-    "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.14",
-    "globals": "^15.12.0",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^15.15.0",
     "postcss": "^8.4.49",
+    "prettier": "3.5.3",
     "rollup-plugin-visualizer": "^5.14.0",
+    "tailwind-scrollbar": "^3.1.0",
     "tailwindcss": "^3.4.16",
     "vite": "^6.2.2",
-    "vite-plugin-pwa": "^0.21.1"
+    "vite-plugin-pwa": "^0.21.1",
+    "vitest": "^3.2.4"
   }
 }

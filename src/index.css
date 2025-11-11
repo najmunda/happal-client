@@ -1,10 +1,9 @@
 @tailwind base;
 
 @layer base {
-
   @font-face {
     font-family: "Plus Jakarta Sans";
-    src: url('./assets/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf');
+    src: url("./assets/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf");
   }
 
   html {
@@ -22,23 +21,23 @@
     --column: 1;
   }
 
-  @media (min-width:768px) {
+  @media (min-width: 768px) {
     :root {
       --column: 2;
     }
   }
 
-  @media (min-width:1024px) {
+  @media (min-width: 1024px) {
     :root {
       --column: 3;
     }
   }
 
   kbd {
-    padding: 0.25rem; 
-    border-radius: 0.25rem; 
-    border-width: 1px; 
-    border-bottom-width: 4px; 
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    border-width: 1px;
+    border-bottom-width: 4px;
   }
 }
 
