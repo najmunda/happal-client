@@ -22,6 +22,7 @@ import { useEffect, useRef } from "react";
 import CardsPagination from "../../components/CardsPagination";
 import clsx from "clsx";
 import { getCardsCustom } from "./db";
+import ButtonAction from "../../components/ButtonAction";
 
 export function shouldRevalidate({ nextUrl }) {
   const isRevalidate = nextUrl.pathname === "/cards";
@@ -144,39 +145,43 @@ export function Component() {
                 {card.sentence}
               </p>
               <div className="col-span-2 flex justify-evenly text-xs">
-                <Link
-                  className="px-2 py-1 flex gap-1 rounded-lg hover:bg-green-100 hover:text-green-500"
+                <ButtonAction
+                  as={Link}
+                  variant="success"
                   to={`${card._id}`}
                   state={{ prevPathNQuery: currentPathNQuery }}
                 >
                   <Info size={15} />
                   Info
-                </Link>
-                <Link
-                  className="px-2 py-1 flex gap-1 rounded-lg hover:bg-blue-100 hover:text-blue-500"
+                </ButtonAction>
+                <ButtonAction
+                  as={Link}
+                  variant="success"
                   to={`${card._id}/edit`}
                   state={{ prevPathNQuery: currentPathNQuery }}
                 >
                   <SquarePen size={15} />
                   Edit
-                </Link>
+                </ButtonAction>
                 {card.srs?.card.state !== 0 && (
-                  <Link
-                    className="px-2 py-1 flex gap-1 rounded-lg hover:bg-yellow-100 hover:text-yellow-500"
+                  <ButtonAction
+                    as={Link}
+                    variant="warning"
                     to={`${card._id}/reset`}
                     state={{ prevPathNQuery: currentPathNQuery }}
                   >
                     <CalendarSync size={15} />
                     Reset
-                  </Link>
+                  </ButtonAction>
                 )}
-                <Link
-                  className="px-2 py-1 flex gap-1 rounded-lg hover:bg-red-100 hover:text-red-500"
+                <ButtonAction
+                  as={Link}
+                  variant="danger"
                   to={`${card._id}/delete`}
                   state={{ prevPathNQuery: currentPathNQuery }}
                 >
                   <Trash2 size={15} /> Hapus
-                </Link>
+                </ButtonAction>
               </div>
             </div>
           ))}
