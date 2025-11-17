@@ -130,7 +130,7 @@ export default function CardEdit() {
           value={sentence}
           onChange={handleSentenceChange}
           onSelect={handleSentenceSelect}
-          className="w-full border border-black rounded p-2"
+          className="w-full border border-black rounded-sm p-2"
           placeholder="Put sentence here..."
         ></TextArea>
         <input
@@ -138,7 +138,7 @@ export default function CardEdit() {
           name="target"
           id="target"
           value={target}
-          className="w-full font-lg border border-black rounded p-2"
+          className="w-full font-lg border border-black rounded-sm p-2"
           placeholder="Highlight words from sentence..."
           readOnly
         />
@@ -148,7 +148,7 @@ export default function CardEdit() {
           id="def"
           value={def}
           onChange={handleDefChange}
-          className="w-full border border-black rounded p-2"
+          className="w-full border border-black rounded-sm p-2"
           placeholder="Add def from dictionary..."
         ></TextArea>
         <div className="pt-2 w-full flex justify-between items-center">

@@ -273,7 +273,7 @@ export function Component() {
           <div className="flex-1 w-full flex flex-col justify-center items-center relative">
             {isLoading ? (
               <div
-                className={`h-full w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center gap-2 justify-center bg-white text-center rounded-lg shadow`}
+                className={`h-full w-full flex-1 max-w-sm md:max-h-140 p-2 flex flex-col items-center gap-2 justify-center bg-white text-center rounded-lg shadow-sm`}
               >
                 <p className="animate-pulse text-neutral-300 bg-neutral-300 rounded-lg">
                   Better use your time to learn!
@@ -283,7 +283,7 @@ export function Component() {
               <>
                 <div
                   ref={nextCardRef}
-                  className={`scale-95 opacity-75 h-full w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center gap-2 justify-center bg-white text-center rounded-lg shadow`}
+                  className={`scale-95 opacity-75 h-full w-full flex-1 max-w-sm md:max-h-140 p-2 flex flex-col items-center gap-2 justify-center bg-white text-center rounded-lg shadow-sm`}
                 >
                   <p className="text-neutral-300 bg-neutral-300 rounded-lg">
                     Better use your time to learn!
@@ -296,7 +296,7 @@ export function Component() {
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
                   onTouchCancel={handleTouchEnd}
-                  className={`absolute h-full w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg shadow ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
+                  className={`absolute h-full w-full flex-1 max-w-sm md:max-h-140 p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg shadow-sm ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
                 >
                   {isOpen && (
                     <>
@@ -361,7 +361,7 @@ export function Component() {
                           <p className="text-xs">{nextReview.again}</p>
                           <p className="text-xs">Again</p>
                         </button>
-                        <hr className="flex-1 border-1 border-neutral-200" />
+                        <hr className="flex-1 border border-neutral-200" />
                       </section>
                     </>
                   )}
@@ -376,7 +376,7 @@ export function Component() {
           />
         </>
       ) : (
-        <div className="w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-500 rounded-lg border-2 border-neutral-300 border-dashed">
+        <div className="w-full flex-1 max-w-sm md:max-h-140 p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-500 rounded-lg border-2 border-neutral-300 border-dashed">
           {cardDocsTotal != 0 ? (
             <>
               <Smile size={80} />

@@ -214,14 +214,14 @@ export function Component() {
           <section className="sticky top-0 flex gap-2 bg-inherit z-50">
             <button
               onClick={handleAddButton}
-              className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md"
+              className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow-sm rounded-lg hover:shadow-md"
             >
               <SquarePlus size={20} />
               Tambah Kartu
             </button>
             <button
               onClick={handleSubmitButton}
-              className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow rounded-lg hover:shadow-md"
+              className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow-sm rounded-lg hover:shadow-md"
             >
               <SaveAll size={20} />
               Simpan Kartu

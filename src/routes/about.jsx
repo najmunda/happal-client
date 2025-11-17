@@ -5,7 +5,7 @@ export function Component() {
     <main
       className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}
     >
-      <div className="w-full flex-[1_1_auto] max-w-sm h-[100px] md:max-h-[35rem] py-6 px-2 flex flex-col items-center gap-3 bg-white text-center rounded-lg shadow overflow-y-auto">
+      <div className="w-full flex-[1_1_auto] max-w-sm h-[100px] md:max-h-140 py-6 px-2 flex flex-col items-center gap-3 bg-white text-center rounded-lg shadow-sm overflow-y-auto">
         <div className="flex items-center gap-2">
           <img src="/happal.svg" alt="" className="h-full" />
           <p className="text-6xl">Happal</p>

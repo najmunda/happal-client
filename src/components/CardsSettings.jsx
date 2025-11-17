@@ -67,7 +67,7 @@ export default function CardsSettings({ searchParams }) {
       onChange={handleFormChange}
       className="flex flex-col xl:grid grid-cols-2 grid-rows-2 gap-2"
     >
-      <section className="flex-1 px-4 py-2 flex justify-between items-center gap-4 bg-white rounded-lg shadow hover:shadow-md">
+      <section className="flex-1 px-4 py-2 flex justify-between items-center gap-4 bg-white rounded-lg shadow-sm hover:shadow-md">
         <input
           type="text"
           name="q"
@@ -78,8 +78,8 @@ export default function CardsSettings({ searchParams }) {
         />
         <Search />
       </section>
-      <section className="px-4 py-2 flex items-center gap-2 overflow-auto rounded-lg bg-white md:shadow hover:shadow-md">
-        <section className="grow flex gap-2 items-center has-[:disabled]:text-neutral-400 relative">
+      <section className="px-4 py-2 flex items-center gap-2 overflow-auto rounded-lg bg-white md:shadow-sm hover:shadow-md">
+        <section className="grow flex gap-2 items-center has-disabled:text-neutral-400 relative">
           <CalendarArrowDown size={18} className="shrink-0" />
           <label
             htmlFor="sortby"
@@ -102,7 +102,7 @@ export default function CardsSettings({ searchParams }) {
           </select>
           {q && <input type="hidden" name="sortby" value={sortby} />}
         </section>
-        <section className="grow flex gap-2 items-center has-[:disabled]:text-neutral-400 relative">
+        <section className="grow flex gap-2 items-center has-disabled:text-neutral-400 relative">
           <ArrowDownNarrowWide size={18} className="shrink-0" />
           <label
             htmlFor="order"
@@ -124,7 +124,7 @@ export default function CardsSettings({ searchParams }) {
           {q && <input type="hidden" name="order" value={order} />}
         </section>
       </section>
-      <section className="col-span-2 px-4 py-2 flex items-center gap-2 rounded-lg bg-white md:shadow hover:shadow-md ">
+      <section className="col-span-2 px-4 py-2 flex items-center gap-2 rounded-lg bg-white md:shadow-sm hover:shadow-md ">
         <Filter size={18} className="shrink-0" />
         <p className="absolute md:static invisible md:visible text-xs text-nowrap">
           Tampilkan
@@ -137,7 +137,7 @@ export default function CardsSettings({ searchParams }) {
             <label
               key={id}
               htmlFor={id}
-              className="relative shrink-0 p-2 text-xs rounded-lg border border-neutral-200 has-[:checked]:bg-green-300 hover:bg-green-100 has-[:checked]:hover:bg-green-100 cursor-pointer"
+              className="relative shrink-0 p-2 text-xs rounded-lg border border-neutral-200 has-checked:bg-green-300 hover:bg-green-100 has-checked:hover:bg-green-100 cursor-pointer"
             >
               <input
                 type="checkbox"

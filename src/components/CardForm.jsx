@@ -61,7 +61,7 @@ export default function CardForm({
     <form
       name={`card_${formIndex}`}
       data-formindex={formIndex}
-      className={`h-fit p-2 flex flex-col items-stretch gap-2 bg-white shadow ${isError ? "border-2 border-red-100" : ""} rounded-lg hover:shadow-md relative`}
+      className={`h-fit p-2 flex flex-col items-stretch gap-2 bg-white shadow-sm ${isError ? "border-2 border-red-100" : ""} rounded-lg hover:shadow-md relative`}
     >
       {isError ? (
         <div className="bg-red-400 size-4 -top-1 -right-2 absolute rounded-full"></div>
@@ -75,7 +75,7 @@ export default function CardForm({
         value={sentence}
         onChange={handleSentenceChange}
         onSelect={handleSentenceSelect}
-        className="w-full text-center text-xs border border-neutral-200 rounded p-2"
+        className="w-full text-center text-xs border border-neutral-200 rounded-sm p-2"
         placeholder="Taruh kalimat disini..."
         required
       ></TextArea>
@@ -85,7 +85,7 @@ export default function CardForm({
         id={`target_${formIndex}`}
         value={target}
         onChange={handleTargetChange}
-        className="w-full text-center border border-neutral-200 rounded p-2"
+        className="w-full text-center border border-neutral-200 rounded-sm p-2"
         placeholder="Ketik/sorot target kata/frasa pada kalimat..."
         required
       />
@@ -95,7 +95,7 @@ export default function CardForm({
         id={`def_${formIndex}`}
         value={def}
         onChange={handleDefChange}
-        className="w-full text-center text-xs border border-neutral-200 rounded p-2"
+        className="w-full text-center text-xs border border-neutral-200 rounded-sm p-2"
         placeholder="Tambah definisi dari kamus..."
         required
       ></TextArea>

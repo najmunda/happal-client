@@ -136,7 +136,7 @@ export function Component() {
             <div
               key={card._id}
               data-key={card._id}
-              className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white rounded-lg shadow hover:shadow-md"
+              className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white rounded-lg shadow-sm hover:shadow-md"
             >
               <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">
                 {card.target}
