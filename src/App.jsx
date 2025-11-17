@@ -3,7 +3,7 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import Root from "./routes/root/root.jsx";
+import Root, {loader as rootLoader} from "./routes/root/root.jsx";
 import RootError from "./routes/root/error.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
@@ -25,6 +25,7 @@ const router = createBrowserRouter([
       const intent = formData?.get("intent");
       return intent === "sync" || intent === "logout" ? true : false;
     },
+    loader: rootLoader,
     element: <Root />,
     errorElement: <RootError />,
     children: [
