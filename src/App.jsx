@@ -20,11 +20,6 @@ const router = createBrowserRouter([
   {
     id: "root",
     path: "/",
-    shouldRevalidate: (args) => {
-      const formData = args?.formData;
-      const intent = formData?.get("intent");
-      return intent === "sync" || intent === "logout" ? true : false;
-    },
     element: <Root />,
     errorElement: <RootError />,
     children: [
