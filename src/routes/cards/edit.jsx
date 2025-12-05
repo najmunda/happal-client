@@ -11,8 +11,10 @@ import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
 import { editCardDoc, getCardDoc } from "../../db";
 import TextArea from "../../components/TextArea";
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, Pencil, X } from "lucide-react";
 import { logError } from "../../utils/logger";
+import ButtonAction from "../../components/ButtonAction";
+import Input from "../../components/Input";
 
 export async function action({ request, params }) {
   let redirect;
@@ -63,20 +65,18 @@ export default function CardEdit() {
 
   if (error !== null && cardDoc === null) {
     return (
-      <section
-        method="post"
-        className="p-3 h-fit flex flex-col justify-evenly items-center gap-2"
-      >
+      <section className="h-fit flex flex-col justify-evenly items-center gap-2">
         <CircleAlert size={60} />
-        <p className="pb-2 w-full text-lg text-center">{error.message}.</p>
+        <p className="w-full text-lg text-center">{error.message}.</p>
         <div className="w-full flex justify-center items-center">
-          <button
+          <ButtonAction
+            as="button"
             type="button"
+            icon={X}
             onClick={handleBackButton}
-            className="px-2 hover:bg-neutral-100 rounded-lg"
           >
             Tutup
-          </button>
+          </ButtonAction>
         </div>
       </section>
     );
@@ -112,10 +112,7 @@ export default function CardEdit() {
     }, [actionData]);
 
     return (
-      <Form
-        method="post"
-        className="p-3 h-fit flex flex-col justify-evenly items-center gap-2"
-      >
+      <Form method="post" className="w-full flex flex-col items-stretch gap-2">
         <input
           type="text"
           name="redirect"
@@ -130,17 +127,20 @@ export default function CardEdit() {
           value={sentence}
           onChange={handleSentenceChange}
           onSelect={handleSentenceSelect}
-          className="w-full border border-black rounded p-2"
-          placeholder="Put sentence here..."
+          className="text-center text-xs"
+          placeholder="Taruh kalimat disini..."
+          required
         ></TextArea>
-        <input
+        <Input
           type="text"
           name="target"
           id="target"
           value={target}
-          className="w-full font-lg border border-black rounded p-2"
-          placeholder="Highlight words from sentence..."
+          autoComplete="off"
+          className="text-center"
+          placeholder="Ketik/sorot target kata/frasa pada kalimat..."
           readOnly
+          required
         />
         <TextArea
           type="text"
@@ -148,24 +148,28 @@ export default function CardEdit() {
           id="def"
           value={def}
           onChange={handleDefChange}
-          className="w-full border border-black rounded p-2"
-          placeholder="Add def from dictionary..."
+          className="text-center text-xs"
+          placeholder="Tambah definisi dari kamus..."
+          required
         ></TextArea>
-        <div className="pt-2 w-full flex justify-between items-center">
-          <button
+        <div className="w-full flex justify-center items-center gap-2">
+          <ButtonAction
+            as="button"
             type="button"
+            icon={X}
             onClick={handleBackButton}
-            className="px-2 hover:bg-neutral-100 rounded-lg"
           >
-            Tutup
-          </button>
-          <button
+            Batal
+          </ButtonAction>
+          <ButtonAction
+            as="button"
             type="submit"
+            variant="success"
+            icon={Pencil}
             onClick={handleDialogClose}
-            className="px-2 hover:bg-blue-100 hover:text-blue-500 rounded-lg"
           >
             Simpan
-          </button>
+          </ButtonAction>
         </div>
       </Form>
     );

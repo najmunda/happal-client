@@ -1,9 +1,10 @@
 import { useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
 import { Interweave } from "interweave";
-import { CircleAlert, Eye, Repeat2 } from "lucide-react";
+import { CircleAlert, Eye, Repeat2, X } from "lucide-react";
 import { getCardDoc } from "../../db";
 import { formatDate } from "../../utils/utils";
 import { logError } from "../../utils/logger";
+import ButtonAction from "../../components/ButtonAction";
 
 export async function loader({ params }) {
   try {
@@ -39,7 +40,7 @@ export default function CardInfo() {
   const dateCreated = cardDoc?.date_created;
 
   return (
-    <section className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
+    <>
       {cardDoc !== null && error === null ? (
         <>
           <p className="pb-2 w-full text-2xl text-pretty">
@@ -78,20 +79,21 @@ export default function CardInfo() {
           </section>
         </>
       ) : (
-        <>
+        <section className="h-fit flex flex-col justify-evenly items-center gap-2">
           <CircleAlert size={60} />
-          <p className="pb-2 w-full text-lg text-center">{error.message}.</p>
-        </>
+          <p className="w-full text-lg text-center">{error.message}.</p>
+        </section>
       )}
       <div className="w-full flex justify-center items-center gap-2">
-        <button
+        <ButtonAction
+          as="button"
           type="button"
+          icon={X}
           onClick={handleBackButton}
-          className="px-2 hover:bg-neutral-100"
         >
-          Tutup
-        </button>
+          Close
+        </ButtonAction>
       </div>
-    </section>
+    </>
   );
 }

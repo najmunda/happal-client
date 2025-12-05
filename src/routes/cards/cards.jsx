@@ -16,13 +16,15 @@ import {
   Trash2,
 } from "lucide-react";
 import { getCardDocTotal } from "../../db";
-import CardsSettings from "../../components/CardsSettings";
+import CardsSettings from "./components/CardsSettings";
 import Loading from "../../components/Loading";
 import { useEffect, useRef } from "react";
-import CardsPagination from "../../components/CardsPagination";
+import CardsPagination from "./components/CardsPagination";
 import clsx from "clsx";
 import { getCardsCustom } from "./db";
 import ButtonAction from "../../components/ButtonAction";
+import Card from "../../components/Card";
+import Dialog from "../../components/Dialog";
 
 export function shouldRevalidate({ nextUrl }) {
   const isRevalidate = nextUrl.pathname === "/cards";
@@ -114,7 +116,10 @@ export function Component() {
   }, [location]);
 
   return (
-    <main className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2 overflow-y-auto relative">
+    <main
+      style={{ scrollbarGutter: "stable" }}
+      className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2 overflow-y-auto scrollbar-thin relative"
+    >
       {cardDocsTotal != 0 ? (
         <CardsSettings searchParams={searchParams} />
       ) : (
@@ -133,10 +138,11 @@ export function Component() {
           )}
         >
           {cardDocs.map((card) => (
-            <div
+            <Card
+              as="div"
               key={card._id}
               data-key={card._id}
-              className="group h-min px-4 py-2 grid grid-cols-2 grid-rows-2 items-center gap-1 bg-white rounded-lg shadow hover:shadow-md"
+              className="group h-min grid grid-cols-2 grid-rows-2 items-center gap-1"
             >
               <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">
                 {card.target}
@@ -183,11 +189,11 @@ export function Component() {
                   <Trash2 size={15} /> Hapus
                 </ButtonAction>
               </div>
-            </div>
+            </Card>
           ))}
         </section>
       ) : cardDocsTotal != 0 ? (
-        <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-neutral-500">
+        <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-content-secondary dark:text-content-secondary-dark">
           <SearchX size={80} />
           <p className="text-center text-sm">
             Kartu tidak ditemukan. Coba cari dengan kata lain atau ubah nilai
@@ -195,7 +201,7 @@ export function Component() {
           </p>
         </section>
       ) : (
-        <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-neutral-500">
+        <section className="p-2 flex-1 flex flex-col justify-center items-center gap-2 text-content-secondary dark:text-content-secondary-dark">
           <CopyX size={80} />
           <p className="text-center text-sm">
             Belum ada kartu yang ditambahkan. Klik{" "}
@@ -205,18 +211,17 @@ export function Component() {
         </section>
       )}
       <CardsPagination searchParams={searchParams} isLastPage={isLastPage} />
-      <dialog
+      <Dialog
         ref={dialogRef}
         onClick={handleBackdropClick}
         onKeyDown={handleEscDown}
-        className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg"
       >
         {isDialogLoading ? (
           <Loading className="h-[33dvh] flex flex-col justify-center items-center" />
         ) : (
           <Outlet context={[handleDialogClose]} />
         )}
-      </dialog>
+      </Dialog>
     </main>
   );
 }

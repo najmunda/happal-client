@@ -1,6 +1,9 @@
-import { Trash2 } from "lucide-react";
-import TextArea from "./TextArea";
-import ButtonAction from "./ButtonAction";
+import { BookA, Trash2 } from "lucide-react";
+import TextArea from "../../../components/TextArea";
+import ButtonAction from "../../../components/ButtonAction";
+import Card from "../../../components/Card";
+import Input from "../../../components/Input";
+import clsx from "clsx";
 
 export default function CardForm({
   form,
@@ -58,13 +61,16 @@ export default function CardForm({
   }
 
   return (
-    <form
+    <Card
+      as="form"
       name={`card_${formIndex}`}
       data-formindex={formIndex}
-      className={`h-fit p-2 flex flex-col items-stretch gap-2 bg-white shadow ${isError ? "border-2 border-red-100" : ""} rounded-lg hover:shadow-md relative`}
+      className={clsx("h-fit flex flex-col items-stretch gap-2 relative", {
+        "border-2 border-danger dark:border-danger-dark": isError,
+      })}
     >
       {isError ? (
-        <div className="bg-red-400 size-4 -top-1 -right-2 absolute rounded-full"></div>
+        <div className="bg-danger dark:bg-danger-dark size-4 -top-1 -right-2 absolute rounded-full"></div>
       ) : (
         <></>
       )}
@@ -75,17 +81,18 @@ export default function CardForm({
         value={sentence}
         onChange={handleSentenceChange}
         onSelect={handleSentenceSelect}
-        className="w-full text-center text-xs border border-neutral-200 rounded p-2"
+        className="w-full text-center text-xs"
         placeholder="Taruh kalimat disini..."
         required
       ></TextArea>
-      <input
+      <Input
         type="text"
         name={`target`}
         id={`target_${formIndex}`}
         value={target}
+        autoComplete="off"
         onChange={handleTargetChange}
-        className="w-full text-center border border-neutral-200 rounded p-2"
+        className="w-full text-center"
         placeholder="Ketik/sorot target kata/frasa pada kalimat..."
         required
       />
@@ -95,20 +102,22 @@ export default function CardForm({
         id={`def_${formIndex}`}
         value={def}
         onChange={handleDefChange}
-        className="w-full text-center text-xs border border-neutral-200 rounded p-2"
+        className="w-full text-center text-xs"
         placeholder="Tambah definisi dari kamus..."
         required
       ></TextArea>
       {target && (
         <ul className="flex gap-1 pb-1 overflow-x-auto">
-          <a
+          <ButtonAction
+            as="a"
             href={`https://www.merriam-webster.com/dictionary/${target}`}
-            className="text-nowrap bg-white px-2 py-1 text-xs border rounded-lg"
+            icon={BookA}
+            variant="success"
             target="_blank"
             rel="noopener noreferrer"
           >
             Merriam-Webster
-          </a>
+          </ButtonAction>
         </ul>
       )}
       {cardCount != 1 ? (
@@ -118,9 +127,10 @@ export default function CardForm({
               as="button"
               type="button"
               value="delete"
+              icon={Trash2}
               variant="danger"
             >
-              <Trash2 size={15} /> Hapus Form
+              Hapus Form
             </ButtonAction>
           ) : (
             <></>
@@ -129,6 +139,6 @@ export default function CardForm({
       ) : (
         <></>
       )}
-    </form>
+    </Card>
   );
 }

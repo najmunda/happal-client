@@ -6,6 +6,10 @@ import {
   Search,
 } from "lucide-react";
 import { useState } from "react";
+import Card from "../../../components/Card";
+import Input from "../../../components/Input";
+import Select from "./Select";
+import CheckBox from "./CheckBox";
 
 const initialShowCheckData = [
   {
@@ -67,19 +71,22 @@ export default function CardsSettings({ searchParams }) {
       onChange={handleFormChange}
       className="flex flex-col xl:grid grid-cols-2 grid-rows-2 gap-2"
     >
-      <section className="flex-1 px-4 py-2 flex justify-between items-center gap-4 bg-white rounded-lg shadow hover:shadow-md">
-        <input
+      <Card
+        as="section"
+        className="flex-1 flex justify-between items-center gap-4"
+      >
+        <Input
           type="text"
           name="q"
           id="q"
           defaultValue={q}
           placeholder="Cari kartu..."
-          className="p-0 flex-1 border-0 focus:ring-0"
+          className="p-0 flex-1"
         />
         <Search />
-      </section>
-      <section className="px-4 py-2 flex items-center gap-2 overflow-auto rounded-lg bg-white md:shadow hover:shadow-md">
-        <section className="grow flex gap-2 items-center has-[:disabled]:text-neutral-400 relative">
+      </Card>
+      <Card as="section" className="flex items-center gap-2 overflow-auto">
+        <section className="grow flex gap-2 items-center has-disabled:text-content-secondary dark:has-disabled:text-content-secondary-dark relative">
           <CalendarArrowDown size={18} className="shrink-0" />
           <label
             htmlFor="sortby"
@@ -87,22 +94,22 @@ export default function CardsSettings({ searchParams }) {
           >
             Urut berdasar
           </label>
-          <select
+          <Select
             name="sortby"
             id="sortby"
             value={q ? "search" : sortby}
             disabled={q ? true : false}
-            className={`grow text-xs rounded-lg border border-neutral-200 cursor-pointer disabled:cursor-default`}
+            className="grow"
             readOnly
           >
             {q ? <option value="search">Pencarian</option> : <></>}
             <option value="create">Tanggal dibuat</option>
             <option value="due">Review selanjutnya</option>
             <option value="review">Review terakhir</option>
-          </select>
+          </Select>
           {q && <input type="hidden" name="sortby" value={sortby} />}
         </section>
-        <section className="grow flex gap-2 items-center has-[:disabled]:text-neutral-400 relative">
+        <section className="grow flex gap-2 items-center has-disabled:text-content-secondary dark:has-disabled:text-content-secondary-dark relative">
           <ArrowDownNarrowWide size={18} className="shrink-0" />
           <label
             htmlFor="order"
@@ -110,21 +117,21 @@ export default function CardsSettings({ searchParams }) {
           >
             Urutan
           </label>
-          <select
+          <Select
             name="order"
             id="order"
             value={q ? "asc" : order}
             disabled={q ? true : false}
             readOnly
-            className="grow text-xs rounded-lg border border-neutral-200 cursor-pointer disabled:cursor-default"
+            className="grow"
           >
             <option value="desc">Menurun</option>
             <option value="asc">Menaik</option>
-          </select>
+          </Select>
           {q && <input type="hidden" name="order" value={order} />}
         </section>
-      </section>
-      <section className="col-span-2 px-4 py-2 flex items-center gap-2 rounded-lg bg-white md:shadow hover:shadow-md ">
+      </Card>
+      <Card as="section" className="col-span-2 flex items-center gap-2">
         <Filter size={18} className="shrink-0" />
         <p className="absolute md:static invisible md:visible text-xs text-nowrap">
           Tampilkan
@@ -134,24 +141,19 @@ export default function CardsSettings({ searchParams }) {
           onClickCapture={handleShowChange}
         >
           {showCheckData.map(({ id, value, caption }) => (
-            <label
-              key={id}
-              htmlFor={id}
-              className="relative shrink-0 p-2 text-xs rounded-lg border border-neutral-200 has-[:checked]:bg-green-300 hover:bg-green-100 has-[:checked]:hover:bg-green-100 cursor-pointer"
-            >
-              <input
+            <CheckBox.Label key={id} htmlFor={id}>
+              <CheckBox.Input
                 type="checkbox"
                 name="show"
                 id={id}
                 value={value}
                 defaultChecked={show.includes(value)}
-                className="invisible absolute"
               />
               {caption}
-            </label>
+            </CheckBox.Label>
           ))}
         </ul>
-      </section>
+      </Card>
     </Form>
   );
 }

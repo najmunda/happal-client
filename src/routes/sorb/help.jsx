@@ -1,4 +1,6 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
+import ButtonAction from "../../components/ButtonAction";
+import { X } from "lucide-react";
 
 export function Component() {
   const navigate = useNavigate();
@@ -10,7 +12,7 @@ export function Component() {
   }
 
   return (
-    <section className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
+    <>
       <section className="w-full flex flex-col justify-evenly gap-2">
         <h2 className="text-2xl font-bold">Sorb?</h2>
         <p className="text-sm">
@@ -24,15 +26,15 @@ export function Component() {
           menemui kartu). Card counter menampilkan jumlah kartu tersisa yang
           harus kamu review hari ini berdasarkan statusnya.
         </p>
-        <p className="text-sm bg-green-200">
+        <p className="text-sm text-content bg-success">
           Warna hijau menampilkan jumlah kartu yang belum pernah kamu
           review/baru ditambahkan. (New Cards)
         </p>
-        <p className="text-sm bg-red-200">
+        <p className="text-sm text-content bg-danger">
           Warna merah menampilkan jumlah kartu tempo kurang dari 1 hari. (Learn
           Cards)
         </p>
-        <p className="text-sm bg-yellow-200">
+        <p className="text-sm text-content bg-warning">
           Warna merah menampilkan jumlah kartu dengan tempo lebih dari 1 hari.
           (Review Cards)
         </p>
@@ -60,11 +62,16 @@ export function Component() {
         </p>
       </section>
       <div className="pt-2 w-full flex justify-center items-center">
-        <button type="button" onClick={handleBackButton} className="px-2">
-          Close
-        </button>
+        <ButtonAction
+          as="button"
+          type="button"
+          icon={X}
+          onClick={handleBackButton}
+        >
+          Tutup
+        </ButtonAction>
       </div>
-    </section>
+    </>
   );
 }
 

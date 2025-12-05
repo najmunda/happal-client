@@ -1,5 +1,6 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { SquarePlus, Trash2 } from "lucide-react";
+import { SaveAll, SquarePlus, Trash2, X } from "lucide-react";
+import ButtonAction from "../../components/ButtonAction";
 
 export function Component() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export function Component() {
   }
 
   return (
-    <section className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
+    <>
       <section className="w-full flex flex-col justify-evenly gap-2">
         <h2 className="text-2xl font-bold">Mine?</h2>
         <p className="text-sm">
@@ -51,14 +52,14 @@ export function Component() {
             <tr>
               <th className="flex gap-1 items-center">
                 <SquarePlus size={15} />
-                Tambah Form
+                Tambah Kartu
               </th>
               <td>: Menambah form kata.</td>
             </tr>
             <tr>
               <th className="flex gap-1 items-center">
-                <SquarePlus size={15} />
-                Simpan Kata
+                <SaveAll size={15} />
+                Simpan Kartu
               </th>
               <td>: Menyimpan seluruh kartu.</td>
             </tr>
@@ -73,11 +74,17 @@ export function Component() {
         </table>
       </section>
       <div className="pt-2 w-full flex justify-center items-center">
-        <button type="button" onClick={handleBackButton} className="px-2">
-          Close
-        </button>
+        <ButtonAction
+          as="button"
+          type="button"
+          variant="success"
+          icon={X}
+          onClick={handleBackButton}
+        >
+          Tutup
+        </ButtonAction>
       </div>
-    </section>
+    </>
   );
 }
 

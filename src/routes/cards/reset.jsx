@@ -10,6 +10,8 @@ import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
 import { logError } from "../../utils/logger";
 import { resetCard } from "./db";
+import ButtonAction from "../../components/ButtonAction";
+import { CalendarSync, X } from "lucide-react";
 
 export async function action({ params, request }) {
   let redirect;
@@ -60,26 +62,29 @@ export default function CardReset() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-3 h-fit flex flex-col justify-evenly items-center gap-2"
+      className="h-fit flex flex-col justify-evenly items-center gap-2"
     >
       <p className="text-center">
         Apakah anda yakin untuk mereset jadwal kartu ini?
       </p>
-      <div className="pt-2 w-full flex justify-center items-center gap-2">
-        <button
+      <div className="w-full flex justify-center items-center gap-2">
+        <ButtonAction
+          as="button"
           type="button"
+          icon={X}
           onClick={handleBackButton}
-          className="px-2 hover:bg-neutral-100 rounded-lg"
         >
           Batal
-        </button>
-        <button
+        </ButtonAction>
+        <ButtonAction
+          as="button"
           type="submit"
+          variant="warning"
+          icon={CalendarSync}
           onClick={handleDialogClose}
-          className="px-2 hover:bg-yellow-100 hover:text-yellow-500 rounded-lg"
         >
           Reset
-        </button>
+        </ButtonAction>
       </div>
     </form>
   );

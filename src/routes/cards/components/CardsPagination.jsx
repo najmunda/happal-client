@@ -1,6 +1,7 @@
 import { useSubmit } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
+import Card from "../../../components/Card";
 
 export default function CardsPagination({ searchParams, isLastPage }) {
   const submit = useSubmit();
@@ -19,38 +20,34 @@ export default function CardsPagination({ searchParams, isLastPage }) {
         },
       )}
     >
-      <button
+      <Card
+        as="button"
         type="button"
         onClick={handleButtonClick}
         value={Number(page) - 1}
-        className={clsx(
-          "px-4 py-2 rounded-lg bg-white border border-neutral-200 shadow-lg hover:shadow-xl",
-          {
-            visible: page > 1,
-            invisible: page == 1,
-          },
-        )}
+        className={clsx("cursor-pointer", {
+          visible: page > 1,
+          invisible: page == 1,
+        })}
         disabled={page == 1}
       >
         <ChevronLeft size={18} className="shrink-0" />
-      </button>
-      <section className="px-4 py-2 flex items-center gap-2 rounded-lg bg-white border border-neutral-200 shadow-lg hover:shadow-xl">
-        <p className="text-sm">{page}</p>
-      </section>
-      <button
+      </Card>
+      <Card as="section" className="flex items-center gap-2">
+        <p className="text-sm cursor-default">{page}</p>
+      </Card>
+      <Card
+        as="button"
         type="button"
         onClick={handleButtonClick}
         value={Number(page) + 1}
-        className={clsx(
-          "px-4 py-2 rounded-lg bg-white border border-neutral-200 shadow-lg hover:shadow-xl",
-          {
-            invisible: isLastPage,
-          },
-        )}
+        className={clsx("cursor-pointer", {
+          invisible: isLastPage,
+        })}
         disabled={isLastPage}
       >
         <ChevronRight size={18} className="shrink-0" />
-      </button>
+      </Card>
     </form>
   );
 }

@@ -11,9 +11,11 @@ import {
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
 import { getCardDocTotal } from "../../db";
-import CardsCounter from "../../components/CardsCounter";
+import CardsCounter from "./components/CardsCounter";
 import { logError } from "../../utils/logger";
 import { getSorbData, updateSRS } from "./db";
+import Card from "../../components/Card";
+import Dialog from "../../components/Dialog";
 
 export async function loader() {
   const { payload: cardDocsTotal } = await getCardDocTotal();
@@ -272,46 +274,49 @@ export function Component() {
         <>
           <div className="flex-1 w-full flex flex-col justify-center items-center relative">
             {isLoading ? (
-              <div
-                className={`h-full w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center gap-2 justify-center bg-white text-center rounded-lg shadow`}
+              <Card
+                as="div"
+                className="h-full w-full flex-1 max-w-sm md:max-h-140 flex flex-col items-center gap-2 justify-center text-center"
               >
-                <p className="animate-pulse text-neutral-300 bg-neutral-300 rounded-lg">
+                <p className="animate-pulse text-line dark:text-line-dark bg-line dark:bg-line-dark rounded-lg">
                   Better use your time to learn!
                 </p>
-              </div>
+              </Card>
             ) : (
               <>
-                <div
+                <Card
+                  as="div"
                   ref={nextCardRef}
-                  className={`scale-95 opacity-75 h-full w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center gap-2 justify-center bg-white text-center rounded-lg shadow`}
+                  className="scale-95 opacity-75 h-full w-full flex-1 max-w-sm md:max-h-140 flex flex-col items-center gap-2 justify-center text-center"
                 >
-                  <p className="text-neutral-300 bg-neutral-300 rounded-lg">
+                  <p className="text-line dark:text-line-dark bg-line dark:bg-line-dark rounded-lg">
                     Better use your time to learn!
                   </p>
-                </div>
-                <div
+                </Card>
+                <Card
+                  as="div"
                   ref={currentCardRef}
                   onClick={handleCardClick}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
                   onTouchCancel={handleTouchEnd}
-                  className={`absolute h-full w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-stretch gap-2 justify-around bg-white text-center rounded-lg shadow ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
+                  className={`absolute h-full w-full flex-1 max-w-sm md:max-h-140 flex flex-col items-stretch gap-2 justify-around text-center ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
                 >
                   {isOpen && (
                     <>
                       <section className="p-2 flex flex-row-reverse items-center gap-2">
                         <button
                           onClick={handleCardRight}
-                          className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100"
+                          className="p-2 flex items-center gap-2 rounded-lg hover:bg-success/25 hover:text-success cursor-pointer"
                         >
                           <ThumbsUp />
                           <p className="text-xs">{nextReview.good}</p>
                           <p className="text-xs">Good</p>
                         </button>
-                        <hr className="flex-1 border-neutral-200" />
+                        <hr className="flex-1 border border-line dark:border-line-dark" />
                       </section>
-                      <section className="flex items-center justify-center gap-1 text-neutral-400">
+                      <section className="flex items-center justify-center gap-1 text-content-secondary dark:text-content-secondary-dark">
                         <p className="text-xs">
                           Swipe Kanan / Klik tombol &#34;Good&#34; / Tekan{" "}
                           <kbd>{">"}</kbd>{" "}
@@ -337,7 +342,7 @@ export function Component() {
                       </>
                     )}
                     {!isOpen && (
-                      <p className="text-xs text-neutral-400">
+                      <p className="text-xs text-content-secondary dark:text-content-secondary-dark">
                         Tekan <kbd>Space</kbd> / Tap / Klik Kartu untuk membuka
                         definisi dan arti.
                       </p>
@@ -345,7 +350,7 @@ export function Component() {
                   </div>
                   {isOpen && (
                     <>
-                      <section className="flex items-center justify-center gap-1 text-neutral-400">
+                      <section className="flex items-center justify-center gap-1 text-content-secondary dark:text-content-secondary-dark">
                         <p className="text-xs">
                           Swipe Kiri / Klik tombol &#34;Again&#34; / Tekan{" "}
                           <kbd>{"<"}</kbd>
@@ -355,17 +360,17 @@ export function Component() {
                         <button
                           type="button"
                           onClick={handleCardLeft}
-                          className="p-2 flex items-center gap-2 rounded-lg border border-neutral-200 hover:bg-neutral-100"
+                          className="p-2 flex items-center gap-2 rounded-lg hover:bg-danger/25 hover:text-danger cursor-pointer"
                         >
                           <ThumbsDown />
                           <p className="text-xs">{nextReview.again}</p>
                           <p className="text-xs">Again</p>
                         </button>
-                        <hr className="flex-1 border-1 border-neutral-200" />
+                        <hr className="flex-1 border border-line dark:border-line-dark" />
                       </section>
                     </>
                   )}
-                </div>
+                </Card>
               </>
             )}
           </div>
@@ -376,7 +381,7 @@ export function Component() {
           />
         </>
       ) : (
-        <div className="w-full flex-1 max-w-sm md:max-h-[35rem] p-2 flex flex-col items-center justify-center gap-2 text-center text-neutral-500 rounded-lg border-2 border-neutral-300 border-dashed">
+        <div className="w-full flex-1 max-w-sm md:max-h-140 p-2 flex flex-col items-center justify-center gap-2 text-center text-content-secondary dark:text-content-secondary-dark rounded-lg border-2 border-line dark:border-line-dark border-dashed">
           {cardDocsTotal != 0 ? (
             <>
               <Smile size={80} />
@@ -396,14 +401,13 @@ export function Component() {
           )}
         </div>
       )}
-      <dialog
+      <Dialog
         ref={dialogRef}
         onClick={handleBackdropClick}
         onKeyDown={handleEscDown}
-        className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg"
       >
         <Outlet context={[handleDialogClose]} />
-      </dialog>
+      </Dialog>
     </main>
   );
 }
