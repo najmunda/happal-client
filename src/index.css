@@ -1,11 +1,40 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
+@plugin 'tailwind-scrollbar';
 @plugin '@tailwindcss/forms';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-main: #00ff66;
+  --color-main: rgb(134, 239, 172);
+
+  --color-success: var(--color-green-500);
+  --color-success-dark: var(--color-green-400);
+  --color-warning: var(--color-yellow-500);
+  --color-warning-dark: var(--color-yellow-400);
+  --color-danger: var(--color-red-500);
+  --color-danger-dark: var(--color-red-400);
+
+  --color-back: var(--color-neutral-100);
+  --color-back-dark: var(--color-neutral-800);
+
+  --color-card: var(--color-white);
+  --color-card-dark: var(--color-neutral-700);
+
+  --color-content: var(--color-black);
+  --color-content-dark: var(--color-white);
+
+  --color-content-secondary: var(--color-neutral-400);
+  --color-content-secondary-dark: var(--color-neutral-400);
+
+  --color-line: var(--color-neutral-300);
+  --color-line-dark: var(--color-neutral-500);
+
+  --shadow-light: var(--shadow-sm);
+  --shadow-dark: 0 1px 3px 0 rgb(0 0 0 / 0.5), 0 1px 2px -1px rgb(0 0 0 / 0.5);
+  --shadow-hover-light: var(--shadow-md);
+  --shadow-hover-dark:
+    0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
 }
 
 /*

@@ -1,16 +1,15 @@
 import { CircleAlert, CircleCheck } from "lucide-react";
+import Card from "./Card";
 
 export default function Toast({ message, type }) {
   return (
-    <div
-      className={`p-2 w-fit flex items-center gap-1 bg-white shadow-sm rounded-lg`}
-    >
+    <Card as="div" className="w-fit flex items-center gap-1">
       {type === "success" ? (
-        <CircleCheck className="fill-green-500 text-white" />
+        <CircleCheck className="fill-success dark:fill-success-dark text-card dark:text-card-dark" />
       ) : (
-        <CircleAlert className="fill-red-500 text-white" />
+        <CircleAlert className="fill-danger dark:fill-danger-dark text-card dark:text-card-dark" />
       )}
       <p className="text-center">{message}</p>
-    </div>
+    </Card>
   );
 }

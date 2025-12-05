@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import Loading from "../../components/Loading";
 import { logError } from "../../utils/logger";
 import { deleteCardDoc } from "./db";
+import { Trash2, X } from "lucide-react";
+import ButtonAction from "../../components/ButtonAction";
 
 export async function action({ params, request }) {
   let redirect;
@@ -64,26 +66,29 @@ export default function CardDelete() {
     <form
       onSubmit={handleSubmit}
       method="delete"
-      className="p-3 h-fit flex flex-col justify-evenly items-center gap-2"
+      className="h-fit flex flex-col justify-evenly items-center gap-2"
     >
       <p className="text-center">
         Apakah anda yakin menghapus kartu ini? Jadwal kartu akan ikut terhapus!
       </p>
-      <div className="pt-2 w-full flex justify-center items-center gap-2">
-        <button
+      <div className="w-full flex justify-center items-center gap-2">
+        <ButtonAction
+          as="button"
           type="button"
+          icon={X}
           onClick={handleBackButton}
-          className="px-2 hover:bg-neutral-100 rounded-lg"
         >
           Batal
-        </button>
-        <button
+        </ButtonAction>
+        <ButtonAction
+          as="button"
           type="submit"
+          variant="danger"
+          icon={Trash2}
           onClick={handleDialogClose}
-          className="px-2 hover:bg-red-100 hover:text-red-500 rounded-lg"
         >
           Hapus
-        </button>
+        </ButtonAction>
       </div>
     </form>
   );

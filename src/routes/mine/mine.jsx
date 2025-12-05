@@ -10,13 +10,15 @@ import {
   useSubmit,
 } from "react-router-dom";
 import { SaveAll, SquarePlus } from "lucide-react";
-import CardForm from "../../components/CardForm";
+import CardForm from "./components/CardForm";
 import Loading from "../../components/Loading";
 import { createEmptyForm } from "../../utils/utils";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
 import { logError } from "../../utils/logger";
 import { addCardDocs } from "./db";
+import Card from "../../components/Card";
+import Dialog from "../../components/Dialog";
 
 export function shouldRevalidate() {
   return false;
@@ -205,27 +207,30 @@ export function Component() {
     <main
       ref={formContainerRef}
       onMouseLeave={handleFormMousLeave}
-      className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2 overflow-y-auto relative"
+      style={{ scrollbarGutter: "stable" }}
+      className="container w-dvw md:w-full flex-1 p-2 flex flex-col items-stretch gap-2 overflow-y-auto scrollbar-thin relative"
     >
       {navigation.state === "submitting" || navigation.state === "loading" ? (
         <Loading className="flex-1 flex flex-col justify-center items-center" />
       ) : (
         <>
           <section className="sticky top-0 flex gap-2 bg-inherit z-50">
-            <button
+            <Card
+              as="button"
               onClick={handleAddButton}
-              className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow-sm rounded-lg hover:shadow-md"
+              className="flex-1 flex items-center justify-center gap-2 text-nowrap hover:cursor-pointer"
             >
               <SquarePlus size={20} />
               Tambah Kartu
-            </button>
-            <button
+            </Card>
+            <Card
+              as="button"
               onClick={handleSubmitButton}
-              className="p-2 flex-1 flex items-center justify-center gap-2 bg-white text-nowrap shadow-sm rounded-lg hover:shadow-md"
+              className="flex-1 flex items-center justify-center gap-2 text-nowrap hover:cursor-pointer"
             >
               <SaveAll size={20} />
               Simpan Kartu
-            </button>
+            </Card>
           </section>
           <section
             onClick={handleCardsButtons}
@@ -249,14 +254,13 @@ export function Component() {
           </section>
         </>
       )}
-      <dialog
+      <Dialog
         ref={dialogRef}
         onClick={handleBackdropClick}
         onKeyDown={handleEscDown}
-        className="w-full max-h-[75dvh] sm:max-w-sm md:max-w-md bottom-0 rounded-lg"
       >
         <Outlet context={[handleDialogClose]} />
-      </dialog>
+      </Dialog>
     </main>
   );
 }

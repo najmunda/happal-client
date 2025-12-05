@@ -43,6 +43,7 @@
     "globals": "^15.15.0",
     "prettier": "3.5.3",
     "rollup-plugin-visualizer": "^5.14.0",
+    "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.1.17",
     "vite": "^6.2.2",
     "vite-plugin-pwa": "^0.21.1",

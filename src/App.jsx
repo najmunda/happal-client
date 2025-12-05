@@ -3,7 +3,7 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import Root, {loader as rootLoader} from "./routes/root/root.jsx";
+import Root, { loader as rootLoader } from "./routes/root/root.jsx";
 import RootError from "./routes/root/error.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";

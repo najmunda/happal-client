@@ -2,11 +2,15 @@ import { Link, useLocation } from "react-router-dom";
 import { HelpCircle, Moon, Sun } from "lucide-react";
 import Navigation from "./Navigation";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import Card from "../../../components/Card";
 
-export default function Header({isDarkTheme, handleDarkToggle}) {
+export default function Header({ isDarkTheme, handleDarkToggle }) {
   const location = useLocation();
   return (
-    <header className="h-14 w-dvw bg-white dark:bg-neutral-700 flex justify-center z-10 rounded-lg shadow-sm">
+    <Card
+      as="header"
+      className="h-14 w-dvw flex justify-center z-10 rounded-none rounded-b-lg"
+    >
       <div className="h-full container w-full px-4 py-2 flex items-center justify-between relative">
         <Link to={"/"} className="flex items-center gap-2 cursor-help">
           <img src="/happal.svg" alt="" />
@@ -16,24 +20,22 @@ export default function Header({isDarkTheme, handleDarkToggle}) {
           <Navigation />
         </nav>
         <div className="flex items-center justify-end gap-1 md:gap-2">
-          <button
-            className="p-2 hover:bg-green-300 rounded-full"
-            onClick={handleDarkToggle}
-          >
-            {
-              isDarkTheme ? <Sun /> : <Moon />
-            }
-          </button>
           {location.pathname !== "/" && (
             <Link
-              className="p-2 hover:bg-green-300 rounded-full"
+              className={`p-2 hover:bg-main hover:text-content ${location.pathname.includes("help") ? "bg-main text-content" : ""} rounded-full`}
               to={location.pathname + "/help"}
             >
               <HelpCircle />
             </Link>
           )}
+          <button
+            className="p-2 hover:bg-main hover:text-content rounded-full cursor-pointer"
+            onClick={handleDarkToggle}
+          >
+            {isDarkTheme ? <Sun /> : <Moon />}
+          </button>
           <a
-            className="p-2 hover:bg-green-300 rounded-full"
+            className="p-2 hover:bg-main hover:text-content rounded-full"
             href="https://github.com/najmunda/happal-client"
             target="_blank"
             rel="noopener noreferrer"
@@ -42,6 +44,6 @@ export default function Header({isDarkTheme, handleDarkToggle}) {
           </a>
         </div>
       </div>
-    </header>
+    </Card>
   );
 }

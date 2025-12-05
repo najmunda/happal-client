@@ -1,5 +1,6 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { CalendarSync, Info, SquarePen, Trash2 } from "lucide-react";
+import { CalendarSync, Info, SquarePen, Trash2, X } from "lucide-react";
+import ButtonAction from "../../components/ButtonAction";
 
 export function Component() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export function Component() {
   }
 
   return (
-    <section className="p-3 h-fit flex flex-col justify-evenly items-center gap-2">
+    <>
       <section className="w-full flex flex-col justify-evenly gap-2">
         <h2 className="text-2xl font-bold">Cards?</h2>
         <p className="text-sm">
@@ -58,15 +59,16 @@ export function Component() {
         </table>
       </section>
       <div className="pt-2 w-full flex justify-center items-center">
-        <button
+        <ButtonAction
+          as="button"
           type="button"
+          icon={X}
           onClick={handleBackButton}
-          className="px-2 hover:bg-neutral-100 rounded-lg"
         >
           Tutup
-        </button>
+        </ButtonAction>
       </div>
-    </section>
+    </>
   );
 }
 
