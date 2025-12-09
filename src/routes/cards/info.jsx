@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
+import { useLoaderData, useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { Interweave } from "interweave";
 import { CircleAlert, Eye, Repeat2, X } from "lucide-react";
 import { getCardDoc } from "../../db";
@@ -23,10 +23,12 @@ export default function CardInfo() {
   const { error, cardDoc } = useLoaderData();
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
+  const location = useLocation();
+  const prevPathNQuery = location.state?.prevPathNQuery ?? "/cards";
 
   function handleBackButton() {
     handleDialogClose();
-    navigate(-1);
+    navigate(prevPathNQuery);
   }
 
   const sentence = cardDoc?.sentence.replace(

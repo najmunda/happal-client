@@ -56,7 +56,7 @@ export default function CardEdit() {
   const [handleDialogClose] = useOutletContext();
   const actionData = useActionData();
   const location = useLocation();
-  const prevPathNQuery = location.state?.prevPathNQuery;
+  const prevPathNQuery = location.state?.prevPathNQuery ?? "/cards";
 
   function handleBackButton() {
     handleDialogClose();
@@ -106,8 +106,8 @@ export default function CardEdit() {
 
     useEffect(() => {
       if (actionData) {
-        const { data, redirect } = actionData;
-        navigate(redirect, { state: data });
+        const { redirect } = actionData;
+        navigate(redirect);
       }
     }, [actionData]);
 

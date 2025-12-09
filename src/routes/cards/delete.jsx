@@ -1,4 +1,5 @@
 import {
+  Form,
   useActionData,
   useLocation,
   useNavigate,
@@ -17,7 +18,9 @@ import ButtonAction from "../../components/ButtonAction";
 export async function action({ params, request }) {
   let redirect;
   try {
-    ({ redirect } = await request.json());
+    const formData = await request.formData();
+    const formObject = Object.fromEntries(formData);
+    ({ redirect } = formObject);
     const response = await deleteCardDoc(params.cardId);
     toast.custom(() => <Toast message={response.message} type="success" />);
   } catch (error) {
@@ -35,39 +38,36 @@ export async function action({ params, request }) {
 export default function CardDelete() {
   const navigate = useNavigate();
   const actionData = useActionData();
-  const submit = useSubmit();
-  const location = useLocation();
-  const prevPathNQuery = location.state?.prevPathNQuery;
   const [handleDialogClose] = useOutletContext();
+  const location = useLocation();
+  const prevPathNQuery = location.state?.prevPathNQuery ?? "/cards";
 
   function handleBackButton() {
     handleDialogClose();
     navigate(prevPathNQuery);
   }
 
-  function handleSubmit(e) {
-    submit(
-      { redirect: prevPathNQuery },
-      { method: "delete", encType: "application/json" },
-    );
-    e.preventDefault();
-  }
-
   useEffect(() => {
     if (actionData) {
-      const { data, redirect } = actionData;
-      navigate(redirect, { state: data, replace: true });
+      const { redirect } = actionData;
+      navigate(redirect, { replace: true });
     }
   }, [actionData]);
 
   return actionData ? (
     <Loading className="h-[33dvh] flex flex-col justify-center items-center" />
   ) : (
-    <form
-      onSubmit={handleSubmit}
+    <Form
       method="delete"
       className="h-fit flex flex-col justify-evenly items-center gap-2"
     >
+      <input
+        type="text"
+        name="redirect"
+        id="redirect"
+        className="hidden"
+        defaultValue={prevPathNQuery}
+      />
       <p className="text-center">
         Apakah anda yakin menghapus kartu ini? Jadwal kartu akan ikut terhapus!
       </p>
@@ -90,6 +90,6 @@ export default function CardDelete() {
           Hapus
         </ButtonAction>
       </div>
-    </form>
+    </Form>
   );
 }

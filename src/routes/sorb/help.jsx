@@ -8,7 +8,7 @@ export function Component() {
 
   function handleBackButton() {
     handleDialogClose();
-    navigate(-1);
+    navigate("/sorb");
   }
 
   return (

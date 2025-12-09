@@ -80,14 +80,14 @@ export function Component() {
   function handleBackdropClick(e) {
     if (e.target == dialogRef.current) {
       dialogRef.current.close();
-      navigate(-1);
+      navigate(location.state?.prevPathNQuery ?? "/cards");
     }
   }
 
   function handleEscDown(e) {
     if (e.key == "Escape") {
       dialogRef.current.close();
-      navigate(-1);
+      navigate(location.state?.prevPathNQuery ?? "/cards");
     }
   }
 
@@ -101,16 +101,6 @@ export function Component() {
 
   useEffect(() => {
     if (location?.state) {
-      // const { action } = location.state;
-      // toast.custom(() => {
-      //   if (action == "delete") {
-      //     return <Toast message="Kartu Dihapus" color="red" />;
-      //   } else if (action == "reset") {
-      //     return <Toast message="Kartu Direset" color="yellow" />;
-      //   } else if (action == "edit") {
-      //     return <Toast message="Kartu Diedit" color="green" />;
-      //   }
-      // });
       history.replaceState(location.state, "");
     }
   }, [location]);
