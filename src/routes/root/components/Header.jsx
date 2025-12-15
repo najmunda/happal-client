@@ -6,6 +6,7 @@ import Card from "../../../components/Card";
 
 export default function Header({ isDarkTheme, handleDarkToggle }) {
   const location = useLocation();
+  const currentPathNQuery = location.pathname + location.search;
   return (
     <Card
       as="header"
@@ -24,6 +25,7 @@ export default function Header({ isDarkTheme, handleDarkToggle }) {
             <Link
               className={`p-2 hover:bg-main hover:text-content ${location.pathname.includes("help") ? "bg-main text-content" : ""} rounded-full`}
               to={location.pathname + "/help"}
+              state={{ prevPathNQuery: currentPathNQuery }}
             >
               <HelpCircle />
             </Link>

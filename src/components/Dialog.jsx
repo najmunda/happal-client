@@ -9,7 +9,7 @@ const Dialog = forwardRef(function Dialog({ children, ...props }, ref) {
       className="m-auto w-full h-fit max-h-[75dvh] sm:max-w-sm md:max-w-md not-open:hidden has-open:flex flex-col items-stretch rounded-lg overflow-hidden"
       {...props}
     >
-      <div className="flex-1 max-h-[calc(75dvh-16px)] overflow-auto scrollbar-thin flex flex-col gap-2">
+      <div className="flex-1 py-[2px] max-h-[calc(75dvh-16px)] overflow-auto scrollbar-thin flex flex-col gap-2">
         {children}
       </div>
     </Card>

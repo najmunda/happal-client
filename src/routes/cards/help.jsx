@@ -1,15 +1,9 @@
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { CalendarSync, Info, SquarePen, Trash2, X } from "lucide-react";
 import ButtonAction from "../../components/ButtonAction";
 
 export function Component() {
-  const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
-
-  function handleBackButton() {
-    handleDialogClose();
-    navigate("/cards");
-  }
 
   return (
     <>
@@ -63,7 +57,7 @@ export function Component() {
           as="button"
           type="button"
           icon={X}
-          onClick={handleBackButton}
+          onClick={handleDialogClose}
         >
           Tutup
         </ButtonAction>

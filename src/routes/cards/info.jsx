@@ -1,4 +1,9 @@
-import { useLoaderData, useLocation, useNavigate, useOutletContext } from "react-router-dom";
+import {
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useOutletContext,
+} from "react-router-dom";
 import { Interweave } from "interweave";
 import { CircleAlert, Eye, Repeat2, X } from "lucide-react";
 import { getCardDoc } from "../../db";

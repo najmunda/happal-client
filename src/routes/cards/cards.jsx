@@ -1,30 +1,21 @@
 import {
-  Link,
   Outlet,
   useLoaderData,
   useLocation,
   useNavigate,
   useNavigation,
 } from "react-router-dom";
-import {
-  CalendarSync,
-  CopyX,
-  Info,
-  Pickaxe,
-  SearchX,
-  SquarePen,
-  Trash2,
-} from "lucide-react";
+import { CopyX, Pickaxe, SearchX } from "lucide-react";
 import { getCardDocTotal } from "../../db";
 import CardsSettings from "./components/CardsSettings";
 import Loading from "../../components/Loading";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import CardsPagination from "./components/CardsPagination";
 import clsx from "clsx";
 import { getCardsCustom } from "./db";
-import ButtonAction from "../../components/ButtonAction";
 import Card from "../../components/Card";
 import Dialog from "../../components/Dialog";
+import CardDetail from "./components/CardDetail";
 
 export function shouldRevalidate({ nextUrl }) {
   const isRevalidate = nextUrl.pathname === "/cards";
@@ -58,36 +49,47 @@ export function Component() {
     navigation.state === "loading" ||
     navigation.state === "submitting" ||
     navigation.location?.pathname == location.pathname;
+  const navigate = useNavigate();
   const isDialogLoading =
     navigation.state === "loading" || navigation.state === "submitting";
-  const currentPathNQuery = location.pathname + location.search;
+  const [showedCardDoc, setShowedCardDoc] = useState();
 
   // Dialog
-
   const dialogRef = useRef();
-  const navigate = useNavigate();
 
   function handleDialogOpen(e) {
-    if (e.target.tagName == "A") {
+    let element;
+    if (e.target.tagName == "DIV") {
+      element = e.target;
+    } else if (e.target.parentElement.tagName == "DIV") {
+      element = e.target.parentElement;
+    }
+    if (element) {
+      const selectedCardId = element.dataset.cardId;
+      setShowedCardDoc(
+        cardDocs.find((cardDoc) => cardDoc._id === selectedCardId),
+      );
       dialogRef.current.showModal();
     }
   }
 
   function handleDialogClose() {
     dialogRef.current.close();
+    if (location.pathname.includes("/help")) {
+      const prevPathNQuery = location.state?.prevPathNQuery ?? "/cards";
+      navigate(prevPathNQuery);
+    }
   }
 
   function handleBackdropClick(e) {
     if (e.target == dialogRef.current) {
-      dialogRef.current.close();
-      navigate(location.state?.prevPathNQuery ?? "/cards");
+      handleDialogClose();
     }
   }
 
   function handleEscDown(e) {
     if (e.key == "Escape") {
-      dialogRef.current.close();
-      navigate(location.state?.prevPathNQuery ?? "/cards");
+      handleDialogClose();
     }
   }
 
@@ -98,12 +100,6 @@ export function Component() {
       dialogRef.current.close();
     }
   }, [location.pathname]);
-
-  useEffect(() => {
-    if (location?.state) {
-      history.replaceState(location.state, "");
-    }
-  }, [location]);
 
   return (
     <main
@@ -132,6 +128,7 @@ export function Component() {
               as="div"
               key={card._id}
               data-key={card._id}
+              data-card-id={card._id}
               className="group h-min grid grid-cols-2 grid-rows-2 items-center gap-1"
             >
               <p className="text-xl font-bold leading-tight text-nowrap truncate gap-2">
@@ -140,45 +137,6 @@ export function Component() {
               <p className="text-xs font-light text-nowrap truncate col-span-2">
                 {card.sentence}
               </p>
-              <div className="col-span-2 flex justify-evenly text-xs">
-                <ButtonAction
-                  as={Link}
-                  variant="success"
-                  to={`${card._id}`}
-                  state={{ prevPathNQuery: currentPathNQuery }}
-                >
-                  <Info size={15} />
-                  Info
-                </ButtonAction>
-                <ButtonAction
-                  as={Link}
-                  variant="success"
-                  to={`${card._id}/edit`}
-                  state={{ prevPathNQuery: currentPathNQuery }}
-                >
-                  <SquarePen size={15} />
-                  Edit
-                </ButtonAction>
-                {card.srs?.card.state !== 0 && (
-                  <ButtonAction
-                    as={Link}
-                    variant="warning"
-                    to={`${card._id}/reset`}
-                    state={{ prevPathNQuery: currentPathNQuery }}
-                  >
-                    <CalendarSync size={15} />
-                    Reset
-                  </ButtonAction>
-                )}
-                <ButtonAction
-                  as={Link}
-                  variant="danger"
-                  to={`${card._id}/delete`}
-                  state={{ prevPathNQuery: currentPathNQuery }}
-                >
-                  <Trash2 size={15} /> Hapus
-                </ButtonAction>
-              </div>
             </Card>
           ))}
         </section>
@@ -208,8 +166,13 @@ export function Component() {
       >
         {isDialogLoading ? (
           <Loading className="h-[33dvh] flex flex-col justify-center items-center" />
-        ) : (
+        ) : location.pathname.includes("/help") ? (
           <Outlet context={[handleDialogClose]} />
+        ) : (
+          <CardDetail
+            showedCardDoc={showedCardDoc}
+            handleDialogClose={handleDialogClose}
+          />
         )}
       </Dialog>
     </main>
