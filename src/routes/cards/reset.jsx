@@ -4,7 +4,6 @@ import {
   useLocation,
   useNavigate,
   useOutletContext,
-  useSubmit,
 } from "react-router-dom";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
@@ -38,7 +37,6 @@ export default function CardReset() {
   const navigate = useNavigate();
   const [handleDialogClose] = useOutletContext();
   const actionData = useActionData();
-  const submit = useSubmit();
   const location = useLocation();
   const prevPathNQuery = location.state?.prevPathNQuery ?? "/cards";
 
