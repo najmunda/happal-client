@@ -75,6 +75,7 @@ export function Component() {
 
   function handleDialogClose() {
     dialogRef.current.close();
+    setShowedCardDoc(null);
     if (location.pathname.includes("/help")) {
       const prevPathNQuery = location.state?.prevPathNQuery ?? "/cards";
       navigate(prevPathNQuery);
@@ -169,10 +170,13 @@ export function Component() {
         ) : location.pathname.includes("/help") ? (
           <Outlet context={[handleDialogClose]} />
         ) : (
-          <CardDetail
-            showedCardDoc={showedCardDoc}
-            handleDialogClose={handleDialogClose}
-          />
+          showedCardDoc && (
+            <CardDetail
+              key={showedCardDoc._id}
+              showedCardDoc={showedCardDoc}
+              handleDialogClose={handleDialogClose}
+            />
+          )
         )}
       </Dialog>
     </main>
