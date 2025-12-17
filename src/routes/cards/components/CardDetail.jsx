@@ -2,8 +2,9 @@ import { Interweave } from "interweave";
 import { CalendarSync, Eye, Repeat2, SquarePen, Trash2, X } from "lucide-react";
 import { formatDate } from "../../../utils/utils";
 import ButtonAction from "../../../components/ButtonAction";
-import { Link, useFetcher } from "react-router-dom";
+import { useFetcher } from "react-router-dom";
 import { useState } from "react";
+import CardEdit from "./CardEdit";
 
 export default function CardDetail({ showedCardDoc, handleDialogClose }) {
   const cardDoc = showedCardDoc;
@@ -23,7 +24,19 @@ export default function CardDetail({ showedCardDoc, handleDialogClose }) {
 
   const fetcher = useFetcher();
 
+  function handleCancelConfirmDialog() {
+    setSelectedAction("");
+  }
+
   switch (selectedAction) {
+    case "edit":
+      return (
+        <CardEdit
+          cardDoc={cardDoc}
+          handleDialogClose={handleDialogClose}
+          handleCancelConfirmDialog={handleCancelConfirmDialog}
+        />
+      );
     case "reset":
       return (
         <fetcher.Form
@@ -135,9 +148,10 @@ export default function CardDetail({ showedCardDoc, handleDialogClose }) {
               Close
             </ButtonAction>
             <ButtonAction
-              as={Link}
+              as="button"
+              type="button"
               variant="success"
-              // to={`${card._id}/edit`}
+              onClick={() => setSelectedAction("edit")}
             >
               <SquarePen size={15} />
               Edit
