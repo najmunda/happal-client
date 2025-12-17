@@ -16,6 +16,7 @@ import { getCardsCustom } from "./db";
 import Card from "../../components/Card";
 import Dialog from "../../components/Dialog";
 import CardDetail from "./components/CardDetail";
+import { createPortal } from "react-dom";
 
 export function shouldRevalidate({ nextUrl }) {
   const isRevalidate = nextUrl.pathname === "/cards";
@@ -69,7 +70,7 @@ export function Component() {
       setShowedCardDoc(
         cardDocs.find((cardDoc) => cardDoc._id === selectedCardId),
       );
-      dialogRef.current.showModal();
+      dialogRef.current.show();
     }
   }
 
@@ -96,7 +97,7 @@ export function Component() {
 
   useEffect(() => {
     if (location.pathname !== "/cards") {
-      dialogRef.current.showModal();
+      dialogRef.current.show();
     } else {
       dialogRef.current.close();
     }
@@ -160,25 +161,28 @@ export function Component() {
         </section>
       )}
       <CardsPagination searchParams={searchParams} isLastPage={isLastPage} />
-      <Dialog
-        ref={dialogRef}
-        onClick={handleBackdropClick}
-        onKeyDown={handleEscDown}
-      >
-        {isDialogLoading ? (
-          <Loading className="h-[33dvh] flex flex-col justify-center items-center" />
-        ) : location.pathname.includes("/help") ? (
-          <Outlet context={[handleDialogClose]} />
-        ) : (
-          showedCardDoc && (
-            <CardDetail
-              key={showedCardDoc._id}
-              showedCardDoc={showedCardDoc}
-              handleDialogClose={handleDialogClose}
-            />
-          )
-        )}
-      </Dialog>
+      {createPortal(
+        <Dialog
+          ref={dialogRef}
+          onClick={handleBackdropClick}
+          onKeyDown={handleEscDown}
+        >
+          {isDialogLoading ? (
+            <Loading className="h-[33dvh] flex flex-col justify-center items-center" />
+          ) : location.pathname.includes("/help") ? (
+            <Outlet context={[handleDialogClose]} />
+          ) : (
+            showedCardDoc && (
+              <CardDetail
+                key={showedCardDoc._id}
+                showedCardDoc={showedCardDoc}
+                handleDialogClose={handleDialogClose}
+              />
+            )
+          )}
+        </Dialog>,
+        document.body,
+      )}
     </main>
   );
 }

@@ -9,6 +9,7 @@ import Loading from "../../../components/Loading";
 import Footer from "./Footer";
 import { Toaster } from "react-hot-toast";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
 export default function RootLayout({ children }) {
   const initialIsDarkTheme = useRouteLoaderData("root");
@@ -41,9 +42,10 @@ export default function RootLayout({ children }) {
         <>{children}</>
       )}
       <Footer />
-      <div>
-        <Toaster position="bottom-center" reverseOrder={false} />
-      </div>
+      {createPortal(
+        <Toaster position="bottom-center" reverseOrder={false} />,
+        document.body,
+      )}
     </>
   );
 }
