@@ -9,11 +9,9 @@ import RootError from "./routes/root/error.jsx";
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
 // Cards
 import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
-import {
-  action as editAction,
-} from "./routes/cards/edit.jsx";
-import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
-import CardDelete, { action as deleteAction } from "./routes/cards/delete.jsx";
+import { action as editAction } from "./routes/cards/edit.jsx";
+import { action as resetAction } from "./routes/cards/reset.jsx";
+import { action as deleteAction } from "./routes/cards/delete.jsx";
 
 const router = createBrowserRouter([
   {
@@ -67,12 +65,10 @@ const router = createBrowserRouter([
           {
             path: ":cardId/delete",
             action: deleteAction,
-            element: <CardDelete />,
           },
           {
             path: ":cardId/reset",
             action: resetAction,
-            element: <CardReset />,
           },
         ],
       },

@@ -1,10 +1,11 @@
 import { Interweave } from "interweave";
 import { CalendarSync, Eye, Repeat2, SquarePen, Trash2, X } from "lucide-react";
-import { formatDate } from "../../../utils/utils";
-import ButtonAction from "../../../components/ButtonAction";
-import { useFetcher } from "react-router-dom";
 import { useState } from "react";
 import CardEdit from "./CardEdit";
+import CardDelete from "./CardDelete";
+import CardReset from "./CardReset";
+import { formatDate } from "../../../utils/utils";
+import ButtonAction from "../../../components/ButtonAction";
 
 export default function CardDetail({ showedCardDoc, handleDialogClose }) {
   const cardDoc = showedCardDoc;
@@ -22,8 +23,6 @@ export default function CardDetail({ showedCardDoc, handleDialogClose }) {
 
   const [selectedAction, setSelectedAction] = useState("");
 
-  const fetcher = useFetcher();
-
   function handleCancelConfirmDialog() {
     setSelectedAction("");
   }
@@ -39,66 +38,19 @@ export default function CardDetail({ showedCardDoc, handleDialogClose }) {
       );
     case "reset":
       return (
-        <fetcher.Form
-          method="post"
-          action={`${cardDoc._id}/reset`}
-          className="h-fit flex flex-col justify-evenly items-center gap-2"
-        >
-          <p className="text-center">
-            Apakah anda yakin untuk mereset jadwal kartu ini?
-          </p>
-          <div className="w-full flex justify-center items-center gap-2">
-            <ButtonAction
-              as="button"
-              type="button"
-              icon={X}
-              onClick={() => setSelectedAction("")}
-            >
-              Batal
-            </ButtonAction>
-            <ButtonAction
-              as="button"
-              type="submit"
-              variant="warning"
-              icon={CalendarSync}
-              onClick={handleDialogClose}
-            >
-              Reset
-            </ButtonAction>
-          </div>
-        </fetcher.Form>
+        <CardReset
+          cardDoc={cardDoc}
+          handleDialogClose={handleDialogClose}
+          handleCancelConfirmDialog={handleCancelConfirmDialog}
+        />
       );
     case "delete":
       return (
-        <fetcher.Form
-          method="delete"
-          action={`${cardDoc._id}/delete`}
-          className="h-fit flex flex-col justify-evenly items-center gap-2"
-        >
-          <p className="text-center">
-            Apakah anda yakin menghapus kartu ini? Jadwal kartu akan ikut
-            terhapus!
-          </p>
-          <div className="w-full flex justify-center items-center gap-2">
-            <ButtonAction
-              as="button"
-              type="button"
-              icon={X}
-              onClick={() => setSelectedAction("")}
-            >
-              Batal
-            </ButtonAction>
-            <ButtonAction
-              as="button"
-              type="submit"
-              variant="danger"
-              icon={Trash2}
-              onClick={handleDialogClose}
-            >
-              Hapus
-            </ButtonAction>
-          </div>
-        </fetcher.Form>
+        <CardDelete
+          cardDoc={cardDoc}
+          handleDialogClose={handleDialogClose}
+          handleCancelConfirmDialog={handleCancelConfirmDialog}
+        />
       );
     default:
       return (
