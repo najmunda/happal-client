@@ -1,13 +1,13 @@
 import { Interweave } from "interweave";
 import { CalendarSync, Eye, Repeat2, SquarePen, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardEdit from "./CardEdit";
 import CardDelete from "./CardDelete";
 import CardReset from "./CardReset";
 import { formatDate } from "../../../utils/utils";
 import ButtonAction from "../../../components/ButtonAction";
 
-export default function CardDetail({ showedCardDoc, handleDialogClose }) {
+export default function CardDetail({ showedCardDoc, handleDialogClose, focusDialog }) {
   const cardDoc = showedCardDoc;
 
   const sentence = cardDoc?.sentence.replace(
@@ -26,6 +26,10 @@ export default function CardDetail({ showedCardDoc, handleDialogClose }) {
   function handleCancelConfirmDialog() {
     setSelectedAction("");
   }
+
+  useEffect(() => {
+    focusDialog();
+  }, [selectedAction])
 
   switch (selectedAction) {
     case "edit":

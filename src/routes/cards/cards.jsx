@@ -95,6 +95,10 @@ export function Component() {
     }
   }
 
+  function focusDialog() {
+    dialogRef.current.focus();
+  }
+
   useEffect(() => {
     if (location.pathname !== "/cards") {
       dialogRef.current.show();
@@ -177,6 +181,7 @@ export function Component() {
                 key={showedCardDoc._id}
                 showedCardDoc={showedCardDoc}
                 handleDialogClose={handleDialogClose}
+                focusDialog={focusDialog}
               />
             )
           )}
