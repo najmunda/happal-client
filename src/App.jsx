@@ -9,8 +9,7 @@ import RootError from "./routes/root/error.jsx";
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
 // Cards
 import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
-import CardEdit, {
-  loader as editLoader,
+import {
   action as editAction,
 } from "./routes/cards/edit.jsx";
 import CardReset, { action as resetAction } from "./routes/cards/reset.jsx";
@@ -63,8 +62,6 @@ const router = createBrowserRouter([
           },
           {
             path: ":cardId/edit",
-            element: <CardEdit />,
-            loader: editLoader,
             action: editAction,
           },
           {
