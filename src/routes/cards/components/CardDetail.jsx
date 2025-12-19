@@ -7,7 +7,11 @@ import CardReset from "./CardReset";
 import { formatDate } from "../../../utils/utils";
 import ButtonAction from "../../../components/ButtonAction";
 
-export default function CardDetail({ showedCardDoc, handleDialogClose, focusDialog }) {
+export default function CardDetail({
+  showedCardDoc,
+  handleDialogClose,
+  focusDialog,
+}) {
   const cardDoc = showedCardDoc;
 
   const sentence = cardDoc?.sentence.replace(
@@ -29,7 +33,7 @@ export default function CardDetail({ showedCardDoc, handleDialogClose, focusDial
 
   useEffect(() => {
     focusDialog();
-  }, [selectedAction])
+  }, [selectedAction]);
 
   switch (selectedAction) {
     case "edit":
@@ -59,11 +63,20 @@ export default function CardDetail({ showedCardDoc, handleDialogClose, focusDial
     default:
       return (
         <>
-          <p className="pb-2 w-full text-2xl text-pretty">
-            <Interweave content={sentence} />
-          </p>
-          <p className="pb-2 w-full text-xl text-pretty">{target}</p>
-          <p className="pb-2 w-full text-xl text-pretty">{def}</p>
+          <div className="flex flex-col">
+            <p className="text-xs">Kalimat</p>
+            <p className="pb-2 w-full text-pretty">
+              <Interweave content={sentence} />
+            </p>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-xs">Target</p>
+            <p className="pb-2 w-full text-pretty">{target}</p>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-xs">Definisi</p>
+            <p className="pb-2 w-full text-pretty">{def}</p>
+          </div>
           <section className="w-full flex justify-evenly flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <Repeat2 size={24} />

@@ -43,37 +43,35 @@ export default function CardEdit({
     <fetcher.Form
       method="post"
       action={`${cardDoc._id}/edit`}
-      className="w-full flex flex-col items-stretch gap-2"
+      className="p-1 w-full flex flex-col items-stretch gap-3"
     >
       <TextArea
-        type="text"
+        label="kalimat"
         name="sentence"
         id="sentence"
         value={sentence}
         onChange={handleSentenceChange}
         onSelect={handleSentenceSelect}
-        className="text-center text-xs"
         placeholder="Taruh kalimat disini..."
         required
       ></TextArea>
       <Input
+        label="target"
         type="text"
         name="target"
         id="target"
         value={target}
         autoComplete="off"
-        className="text-center"
         placeholder="Ketik/sorot target kata/frasa pada kalimat..."
         readOnly
         required
       />
       <TextArea
-        type="text"
+        label="definisi"
         name="def"
         id="def"
         value={def}
         onChange={handleDefChange}
-        className="text-center text-xs"
         placeholder="Tambah definisi dari kamus..."
         required
       ></TextArea>
