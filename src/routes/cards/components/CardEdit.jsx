@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFetcher } from "react-router-dom";
 import { Pencil, X } from "lucide-react";
+import { DialogButtons, DialogContent } from "../../../components/Dialog";
 import TextArea from "../../../components/TextArea";
 import ButtonAction from "../../../components/ButtonAction";
 import Input from "../../../components/Input";
@@ -40,42 +41,46 @@ export default function CardEdit({
   }, [fetcher.state, fetcher.data]);
 
   return (
-    <fetcher.Form
-      method="post"
-      action={`${cardDoc._id}/edit`}
-      className="p-1 w-full flex flex-col items-stretch gap-3"
-    >
-      <TextArea
-        label="kalimat"
-        name="sentence"
-        id="sentence"
-        value={sentence}
-        onChange={handleSentenceChange}
-        onSelect={handleSentenceSelect}
-        placeholder="Taruh kalimat disini..."
-        required
-      ></TextArea>
-      <Input
-        label="target"
-        type="text"
-        name="target"
-        id="target"
-        value={target}
-        autoComplete="off"
-        placeholder="Ketik/sorot target kata/frasa pada kalimat..."
-        readOnly
-        required
-      />
-      <TextArea
-        label="definisi"
-        name="def"
-        id="def"
-        value={def}
-        onChange={handleDefChange}
-        placeholder="Tambah definisi dari kamus..."
-        required
-      ></TextArea>
-      <div className="w-full flex justify-center items-center gap-2">
+    <>
+      <DialogContent
+        as={fetcher.Form}
+        method="post"
+        action={`${cardDoc._id}/edit`}
+        id="edit-form"
+        className="pt-2 gap-3"
+      >
+        <TextArea
+          label="kalimat"
+          name="sentence"
+          id="sentence"
+          value={sentence}
+          onChange={handleSentenceChange}
+          onSelect={handleSentenceSelect}
+          placeholder="Taruh kalimat disini..."
+          required
+        ></TextArea>
+        <Input
+          label="target"
+          type="text"
+          name="target"
+          id="target"
+          value={target}
+          autoComplete="off"
+          placeholder="Ketik/sorot target kata/frasa pada kalimat..."
+          readOnly
+          required
+        />
+        <TextArea
+          label="definisi"
+          name="def"
+          id="def"
+          value={def}
+          onChange={handleDefChange}
+          placeholder="Tambah definisi dari kamus..."
+          required
+        ></TextArea>
+      </DialogContent>
+      <DialogButtons>
         <ButtonAction
           as="button"
           type="button"
@@ -84,10 +89,16 @@ export default function CardEdit({
         >
           Batal
         </ButtonAction>
-        <ButtonAction as="button" type="submit" variant="success" icon={Pencil}>
+        <ButtonAction
+          as="button"
+          form="edit-form"
+          type="submit"
+          variant="success"
+          icon={Pencil}
+        >
           Simpan
         </ButtonAction>
-      </div>
-    </fetcher.Form>
+      </DialogButtons>
+    </>
   );
 }

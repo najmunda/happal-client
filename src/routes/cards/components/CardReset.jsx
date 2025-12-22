@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useFetcher } from "react-router-dom";
 import { CalendarSync, X } from "lucide-react";
+import { DialogButtons, DialogContent } from "../../../components/Dialog";
 import ButtonAction from "../../../components/ButtonAction";
 
 export default function CardDelete({
@@ -15,15 +16,18 @@ export default function CardDelete({
   }, [fetcher.state, fetcher.data]);
 
   return (
-    <fetcher.Form
-      method="post"
-      action={`${cardDoc._id}/reset`}
-      className="h-fit flex flex-col justify-evenly items-center gap-2"
-    >
-      <p className="text-center">
-        Apakah anda yakin untuk mereset jadwal kartu ini?
-      </p>
-      <div className="w-full flex justify-center items-center gap-2">
+    <>
+      <DialogContent
+        as={fetcher.Form}
+        id="reset-form"
+        method="post"
+        action={`${cardDoc._id}/reset`}
+      >
+        <p className="text-center">
+          Apakah anda yakin untuk mereset jadwal kartu ini?
+        </p>
+      </DialogContent>
+      <DialogButtons>
         <ButtonAction
           as="button"
           type="button"
@@ -34,13 +38,14 @@ export default function CardDelete({
         </ButtonAction>
         <ButtonAction
           as="button"
+          form="reset-form"
           type="submit"
           variant="warning"
           icon={CalendarSync}
         >
           Reset
         </ButtonAction>
-      </div>
-    </fetcher.Form>
+      </DialogButtons>
+    </>
   );
 }

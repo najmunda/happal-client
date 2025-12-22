@@ -5,6 +5,7 @@ import CardEdit from "./CardEdit";
 import CardDelete from "./CardDelete";
 import CardReset from "./CardReset";
 import { formatDate } from "../../../utils/utils";
+import { DialogButtons, DialogContent } from "../../../components/Dialog";
 import ButtonAction from "../../../components/ButtonAction";
 
 export default function CardDetail({
@@ -63,51 +64,59 @@ export default function CardDetail({
     default:
       return (
         <>
-          <div className="flex flex-col">
-            <p className="text-xs">Kalimat</p>
-            <p className="pb-2 w-full text-pretty">
-              <Interweave content={sentence} />
-            </p>
-          </div>
-          <div className="flex flex-col">
-            <p className="text-xs">Target</p>
-            <p className="pb-2 w-full text-pretty">{target}</p>
-          </div>
-          <div className="flex flex-col">
-            <p className="text-xs">Definisi</p>
-            <p className="pb-2 w-full text-pretty">{def}</p>
-          </div>
-          <section className="w-full flex justify-evenly flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <Repeat2 size={24} />
-              <div className="flex flex-col">
-                <p className="text-xs">Review Selanjutnya</p>
-                <p>{due ? formatDate(due) : "-"}</p>
-              </div>
+          <DialogContent as="div">
+            <div className="flex flex-col">
+              <p className="text-xs text-content-secondary dark:text-content-secondary-dark">
+                Kalimat
+              </p>
+              <p className="w-full text-pretty">
+                <Interweave content={sentence} />
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Repeat2 size={24} />
-              <div className="flex flex-col">
-                <p className="text-xs">Dilihat terakhir</p>
-                <p>{lastReview ? formatDate(lastReview) : "-"}</p>
-              </div>
+            <div className="flex flex-col">
+              <p className="text-xs text-content-secondary dark:text-content-secondary-dark">
+                Target
+              </p>
+              <p className="w-full text-pretty">{target}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Eye size={24} />
-              <div className="flex flex-col">
-                <p className="text-xs">Dilihat</p>
-                <p>{reps} kali</p>
-              </div>
+            <div className="flex flex-col">
+              <p className="text-xs text-content-secondary dark:text-content-secondary-dark">
+                Definisi
+              </p>
+              <p className="w-full text-pretty">{def}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Repeat2 size={24} />
-              <div className="flex flex-col">
-                <p className="text-xs">Dibuat</p>
-                <p>{dateCreated ? formatDate(dateCreated) : "-"}</p>
+            <section className="w-full flex justify-evenly flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Repeat2 size={24} />
+                <div className="flex flex-col">
+                  <p className="text-xs">Review Selanjutnya</p>
+                  <p>{due ? formatDate(due) : "-"}</p>
+                </div>
               </div>
-            </div>
-          </section>
-          <div className="col-span-2 flex justify-evenly text-xs">
+              <div className="flex items-center gap-2">
+                <Repeat2 size={24} />
+                <div className="flex flex-col">
+                  <p className="text-xs">Dilihat terakhir</p>
+                  <p>{lastReview ? formatDate(lastReview) : "-"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Eye size={24} />
+                <div className="flex flex-col">
+                  <p className="text-xs">Dilihat</p>
+                  <p>{reps} kali</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Repeat2 size={24} />
+                <div className="flex flex-col">
+                  <p className="text-xs">Dibuat</p>
+                  <p>{dateCreated ? formatDate(dateCreated) : "-"}</p>
+                </div>
+              </div>
+            </section>
+          </DialogContent>
+          <DialogButtons>
             <ButtonAction
               as="button"
               type="button"
@@ -144,7 +153,7 @@ export default function CardDetail({
             >
               <Trash2 size={15} /> Hapus
             </ButtonAction>
-          </div>
+          </DialogButtons>
         </>
       );
   }

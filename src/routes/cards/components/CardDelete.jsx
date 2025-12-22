@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useFetcher } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
+import { DialogButtons, DialogContent } from "../../../components/Dialog";
 import ButtonAction from "../../../components/ButtonAction";
 
 export default function CardDelete({
@@ -15,15 +16,19 @@ export default function CardDelete({
   }, [fetcher.state, fetcher.data]);
 
   return (
-    <fetcher.Form
-      method="delete"
-      action={`${cardDoc._id}/delete`}
-      className="h-fit flex flex-col justify-evenly items-center gap-2"
-    >
-      <p className="text-center">
-        Apakah anda yakin menghapus kartu ini? Jadwal kartu akan ikut terhapus!
-      </p>
-      <div className="w-full flex justify-center items-center gap-2">
+    <>
+      <DialogContent
+        as={fetcher.Form}
+        id="delete-form"
+        method="delete"
+        action={`${cardDoc._id}/delete`}
+      >
+        <p className="text-center">
+          Apakah anda yakin menghapus kartu ini? Jadwal kartu akan ikut
+          terhapus!
+        </p>
+      </DialogContent>
+      <DialogButtons>
         <ButtonAction
           as="button"
           type="button"
@@ -32,10 +37,16 @@ export default function CardDelete({
         >
           Batal
         </ButtonAction>
-        <ButtonAction as="button" type="submit" variant="danger" icon={Trash2}>
+        <ButtonAction
+          as="button"
+          type="submit"
+          form="delete-form"
+          variant="danger"
+          icon={Trash2}
+        >
           Hapus
         </ButtonAction>
-      </div>
-    </fetcher.Form>
+      </DialogButtons>
+    </>
   );
 }
