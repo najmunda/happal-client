@@ -1,7 +1,13 @@
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
 
-export default function TextArea({ label, id, className, ...props }) {
+export default function TextArea({
+  label,
+  id,
+  wrapperClassName,
+  className,
+  ...props
+}) {
   const textAreaRef = useRef();
 
   useEffect(() => {
@@ -12,10 +18,10 @@ export default function TextArea({ label, id, className, ...props }) {
   });
 
   return (
-    <div className="relative flex flex-col">
+    <div className={clsx("relative flex flex-col", wrapperClassName)}>
       <label
         htmlFor={id}
-        className="p-px absolute -top-2 left-2 text-xs text-line-dark dark:text-line bg-card dark:bg-card-dark"
+        className="py-px px-1 absolute -top-2 left-2 text-xs text-content-secondary dark:text-content-secondary bg-card dark:bg-card-dark"
       >
         {label}
       </label>

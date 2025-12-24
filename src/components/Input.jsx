@@ -1,11 +1,17 @@
 import clsx from "clsx";
 
-export default function Input({ label, id, className, ...props }) {
+export default function Input({
+  label,
+  id,
+  wrapperClassName,
+  className,
+  ...props
+}) {
   return (
-    <div className="relative">
+    <div className={clsx("relative", wrapperClassName)}>
       <label
         htmlFor={id}
-        className="p-px absolute -top-2 left-2 text-xs text-line-dark dark:text-line bg-card dark:bg-card-dark"
+        className="py-px px-1 absolute -top-2 left-2 text-xs text-content-secondary dark:text-content-secondary bg-card dark:bg-card-dark"
       >
         {label}
       </label>
