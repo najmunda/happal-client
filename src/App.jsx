@@ -8,7 +8,7 @@ import RootError from "./routes/root/error.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
 // Cards
-import CardInfo, { loader as infoLoader } from "./routes/cards/info.jsx";
+import { loader as infoLoader } from "./routes/cards/info.jsx";
 import { action as editAction } from "./routes/cards/edit.jsx";
 import { action as resetAction } from "./routes/cards/reset.jsx";
 import { action as deleteAction } from "./routes/cards/delete.jsx";
@@ -55,7 +55,6 @@ const router = createBrowserRouter([
           },
           {
             path: ":cardId",
-            element: <CardInfo />,
             loader: infoLoader,
           },
           {

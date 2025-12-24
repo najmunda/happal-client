@@ -6,11 +6,7 @@ import TextArea from "../../../components/TextArea";
 import ButtonAction from "../../../components/ButtonAction";
 import Input from "../../../components/Input";
 
-export default function CardEdit({
-  cardDoc,
-  handleDialogClose,
-  handleCancelConfirmDialog,
-}) {
+export default function CardEdit({ cardDoc, handleBackToDetailDialog }) {
   const fetcher = useFetcher();
 
   const [sentence, setSentence] = useState(cardDoc.sentence);
@@ -37,7 +33,8 @@ export default function CardEdit({
   }
 
   useEffect(() => {
-    if (fetcher.data?.success && fetcher.state === "idle") handleDialogClose();
+    if (fetcher.data?.success && fetcher.state === "idle")
+      handleBackToDetailDialog();
   }, [fetcher.state, fetcher.data]);
 
   return (
@@ -85,7 +82,7 @@ export default function CardEdit({
           as="button"
           type="button"
           icon={X}
-          onClick={handleCancelConfirmDialog}
+          onClick={handleBackToDetailDialog}
         >
           Batal
         </ButtonAction>

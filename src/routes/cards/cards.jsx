@@ -53,7 +53,7 @@ export function Component() {
   const navigate = useNavigate();
   const isDialogLoading =
     navigation.state === "loading" || navigation.state === "submitting";
-  const [showedCardDoc, setShowedCardDoc] = useState();
+  const [showedCardId, setShowedCardId] = useState();
 
   // Dialog
   const dialogRef = useRef();
@@ -66,17 +66,14 @@ export function Component() {
       element = e.target.parentElement;
     }
     if (element) {
-      const selectedCardId = element.dataset.cardId;
-      setShowedCardDoc(
-        cardDocs.find((cardDoc) => cardDoc._id === selectedCardId),
-      );
+      setShowedCardId(element.dataset.cardId);
       dialogRef.current.show();
     }
   }
 
   function handleDialogClose() {
     dialogRef.current.close();
-    setShowedCardDoc(null);
+    setShowedCardId(null);
     if (location.pathname.includes("/help")) {
       const prevPathNQuery = location.state?.prevPathNQuery ?? "/cards";
       navigate(prevPathNQuery);
@@ -176,10 +173,10 @@ export function Component() {
           ) : location.pathname.includes("/help") ? (
             <Outlet context={[handleDialogClose]} />
           ) : (
-            showedCardDoc && (
+            showedCardId && (
               <CardDetail
-                key={showedCardDoc._id}
-                showedCardDoc={showedCardDoc}
+                key={setShowedCardId}
+                showedCardId={showedCardId}
                 handleDialogClose={handleDialogClose}
                 focusDialog={focusDialog}
               />

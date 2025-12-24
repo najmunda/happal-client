@@ -4,15 +4,12 @@ import { CalendarSync, X } from "lucide-react";
 import { DialogButtons, DialogContent } from "../../../components/Dialog";
 import ButtonAction from "../../../components/ButtonAction";
 
-export default function CardDelete({
-  cardDoc,
-  handleDialogClose,
-  handleCancelConfirmDialog,
-}) {
+export default function CardDelete({ cardDoc, handleBackToDetailDialog }) {
   const fetcher = useFetcher();
 
   useEffect(() => {
-    if (fetcher.data?.success && fetcher.state === "idle") handleDialogClose();
+    if (fetcher.data?.success && fetcher.state === "idle")
+      handleBackToDetailDialog();
   }, [fetcher.state, fetcher.data]);
 
   return (
@@ -32,7 +29,7 @@ export default function CardDelete({
           as="button"
           type="button"
           icon={X}
-          onClick={handleCancelConfirmDialog}
+          onClick={handleBackToDetailDialog}
         >
           Batal
         </ButtonAction>
