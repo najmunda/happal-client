@@ -43,7 +43,15 @@ export default function RootLayout({ children }) {
       )}
       <Footer />
       {createPortal(
-        <Toaster position="bottom-center" reverseOrder={false} />,
+        <>
+          {window.screen.width >
+          40 *
+            parseFloat(getComputedStyle(document.documentElement).fontSize) ? (
+            <Toaster position="bottom-center" reverseOrder={false} />
+          ) : (
+            <Toaster position="top-center" reverseOrder={false} />
+          )}
+        </>,
         document.body,
       )}
     </>
