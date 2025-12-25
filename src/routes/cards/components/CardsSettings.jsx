@@ -81,7 +81,7 @@ export default function CardsSettings({ searchParams }) {
           id="q"
           defaultValue={q}
           placeholder="Cari kartu..."
-          className="p-0 flex-1"
+          wrapperClassName="p-0 flex-1"
         />
         <Search />
       </Card>
