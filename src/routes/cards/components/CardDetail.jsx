@@ -138,7 +138,7 @@ export default function CardDetail({
                 icon={X}
                 onClick={handleDialogClose}
               >
-                Close
+                Tutup
               </ButtonAction>
               <ButtonAction
                 as="button"
