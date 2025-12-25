@@ -28,6 +28,10 @@ export default function CardEdit({ cardDoc, handleBackToDetailDialog }) {
     }
   }
 
+  function handleTargetChange(e) {
+    setTarget(e.currentTarget.value);
+  }
+
   function handleDefChange(e) {
     setDef(e.currentTarget.value);
   }
@@ -63,8 +67,8 @@ export default function CardEdit({ cardDoc, handleBackToDetailDialog }) {
           id="target"
           value={target}
           autoComplete="off"
+          onChange={handleTargetChange}
           placeholder="Ketik/sorot target kata/frasa pada kalimat..."
-          readOnly
           required
         />
         <TextArea
