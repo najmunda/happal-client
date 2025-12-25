@@ -8,7 +8,7 @@ export default function Loading({ className }) {
         fill="#5f6368"
         version="1.1"
         id="svg1"
-        className="animate-spin"
+        className="animate-spin fill-content dark:fill-content-dark"
       >
         <path
           id="path1"
