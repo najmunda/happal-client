@@ -305,7 +305,7 @@ export function Component() {
                 >
                   {isOpen && (
                     <>
-                      <section className="p-2 flex flex-row-reverse items-center gap-2">
+                      <section className="flex flex-row-reverse items-center gap-2">
                         <button
                           onClick={handleCardRight}
                           className="p-2 flex items-center gap-2 rounded-lg hover:bg-success/25 hover:text-success cursor-pointer"
@@ -316,15 +316,9 @@ export function Component() {
                         </button>
                         <hr className="flex-1 border border-line dark:border-line-dark" />
                       </section>
-                      <section className="flex items-center justify-center gap-1 text-content-secondary dark:text-content-secondary-dark">
-                        <p className="text-xs">
-                          Swipe Kanan / Klik tombol &#34;Good&#34; / Tekan{" "}
-                          <kbd>{">"}</kbd>{" "}
-                        </p>
-                      </section>
                     </>
                   )}
-                  <div className="flex-1 flex flex-col justify-center items-center gap-2 relative">
+                  <div className="my-auto w-full flex flex-col items-center gap-2 relative text-wrap whitespace-normal wrap-anywhere overflow-y-auto overflow-x-hidden scrollbar-thin">
                     <p>
                       <Interweave
                         content={topCardDoc.sentence.replace(
@@ -341,22 +335,10 @@ export function Component() {
                         <p className="text-sm">{topCardDoc.def}</p>
                       </>
                     )}
-                    {!isOpen && (
-                      <p className="text-xs text-content-secondary dark:text-content-secondary-dark">
-                        Tekan <kbd>Space</kbd> / Tap / Klik Kartu untuk membuka
-                        definisi dan arti.
-                      </p>
-                    )}
                   </div>
                   {isOpen && (
                     <>
-                      <section className="flex items-center justify-center gap-1 text-content-secondary dark:text-content-secondary-dark">
-                        <p className="text-xs">
-                          Swipe Kiri / Klik tombol &#34;Again&#34; / Tekan{" "}
-                          <kbd>{"<"}</kbd>
-                        </p>
-                      </section>
-                      <section className="p-2 flex items-center gap-2">
+                      <section className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={handleCardLeft}
