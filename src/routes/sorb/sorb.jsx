@@ -309,21 +309,6 @@ export function Component() {
                   onTouchCancel={handleTouchEnd}
                   className={`absolute h-full w-full flex-1 max-w-sm md:max-h-140 flex flex-col items-stretch gap-2 justify-around text-center ${isOpen ? "" : "hover:shadow-md cursor-pointer"}`}
                 >
-                  {isOpen && (
-                    <>
-                      <section className="flex flex-row-reverse items-center gap-2">
-                        <button
-                          onClick={handleCardRight}
-                          className="p-2 flex items-center gap-2 rounded-lg hover:bg-success/25 hover:text-success cursor-pointer"
-                        >
-                          <ThumbsUp />
-                          <p className="text-xs">{nextReview.good}</p>
-                          <p className="text-xs">Good</p>
-                        </button>
-                        <hr className="flex-1 border border-line dark:border-line-dark" />
-                      </section>
-                    </>
-                  )}
                   <div className="my-auto w-full flex flex-col items-center gap-2 relative text-wrap whitespace-normal wrap-anywhere overflow-y-auto overflow-x-hidden scrollbar-thin">
                     <p>
                       <Interweave
@@ -355,6 +340,14 @@ export function Component() {
                           <p className="text-xs">Again</p>
                         </button>
                         <hr className="flex-1 border border-line dark:border-line-dark" />
+                        <button
+                          onClick={handleCardRight}
+                          className="p-2 flex items-center gap-2 rounded-lg hover:bg-success/25 hover:text-success cursor-pointer"
+                        >
+                          <p className="text-xs">{nextReview.good}</p>
+                          <p className="text-xs">Good</p>
+                          <ThumbsUp />
+                        </button>
                       </section>
                     </>
                   )}
