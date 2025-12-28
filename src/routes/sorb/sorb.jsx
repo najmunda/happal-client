@@ -8,6 +8,7 @@ import {
   useNavigation,
   useSubmit,
 } from "react-router-dom";
+import { useAnimate } from "motion/react-mini";
 import toast from "react-hot-toast";
 import Toast from "../../components/Toast";
 import { getCardDocTotal } from "../../db";
@@ -45,9 +46,9 @@ export function Component() {
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const mainDivRef = useRef();
-  const currentCardRef = useRef();
   const initialCardRectRef = useRef();
-  const nextCardRef = useRef();
+  const [currentCardScope, animateCurrentCard] = useAnimate();
+  const [nextCardScope, animateNextCard] = useAnimate();
   const navigation = useNavigation();
 
   // Handlers
@@ -67,19 +68,18 @@ export function Component() {
   }
 
   function handleTouchMove(e) {
-    if (!firstTouchX || swiped || !isOpen) {
-      return;
-    }
+    if (!firstTouchX || swiped || !isOpen) return;
 
     const secondTouch = getTouches(e)[0];
     const touchXDiff = secondTouch.clientX - firstTouchX;
 
-    currentCardRef.current.animate(
+    animateCurrentCard(
+      currentCardScope.current,
       {
         transform: `translateX(${touchXDiff}px)`,
       },
       {
-        duration: 200,
+        duration: 0.2,
         fill: "forwards",
       },
     );
@@ -106,13 +106,14 @@ export function Component() {
       handleCardLeft();
     } else {
       // Translate to initial position
-      currentCardRef.current.animate(
+      animateCurrentCard(
+        currentCardScope.current,
         {
           transform: `translateX(${initialCardRectRef.current.x - parseFloat(getComputedStyle(mainDivRef.current).paddingLeft)}px)`,
           opacity: 1,
         },
         {
-          duration: 200,
+          duration: 0.2,
           fill: "forwards",
         },
       );
@@ -120,87 +121,91 @@ export function Component() {
   }
 
   useEffect(() => {
-    if (currentCardRef.current) {
+    if (currentCardScope.current) {
       initialCardRectRef.current =
-        currentCardRef.current.getBoundingClientRect();
+        currentCardScope.current.getBoundingClientRect();
     }
   }, []);
 
   function handleCardRight() {
     if (isOpen) {
       // Translate to right out of screen then do submit
+      const nextCardAnimation = animateNextCard(
+        nextCardScope.current,
+        {
+          scale: 1,
+          opacity: 1,
+        },
+        {
+          duration: 0.2,
+        },
+      );
       Promise.allSettled([
-        currentCardRef.current.animate(
+        animateCurrentCard(
+          currentCardScope.current,
           {
             transform: `translateX(${initialCardRectRef.current.width}px)`,
             opacity: 0,
           },
           {
-            duration: 200,
+            duration: 0.2,
             fill: "forwards",
           },
         ).finished,
-        nextCardRef.current.animate(
-          {
-            transform: "scale(1)",
-            opacity: 1,
-          },
-          {
-            duration: 200,
-            fill: "forwards",
-          },
-        ).finished,
-      ]).then(() => {
-        submit(
-          { cardId: topCardDoc._id, rating: 1 },
-          { method: "post", encType: "application/json" },
-        );
-        setTimeout(() => setIsOpen(false), 100);
-      });
+        nextCardAnimation.finished,
+      ])
+        .then(() => {
+          submit(
+            { cardId: topCardDoc._id, rating: 1 },
+            { method: "post", encType: "application/json" },
+          );
+          setTimeout(() => setIsOpen(false), 100);
+        })
+        .finally(() => {
+          nextCardAnimation.cancel();
+        });
     }
   }
 
   function handleCardLeft() {
     if (isOpen) {
+      const nextCardAnimation = animateNextCard(
+        nextCardScope.current,
+        {
+          scale: 1,
+          opacity: 1,
+        },
+        {
+          duration: 0.2,
+        },
+      );
       // Translate to left out of screen then do submit
       Promise.allSettled([
-        currentCardRef.current.animate(
+        animateCurrentCard(
+          currentCardScope.current,
           {
             transform: `translateX(-${initialCardRectRef.current.width}px)`,
             opacity: 0,
           },
           {
-            duration: 200,
+            duration: 0.2,
             fill: "forwards",
           },
         ).finished,
-        nextCardRef.current.animate(
-          {
-            transform: "scale(1)",
-            opacity: 1,
-          },
-          {
-            duration: 200,
-            fill: "forwards",
-          },
-        ).finished,
-      ]).then(() => {
-        submit(
-          { cardId: topCardDoc._id, rating: 0 },
-          { method: "post", encType: "application/json" },
-        );
-        setTimeout(() => setIsOpen(false), 100);
-      });
+        nextCardAnimation.finished,
+      ])
+        .then(() => {
+          submit(
+            { cardId: topCardDoc._id, rating: 0 },
+            { method: "post", encType: "application/json" },
+          );
+          setTimeout(() => setIsOpen(false), 100);
+        })
+        .finally(() => {
+          nextCardAnimation.cancel();
+        });
     }
   }
-
-  useEffect(() => {
-    if (nextCardRef.current) {
-      nextCardRef.current
-        .getAnimations()
-        .forEach((animation) => animation.cancel());
-    }
-  }, [topCardDoc]);
 
   function handleCardClick() {
     setIsOpen(true);
@@ -286,7 +291,8 @@ export function Component() {
               <>
                 <Card
                   as="div"
-                  ref={nextCardRef}
+                  ref={nextCardScope}
+                  style={{ opacity: 0.75, scale: 0.95 }}
                   className="scale-95 opacity-75 h-full w-full flex-1 max-w-sm md:max-h-140 flex flex-col items-center gap-2 justify-center text-center"
                 >
                   <p className="text-line dark:text-line-dark bg-line dark:bg-line-dark rounded-lg">
@@ -295,7 +301,7 @@ export function Component() {
                 </Card>
                 <Card
                   as="div"
-                  ref={currentCardRef}
+                  ref={currentCardScope}
                   onClick={handleCardClick}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
