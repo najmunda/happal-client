@@ -1,3 +1,12 @@
+export async function safeFetch(...args) {
+  try {
+    return await fetch(...args);
+  } catch (error) {
+    error.isFetchError = true;
+    throw error;
+  }
+}
+
 export function greetTime() {
   const date = new Date();
   const hours = date.getHours();
