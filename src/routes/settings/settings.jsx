@@ -5,7 +5,14 @@ import {
   useNavigation,
   useSubmit,
 } from "react-router-dom";
-import { CloudAlert, FileDown, FileUp, Trash2, TriangleAlert, X } from "lucide-react";
+import {
+  CloudAlert,
+  FileDown,
+  FileUp,
+  Trash2,
+  TriangleAlert,
+  X,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
 import { getCardDocTotal } from "../../db";
@@ -14,8 +21,8 @@ import { logError } from "../../utils/logger";
 import {
   deleteAllCardDoc,
   downloadAllCardDoc,
+  downloadErrorLog,
   importCardDocs,
-  uploadLog,
 } from "./db";
 import Card from "../../components/Card";
 import ButtonMenu from "./components/ButtonMenu";
@@ -46,8 +53,8 @@ export async function action({ request }) {
         response = await importCardDocs(formData.get("file"));
         break;
       }
-      case "upload-log": {
-        response = await uploadLog();
+      case "download-error-log": {
+        response = await downloadErrorLog();
         break;
       }
       default: {
@@ -101,7 +108,10 @@ export function Component() {
     <main
       className={`container w-dvw md:w-full flex-1 flex flex-col justify-center items-center gap-2 p-2`}
     >
-      <Card as="div" className="w-full max-w-sm flex-[1_1_auto] [@media(min-height:600px)]:flex-[0_1_auto] h-[100px] [@media(min-height:600px)]:h-fit md:max-h-[35rem] flex flex-col items-stretch gap-3 text-center overflow-y-auto">
+      <Card
+        as="div"
+        className="w-full max-w-sm flex-[1_1_auto] [@media(min-height:600px)]:flex-[0_1_auto] h-[100px] [@media(min-height:600px)]:h-fit md:max-h-[35rem] flex flex-col items-stretch gap-3 text-center overflow-y-auto"
+      >
         {isLoading ? (
           <Loading className="flex-1 flex flex-col justify-center items-center" />
         ) : (
@@ -117,7 +127,9 @@ export function Component() {
             >
               <FileDown />
               <p className="flex-1">Unduh file cadangan</p>
-              <p className="text-content-secondary dark:text-content-secondary-dark text-sm">1</p>
+              <p className="text-content-secondary dark:text-content-secondary-dark text-sm">
+                1
+              </p>
             </ButtonMenu>
             {!showDeleteConfirm ? (
               <ButtonMenu
@@ -127,7 +139,9 @@ export function Component() {
               >
                 <Trash2 />
                 <p className="flex-1">Hapus semua kartu</p>
-                <p className="text-content-secondary dark:text-content-secondary-dark text-sm">2</p>
+                <p className="text-content-secondary dark:text-content-secondary-dark text-sm">
+                  2
+                </p>
               </ButtonMenu>
             ) : (
               <div className="p-2 flex gap-2 items-center text-left relative">
@@ -162,7 +176,9 @@ export function Component() {
             >
               <FileUp />
               <p className="flex-1">Import file cadangan</p>
-              <p className="text-content-secondary dark:text-content-secondary-dark text-sm">3</p>
+              <p className="text-content-secondary dark:text-content-secondary-dark text-sm">
+                3
+              </p>
             </ButtonMenu>
             <input
               type="file"
@@ -176,11 +192,7 @@ export function Component() {
             <p className="p-2 text-left text-content-secondary dark:text-content-secondary-dark text-sm">
               Pengembangan
             </p>
-            <ButtonMenu
-              type="submit"
-              name="intent"
-              value="download-log"
-            >
+            <ButtonMenu type="submit" name="intent" value="download-error-log">
               <CloudAlert />
               Unduh log eror
             </ButtonMenu>

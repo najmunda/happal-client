@@ -1,6 +1,28 @@
 import db, { handleError } from "../../db";
 import { cardDocsSchema } from "../../utils/schemas";
-import { safeFetch } from "../../utils/utils";
+
+function downloadObjectAsJSON(object, name) {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month =
+    date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+  const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+  const blob = new Blob([JSON.stringify(object)], {
+    type: "text/json",
+  });
+  const link = document.createElement("a");
+  link.download = `${year}${month}${day}-happal-${name}.json`;
+  link.href = window.URL.createObjectURL(blob);
+  link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+  link.dispatchEvent(
+    new MouseEvent("click", {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+  link.remove();
+}
 
 export async function downloadAllCardDoc() {
   try {
@@ -19,30 +41,7 @@ export async function downloadAllCardDoc() {
         _id,
       }),
     );
-    const date = new Date();
-    const year = date.getFullYear();
-    const month =
-      date.getMonth() + 1 < 10
-        ? `0${date.getMonth() + 1}`
-        : date.getMonth() + 1;
-    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-    const blob = new Blob([JSON.stringify(allCardDocs)], {
-      type: "text/json",
-    });
-    const link = document.createElement("a");
-    link.download = `${year}${month}${day}-happal.json`;
-    link.href = window.URL.createObjectURL(blob);
-    link.dataset.downloadurl = ["text/json", link.download, link.href].join(
-      ":",
-    );
-    link.dispatchEvent(
-      new MouseEvent("click", {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-    link.remove();
+    downloadObjectAsJSON(allCardDocs, "cards-backup");
     return { success: true };
   } catch (error) {
     await handleError(error, "Terjadi eror saat mendapatkan file cadangan");
@@ -141,7 +140,7 @@ export async function importCardDocs(importedFileObjUrl) {
   }
 }
 
-export async function uploadLog() {
+export async function downloadErrorLog() {
   let clientLogDoc;
   try {
     clientLogDoc = await db.get("client-log").catch((error) => {
@@ -153,25 +152,15 @@ export async function uploadLog() {
     });
     const clientLog = clientLogDoc["log"];
     if (clientLog !== "") {
-      await safeFetch(`${import.meta.env.VITE_SERVER_URL}/log/client`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ log: clientLog }),
-        method: "POST",
-      });
+      downloadObjectAsJSON(clientLog, "error-log");
     }
   } catch (error) {
-    throw new Error("Log gagal diunggah");
+    throw new Error("Log eror gagal diunduh");
   }
   try {
     await db.put({ ...clientLogDoc, log: [] });
-    return {
-      success: true,
-      message: "Log berhasil diunggah",
-    };
+    return { success: true };
   } catch (error) {
-    throw new Error("Log gagal direset, tapi berhasil diunggah");
+    throw new Error("Log eror gagal direset, namun berhasil diunduh");
   }
 }
