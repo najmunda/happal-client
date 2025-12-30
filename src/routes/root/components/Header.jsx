@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { HelpCircle, Moon, Sun } from "lucide-react";
+import { HelpCircle, Moon, Settings, Sun } from "lucide-react";
 import Navigation from "./Navigation";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import Card from "../../../components/Card";
@@ -21,7 +21,7 @@ export default function Header({ isDarkTheme, handleDarkToggle }) {
           <Navigation />
         </nav>
         <div className="flex items-center justify-end gap-1 md:gap-2">
-          {location.pathname !== "/" && (
+          {!["/", "/settings"].includes(location.pathname) && (
             <Link
               className={`p-2 hover:bg-main hover:text-content ${location.pathname.includes("help") ? "bg-main text-content" : ""} rounded-full`}
               to={location.pathname + "/help"}
@@ -36,6 +36,12 @@ export default function Header({ isDarkTheme, handleDarkToggle }) {
           >
             {isDarkTheme ? <Sun /> : <Moon />}
           </button>
+          <Link
+            to={"/settings"}
+            className={`p-2 hover:bg-main hover:text-content ${location.pathname.includes("account") ? "bg-main text-content" : ""} rounded-full`}
+          >
+            <Settings />
+          </Link>
           <a
             className="p-2 hover:bg-main hover:text-content rounded-full"
             href="https://github.com/najmunda/happal-client"

@@ -72,6 +72,10 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: "/settings",
+        lazy: () => import("./routes/settings/settings.jsx"),
+      },
+      {
         path: "*",
         element: <Navigate to={"/"} />,
       },

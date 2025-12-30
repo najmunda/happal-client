@@ -10,7 +10,7 @@ export default function ButtonAction({
   return (
     <Component
       className={clsx(
-        "px-2 py-1 flex text-sm items-center gap-1 rounded-lg hover:cursor-pointer",
+        "px-2 py-1 flex text-sm items-center gap-1 rounded-lg hover:cursor-pointer disabled:hover:cursor-default",
         {
           "dark:hover:bg-card/25 dark:hover:text-card hover:bg-card-dark/25 hover:text-card-dark":
             !variant,
