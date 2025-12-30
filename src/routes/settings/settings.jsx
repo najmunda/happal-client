@@ -100,7 +100,7 @@ export function Component() {
     const importFormData = new FormData();
     importFormData.append("intent", "import");
     importFormData.append("file", URL.createObjectURL(importedFiles));
-    submit(importFormData, { action: "/account", method: "post" });
+    submit(importFormData, { action: "/settings", method: "post" });
     e.preventDefault();
   }
 
