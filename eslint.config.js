@@ -16,7 +16,12 @@ export default defineConfig([
         "caughtErrors": "none",
       }],
       "react/prop-types": "off",
-    }
+    },
+    "settings": {
+      "react": {
+        "version": "detect",
+      },
+    },
   },
   eslintConfigPrettier,
 ]);
