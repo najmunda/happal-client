@@ -63,12 +63,21 @@ export async function updateSRS(cardId, rating) {
       rating == 0 ? Rating.Again : Rating.Good,
     );
     await editCardDoc(cardId, { srs: updatedSrs });
-    // const scheduledDays = updatedSrs.card.scheduled_days;
-    // if (scheduledDays > 0) {
-    //   await setMonthlyHistory({reviewCountAdd: 1});
-    // }
     return { success: true };
   } catch (error) {
     await handleError(error, "SRS kartu gagal diperbarui");
+  }
+}
+
+export async function undoSRS(prevCardId, prevCardRev) {
+  try {
+    const options = { rev: prevCardRev };
+    const {
+      payload: { srs: prevSrs },
+    } = await getCardDoc(prevCardId, options);
+    await editCardDoc(prevCardId, { srs: prevSrs });
+    return { success: true };
+  } catch (error) {
+    await handleError(error, "Penilaian gagal diurungkan");
   }
 }

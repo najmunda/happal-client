@@ -1,8 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Interweave } from "interweave";
-import { CopyX, Pickaxe, Smile, ThumbsDown, ThumbsUp } from "lucide-react";
+import {
+  CopyX,
+  Pickaxe,
+  Smile,
+  ThumbsDown,
+  ThumbsUp,
+  Undo,
+} from "lucide-react";
 import {
   Outlet,
+  useActionData,
   useLoaderData,
   useNavigate,
   useNavigation,
@@ -14,7 +22,7 @@ import Toast from "../../components/Toast";
 import { getCardDocTotal } from "../../db";
 import CardsCounter from "./components/CardsCounter";
 import { logError } from "../../utils/logger";
-import { getSorbData, updateSRS } from "./db";
+import { getSorbData, undoSRS, updateSRS } from "./db";
 import Card from "../../components/Card";
 import Dialog from "../../components/Dialog";
 
@@ -27,9 +35,24 @@ export async function loader() {
 }
 
 export async function action({ request }) {
+  let intent;
+  let cardId;
+  let cardRev;
   try {
-    const { cardId, rating } = await request.json();
-    await updateSRS(cardId, rating);
+    const requestJson = await request.json();
+    intent = requestJson["intent"];
+    cardId = requestJson["cardId"];
+    cardRev = requestJson["cardRev"];
+    switch (intent) {
+      case "rating":
+        await updateSRS(cardId, requestJson["rating"]);
+        break;
+      case "undo":
+        await undoSRS(cardId, cardRev);
+        break;
+      default:
+        break;
+    }
   } catch (error) {
     await logError(error);
     error.message = Object.hasOwn(error, "cause")
@@ -37,12 +60,13 @@ export async function action({ request }) {
       : "SRS kartu gagal diperbarui";
     toast.custom(() => <Toast message={error.message} type="error" />);
   }
-  return null;
+  return { intent, prevCardId: cardId, prevCardRev: cardRev };
 }
 
 export function Component() {
   const { topCardDoc, nextReview, todayCardsLeft, cardDocsTotal } =
     useLoaderData();
+  const { intent, prevCardId, prevCardRev } = useActionData() || {};
   const [isOpen, setIsOpen] = useState(false);
   const submit = useSubmit();
   const mainDivRef = useRef();
@@ -50,6 +74,20 @@ export function Component() {
   const [currentCardScope, animateCurrentCard] = useAnimate();
   const [nextCardScope, animateNextCard] = useAnimate();
   const navigation = useNavigation();
+  const [rateHistory, setRateHistory] = useState([]);
+
+  // Rating history
+
+  useEffect(() => {
+    if (intent === "rating") {
+      setRateHistory((prevRateHistory) => [
+        ...prevRateHistory,
+        { cardId: prevCardId, cardRev: prevCardRev },
+      ]);
+    } else if (intent === "undo") {
+      setRateHistory((prevRateHistory) => prevRateHistory.slice(0, -1));
+    }
+  }, [topCardDoc]);
 
   // Handlers
 
@@ -156,7 +194,12 @@ export function Component() {
       ])
         .then(() => {
           submit(
-            { cardId: topCardDoc._id, rating: 1 },
+            {
+              intent: "rating",
+              cardId: topCardDoc._id,
+              cardRev: topCardDoc._rev,
+              rating: 1,
+            },
             { method: "post", encType: "application/json" },
           );
           setTimeout(() => setIsOpen(false), 100);
@@ -196,7 +239,12 @@ export function Component() {
       ])
         .then(() => {
           submit(
-            { cardId: topCardDoc._id, rating: 0 },
+            {
+              intent: "rating",
+              cardId: topCardDoc._id,
+              cardRev: topCardDoc._rev,
+              rating: 0,
+            },
             { method: "post", encType: "application/json" },
           );
           setTimeout(() => setIsOpen(false), 100);
@@ -205,6 +253,14 @@ export function Component() {
           nextCardAnimation.cancel();
         });
     }
+  }
+
+  function handleUndoButton() {
+    const { cardId: prevCardId, cardRev: prevCardRev } = rateHistory.at(-1);
+    submit(
+      { intent: "undo", cardId: prevCardId, cardRev: prevCardRev },
+      { method: "post", encType: "application/json" },
+    );
   }
 
   function handleCardClick() {
@@ -277,6 +333,11 @@ export function Component() {
       todayCardsLeft.new.length != 0 ||
       todayCardsLeft.review.length != 0 ? (
         <>
+          <CardsCounter
+            newTotal={todayCardsLeft.new.length}
+            learnTotal={todayCardsLeft.learn.length}
+            reviewTotal={todayCardsLeft.review.length}
+          />
           <div className="flex-1 w-full flex flex-col justify-center items-center relative">
             {isLoading ? (
               <Card
@@ -327,39 +388,42 @@ export function Component() {
                       </>
                     )}
                   </div>
-                  {isOpen && (
-                    <>
-                      <section className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={handleCardLeft}
-                          className="p-2 flex items-center gap-2 rounded-lg hover:bg-danger/25 hover:text-danger cursor-pointer"
-                        >
-                          <ThumbsDown />
-                          <p className="text-xs">{nextReview.again}</p>
-                          <p className="text-xs">Again</p>
-                        </button>
-                        <hr className="flex-1 border border-line dark:border-line-dark" />
-                        <button
-                          onClick={handleCardRight}
-                          className="p-2 flex items-center gap-2 rounded-lg hover:bg-success/25 hover:text-success cursor-pointer"
-                        >
-                          <p className="text-xs">{nextReview.good}</p>
-                          <p className="text-xs">Good</p>
-                          <ThumbsUp />
-                        </button>
-                      </section>
-                    </>
-                  )}
                 </Card>
               </>
             )}
           </div>
-          <CardsCounter
-            newTotal={todayCardsLeft.new.length}
-            learnTotal={todayCardsLeft.learn.length}
-            reviewTotal={todayCardsLeft.review.length}
-          />
+          <section className="w-full md:max-w-sm md:max-h-140 flex justify-around items-stretch gap-2 font-extrabold text-xs text-center">
+            <Card
+              as="button"
+              type="button"
+              onClick={handleCardLeft}
+              className="flex-1 flex justify-center items-center gap-2 font-normal hover:bg-danger/25 hover:text-danger cursor-pointer"
+            >
+              <ThumbsDown size={20} />
+              <p className="text-xs">{nextReview.again}</p>
+              <p className="text-xs">Again</p>
+            </Card>
+            <Card
+              as="button"
+              type="submit"
+              onClick={handleUndoButton}
+              disabled={rateHistory.length === 0}
+              className="flex justify-center items-center gap-2 font-normal disabled:text-content-secondary dark:disabled:text-content-secondary-dark cursor-pointer disabled:cursor-default"
+            >
+              <Undo size={20} />
+              Urung
+            </Card>
+            <Card
+              as="button"
+              type="button"
+              onClick={handleCardRight}
+              className="flex-1 flex justify-center items-center gap-2 font-normal hover:bg-success/25 hover:text-success cursor-pointer"
+            >
+              <p className="text-xs">{nextReview.good}</p>
+              <p className="text-xs">Good</p>
+              <ThumbsUp size={20} />
+            </Card>
+          </section>
         </>
       ) : (
         <div className="w-full flex-1 max-w-sm md:max-h-140 p-2 flex flex-col items-center justify-center gap-2 text-center text-content-secondary dark:text-content-secondary-dark rounded-lg border-2 border-line dark:border-line-dark border-dashed">

@@ -21,7 +21,6 @@ PouchDB.plugin(upsertPlugin);
 // Custom Error with message handled & showed on UI
 
 const db = new PouchDB("sorbit", {
-  auto_compaction: true,
   revs_limit: 500,
 });
 
@@ -42,9 +41,9 @@ export async function getCardDocTotal() {
   }
 }
 
-export async function getCardDoc(cardId) {
+export async function getCardDoc(cardId, options = {}) {
   try {
-    const cardDoc = await db.get(cardId);
+    const cardDoc = await db.get(cardId, options);
     return {
       success: true,
       payload: cardDoc,
