@@ -1,6 +1,10 @@
 import { fsrs, Rating } from "ts-fsrs";
 import db, { editCardDoc, getCardDoc, handleError } from "../../db";
-import { getEndTodayUTC, msToDHM } from "../../utils/utils";
+import {
+  dateInSRSObjectToISOStr,
+  getEndTodayUTC,
+  msToDHM,
+} from "../../utils/utils";
 
 export async function getSorbData(cardDocsTotal) {
   try {
@@ -62,6 +66,7 @@ export async function updateSRS(cardId, rating) {
       new Date(),
       rating == 0 ? Rating.Again : Rating.Good,
     );
+    dateInSRSObjectToISOStr(updatedSrs);
     await editCardDoc(cardId, { srs: updatedSrs });
     return { success: true };
   } catch (error) {

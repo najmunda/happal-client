@@ -1,6 +1,7 @@
 import Fuse from "fuse.js";
 import db, { editCardDoc, handleError } from "../../db";
 import { fsrs } from "ts-fsrs";
+import { dateInSRSObjectToISOStr } from "../../utils/utils";
 
 const SortBy = Object.freeze({
   create: "date_created",
@@ -88,6 +89,7 @@ export async function resetCard(cardId) {
     const dateNow = new Date();
     const cardDoc = await db.get(cardId);
     const resetSRS = f.forget(cardDoc.srs.card, dateNow, false);
+    dateInSRSObjectToISOStr(resetSRS);
     await editCardDoc(cardId, { srs: resetSRS });
     return { success: true, message: "Kartu berhasil direset" };
   } catch (error) {

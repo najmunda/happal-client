@@ -102,3 +102,18 @@ export function getMonth(index) {
   ];
   return arr[index];
 }
+
+export function dateInSRSObjectToISOStr(srsObject) {
+  // Call toISOString() of Date inside SRS object
+  if (srsObject.card) {
+    if (srsObject.card.due)
+      srsObject.card.due = srsObject.card.due.toISOString();
+    if (srsObject.card.last_review)
+      srsObject.card.last_review = srsObject.card.last_review.toISOString();
+  }
+  if (srsObject.log) {
+    if (srsObject.log.due) srsObject.log.due = srsObject.log.due.toISOString();
+    if (srsObject.log.review)
+      srsObject.log.review = srsObject.log.review.toISOString();
+  }
+}

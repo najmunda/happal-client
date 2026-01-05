@@ -1,19 +1,22 @@
 import { createEmptyCard } from "ts-fsrs";
 import db, { handleError } from "../../db";
+import { dateInSRSObjectToISOStr } from "../../utils/utils";
 
 export async function addCardDocs(newCardsData) {
   let responses;
   try {
     const dateCreate = new Date();
     const emptyCard = createEmptyCard(dateCreate);
+    const emptySRS = {
+      card: emptyCard,
+      log: null,
+    };
+    dateInSRSObjectToISOStr(emptySRS);
     const newCardDocs = newCardsData.map((cardDoc) => ({
       _id: `card-${crypto.randomUUID()}`,
       ...cardDoc,
       date_created: dateCreate.toISOString(),
-      srs: {
-        card: emptyCard,
-        log: null,
-      },
+      srs: emptySRS,
     }));
     responses = await db.bulkDocs(newCardDocs);
     // .then(() => {
