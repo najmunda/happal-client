@@ -74,6 +74,24 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         lazy: () => import("./routes/settings/settings.jsx"),
+        children: [
+          {
+            path: "download-cards",
+            lazy: () => import("./routes/settings/download-cards.jsx"),
+          },
+          {
+            path: "delete-cards",
+            lazy: () => import("./routes/settings/delete-cards.jsx"),
+          },
+          {
+            path: "import-cards",
+            lazy: () => import("./routes/settings/import-cards.jsx"),
+          },
+          {
+            path: "download-error-log",
+            lazy: () => import("./routes/settings/download-error-log.jsx"),
+          },
+        ],
       },
       {
         path: "*",

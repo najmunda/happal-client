@@ -1,10 +1,5 @@
 import { useRef, useState } from "react";
-import {
-  Form,
-  useLoaderData,
-  useNavigation,
-  useSubmit,
-} from "react-router-dom";
+import { useFetcher, useLoaderData } from "react-router-dom";
 import {
   CloudAlert,
   FileDown,
@@ -13,17 +8,8 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
-import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
 import { getCardDocTotal } from "../../db";
-import Toast from "../../components/Toast";
-import { logError } from "../../utils/logger";
-import {
-  deleteAllCardDoc,
-  downloadAllCardDoc,
-  downloadErrorLog,
-  importCardDocs,
-} from "./db";
 import Card from "../../components/Card";
 import ButtonMenu from "./components/ButtonMenu";
 import ButtonAction from "../../components/ButtonAction";
@@ -35,60 +21,19 @@ export async function loader() {
   };
 }
 
-export async function action({ request }) {
-  try {
-    const formData = await request.formData();
-    const intent = formData.get("intent");
-    let response;
-    switch (intent) {
-      case "delete": {
-        response = await deleteAllCardDoc();
-        break;
-      }
-      case "download": {
-        response = await downloadAllCardDoc();
-        break;
-      }
-      case "import": {
-        response = await importCardDocs(formData.get("file"));
-        break;
-      }
-      case "download-error-log": {
-        response = await downloadErrorLog();
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-    if (response?.message) {
-      toast.custom(() => (
-        <Toast
-          message={response.message}
-          type={response.success ? "success" : "error"}
-        />
-      ));
-    }
-    return null;
-  } catch (error) {
-    await logError(error);
-    error.message = Object.hasOwn(error, "cause")
-      ? error.message
-      : "Terjadi eror, aksi dibatalkan";
-    toast.custom(() => <Toast message={error.message} type="error" />);
-    return null;
-  }
-}
-
 export function Component() {
   const { cardDocsTotal } = useLoaderData();
-  const navigation = useNavigation();
+  const fetcher = useFetcher();
   const isLoading =
-    navigation.state === "loading" || navigation.state === "submitting";
-
+    fetcher.state === "loading" || fetcher.state === "submitting";
   const importBtnRef = useRef();
-  const submit = useSubmit();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  function handleSubmitButton(e) {
+    const dataset = e.currentTarget.dataset;
+    fetcher.submit(null, { action: dataset.action, method: dataset.method });
+    setShowDeleteConfirm(false);
+  }
 
   function handleImportButton(e) {
     importBtnRef.current.click();
@@ -98,9 +43,9 @@ export function Component() {
   function handleImportChange(e) {
     const importedFiles = importBtnRef.current.files[0];
     const importFormData = new FormData();
-    importFormData.append("intent", "import");
     importFormData.append("file", URL.createObjectURL(importedFiles));
-    submit(importFormData, { action: "/settings", method: "post" });
+    fetcher.submit(importFormData, { action: "import-cards", method: "post" });
+    setShowDeleteConfirm(false);
     e.preventDefault();
   }
 
@@ -115,15 +60,16 @@ export function Component() {
         {isLoading ? (
           <Loading className="flex-1 flex flex-col justify-center items-center" />
         ) : (
-          <Form method="post" className="flex flex-col">
+          <div method="post" className="flex flex-col items-stretch">
             <p className="p-2 text-left text-content-secondary dark:text-content-secondary-dark text-sm">
               Sinkronisasi Lokal
             </p>
             <ButtonMenu
-              type="submit"
-              name="intent"
-              value="download"
+              type="button"
+              data-method="post"
+              data-action="download-cards"
               disabled={cardDocsTotal <= 0}
+              onClick={handleSubmitButton}
             >
               <FileDown />
               <p className="flex-1">Unduh file cadangan</p>
@@ -144,10 +90,10 @@ export function Component() {
                 </p>
               </ButtonMenu>
             ) : (
-              <div className="p-2 flex gap-2 items-center text-left relative">
+              <div className="p-2 flex gap-2 items-stretch text-left relative">
                 <TriangleAlert />
                 <p className="flex-1">Anda yakin?</p>
-                <div className="flex gap-2 items-center absolute right-2">
+                <div className="flex gap-2 absolute right-0">
                   <ButtonAction
                     as="button"
                     type="button"
@@ -158,11 +104,12 @@ export function Component() {
                   </ButtonAction>
                   <ButtonAction
                     as="button"
-                    type="submit"
-                    name="intent"
-                    value="delete"
+                    type="button"
+                    data-method="delete"
+                    data-action="delete-cards"
                     variant="danger"
                     icon={Trash2}
+                    onClick={handleSubmitButton}
                   >
                     Hapus
                   </ButtonAction>
@@ -192,11 +139,16 @@ export function Component() {
             <p className="p-2 text-left text-content-secondary dark:text-content-secondary-dark text-sm">
               Pengembangan
             </p>
-            <ButtonMenu type="submit" name="intent" value="download-error-log">
+            <ButtonMenu
+              type="button"
+              data-method="post"
+              data-action="download-error-log"
+              onClick={handleSubmitButton}
+            >
               <CloudAlert />
               Unduh log eror
             </ButtonMenu>
-          </Form>
+          </div>
         )}
       </Card>
     </main>
