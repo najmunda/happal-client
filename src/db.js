@@ -26,6 +26,15 @@ const db = new PouchDB("sorbit", {
 
 export default db;
 
+export async function compactDB() {
+  try {
+    await db.compact();
+    return { success: true };
+  } catch (error) {
+    await handleError(error, "Basis data gagal dipadatkan");
+  }
+}
+
 export async function getCardDocTotal() {
   try {
     const response = await db.allDocs({
