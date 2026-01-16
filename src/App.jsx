@@ -7,11 +7,6 @@ import Root, { loader as rootLoader } from "./routes/root/root.jsx";
 import RootError from "./routes/root/error.jsx";
 // Home
 // import Home, { loader as homeLoader} from "./routes/home.jsx";
-// Cards
-import { loader as infoLoader } from "./routes/cards/info.jsx";
-import { action as editAction } from "./routes/cards/edit.jsx";
-import { action as resetAction } from "./routes/cards/reset.jsx";
-import { action as deleteAction } from "./routes/cards/delete.jsx";
 
 const router = createBrowserRouter([
   {
@@ -55,19 +50,19 @@ const router = createBrowserRouter([
           },
           {
             path: ":cardId",
-            loader: infoLoader,
+            lazy: () => import("./routes/cards/info"),
           },
           {
             path: ":cardId/edit",
-            action: editAction,
+            lazy: () => import("./routes/cards/edit"),
           },
           {
             path: ":cardId/delete",
-            action: deleteAction,
+            lazy: () => import("./routes/cards/delete"),
           },
           {
             path: ":cardId/reset",
-            action: resetAction,
+            lazy: () => import("./routes/cards/reset"),
           },
         ],
       },
