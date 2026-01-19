@@ -38,7 +38,7 @@ export default function Header({ isDarkTheme, handleDarkToggle }) {
           </button>
           <Link
             to={"/settings"}
-            className={`p-2 hover:bg-main hover:text-content ${location.pathname.includes("account") ? "bg-main text-content" : ""} rounded-full`}
+            className={`p-2 hover:bg-main hover:text-content ${location.pathname.includes("settings") ? "bg-main text-content" : ""} rounded-full`}
           >
             <Settings />
           </Link>
