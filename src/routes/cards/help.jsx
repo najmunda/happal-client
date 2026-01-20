@@ -1,13 +1,17 @@
 import { useOutletContext } from "react-router-dom";
 import { CalendarSync, Info, SquarePen, Trash2, X } from "lucide-react";
 import ButtonAction from "../../components/ButtonAction";
+import { DialogButtons, DialogContent } from "../../components/Dialog";
 
 export function Component() {
   const [handleDialogClose] = useOutletContext();
 
   return (
     <>
-      <section className="w-full flex flex-col justify-evenly gap-2">
+      <DialogContent
+        as="section"
+        className="w-full flex flex-col justify-evenly gap-2"
+      >
         <h2 className="text-2xl font-bold">Cards?</h2>
         <p className="text-sm">
           Halaman ini digunakan untuk mengelola kartu-kartu yang telah kamu
@@ -51,8 +55,8 @@ export function Component() {
             </tr>
           </tbody>
         </table>
-      </section>
-      <div className="pt-2 w-full flex justify-center items-center">
+      </DialogContent>
+      <DialogButtons className="pt-2 w-full flex justify-center items-center">
         <ButtonAction
           as="button"
           type="button"
@@ -61,7 +65,7 @@ export function Component() {
         >
           Tutup
         </ButtonAction>
-      </div>
+      </DialogButtons>
     </>
   );
 }

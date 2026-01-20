@@ -25,6 +25,7 @@ import { logError } from "../../utils/logger";
 import { getSorbData, undoSRS, updateSRS } from "./db";
 import Card from "../../components/Card";
 import Dialog from "../../components/Dialog";
+import { createPortal } from "react-dom";
 
 export async function loader() {
   const { payload: cardDocsTotal } = await getCardDocTotal();
@@ -318,7 +319,7 @@ export function Component() {
 
   useEffect(() => {
     if (location.pathname !== "/sorb") {
-      dialogRef.current.showModal();
+      dialogRef.current.show();
     } else {
       dialogRef.current.close();
     }
@@ -446,13 +447,16 @@ export function Component() {
           )}
         </div>
       )}
-      <Dialog
-        ref={dialogRef}
-        onClick={handleBackdropClick}
-        onKeyDown={handleEscDown}
-      >
-        <Outlet context={[handleDialogClose]} />
-      </Dialog>
+      {createPortal(
+        <Dialog
+          ref={dialogRef}
+          onClick={handleBackdropClick}
+          onKeyDown={handleEscDown}
+        >
+          <Outlet context={[handleDialogClose]} />
+        </Dialog>,
+        document.body,
+      )}
     </main>
   );
 }
